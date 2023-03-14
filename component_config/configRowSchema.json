@@ -1,1 +1,1326 @@
-{}
+{
+  "title": "DV360 Report",
+  "type": "object",
+  "required": [
+    "input_variant",
+    "time_range",
+    "destination"
+  ],
+  "properties": {
+    "input_variant": {
+      "type": "string",
+      "title": "Input variant",
+      "propertyOrder": 100,
+      "description": "You may choose to either define a new report or to enter existing report ID",
+      "enum": [
+        "report_specification",
+        "existing_report_id"
+      ],
+      "options": {
+        "enum_titles": [
+          "Report specification",
+          "Existing report ID"
+        ]
+      },
+      "default": "report_specification"
+    },
+    "time_range": {
+      "type": "object",
+      "title": "Time Range",
+      "propertyOrder": 200,
+      "properties": {
+        "period": {
+          "type": "string",
+          "title": "Report Period",
+          "propertyOrder": 10,
+          "default": "LAST_7_DAYS",
+          "enum": [
+            "CUSTOM_DATES",
+            "CURRENT_DAY",
+            "PREVIOUS_DAY",
+            "WEEK_TO_DATE",
+            "MONTH_TO_DATE",
+            "QUARTER_TO_DATE",
+            "YEAR_TO_DATE",
+            "PREVIOUS_WEEK",
+            "PREVIOUS_MONTH",
+            "PREVIOUS_QUARTER",
+            "PREVIOUS_YEAR",
+            "LAST_7_DAYS",
+            "LAST_30_DAYS",
+            "LAST_90_DAYS",
+            "LAST_365_DAYS",
+            "ALL_TIME",
+            "LAST_14_DAYS",
+            "LAST_60_DAYS"
+          ],
+          "options": {
+            "enum_titles": [
+              "Custom date range",
+              "Current day",
+              "Previous day",
+              "All days, including the current day, since the most recent Sunday",
+              "All days, including the current day, since the start of the current month",
+              "All days, including the current day, since the start of the current quarter",
+              "All days, including the current day, since the start of the current calendar year",
+              "The previous completed week, beginning from Sunday",
+              "The previous completed calendar month",
+              "The previous completed quarter",
+              "The previous completed calendar year",
+              "The previous 7 days, excluding the current day",
+              "The previous 30 days, excluding the current day",
+              "The previous 90 days, excluding the current day",
+              "The previous 365 days, excluding the current day",
+              "All time for which data is available, excluding the current day",
+              "The previous 14 days, excluding the current day",
+              "The previous 60 days, excluding the current day"
+            ]
+          }
+        },
+        "date_from": {
+          "type": "string",
+          "title": "Date from",
+          "propertyOrder": 20,
+          "description": "Start date: Either date in YYYY-MM-DD format or a relative date string i.e. 5 days ago, 1 month ago, yesterday, etc.",
+          "options": {
+            "dependencies": {
+              "period": "CUSTOM_DATES"
+            }
+          }
+        },
+        "date_to": {
+          "type": "string",
+          "title": "Date to",
+          "propertyOrder": 30,
+          "description": "End date: Either date in YYYY-MM-DD format or a relative date string i.e. 5 days ago, 1 month ago, yesterday, etc.",
+          "options": {
+            "dependencies": {
+              "period": "CUSTOM_DATES"
+            }
+          }
+        }
+      }
+    },
+    "report_specification": {
+      "type": "object",
+      "title": "Report Details",
+      "propertyOrder": 300,
+      "properties": {
+        "report_type": {
+          "title": "Report Type",
+          "type": "string",
+          "enum": [
+            "STANDARD",
+            "REACH",
+            "PATH_TO_CONVERSION",
+            "CROSS_DIMENSION_REACH",
+            "FLOODLIGHT",
+            "PATH",
+            "PATH_ATTRIBUTION"
+          ],
+          "options": {
+            "enum_titles": [
+              "Standard",
+              "Reach",
+              "Path to Conversion",
+              "Croll Dimension Reach",
+              "Floodlight",
+              "Path",
+              "Path Attribution"
+            ]
+          },
+          "propertyOrder": 500
+        },
+
+        "dimensions_standard": {
+          "options": {
+            "dependencies": {
+              "report_type": "STANDARD"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Activity",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "REACH"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_path_to_conversion": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_TO_CONVERSION"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_cross_dimension_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "CROSS_DIMENSION_REACH"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_floodlight": {
+          "options": {
+            "dependencies": {
+              "report_type": "FLOODLIGHT"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_path": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+        "dimensions_path_attribution": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_ATTRIBUTION"
+            }
+          },
+          "title": "Dimensions",
+          "type": "array",
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "activity",
+              "activityId",
+              "ad",
+              "adId",
+              "campaign",
+              "campaignId",
+              "creative",
+              "creativeId",
+              "eventType",
+              "pathChannelGroupingName",
+              "pathEventIndex",
+              "pathPatternId",
+              "placement",
+              "placementId",
+              "site",
+              "siteId"
+            ],
+            "options": {
+              "enum_titles": [
+                "Prehodili jsme REACH",
+                "Activity ID",
+                "Ad",
+                "Ad ID",
+                "Campaign",
+                "Campaign ID",
+                "Creative",
+                "Creative ID",
+                "Event Type",
+                "Channel Grouping",
+                "Path Event Index",
+                "Path Pattern ID",
+                "Placement",
+                "Placement ID",
+                "Site (CM360)",
+                "Site ID (CM360)"
+              ]
+            }
+          },
+          "propertyOrder": 600
+        },
+
+        "metrics_standard": {
+          "options": {
+            "dependencies": {
+              "report_type": "STANDARD"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "REACH"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_path_to_conversion": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_TO_CONVERSION"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_cross_dimension_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "CROSS_DIMENSION_REACH"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_floodlight": {
+          "options": {
+            "dependencies": {
+              "report_type": "FLOODLIGHT"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_path": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+        "metrics_path_attribution": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_ATTRIBUTION"
+            }
+          },
+          "type": "array",
+          "title": "Metrics",
+          "propertyOrder": 700,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
+              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
+              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
+              "METRIC_WIN_LOSS_RATE"
+            ],
+            "options": {
+              "enum_titles": [
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
+                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
+                "Active View: Impressions Audible and Visible at Completion",
+                "Active View: Average Viewable Time (Seconds)",
+                "Win Rate"
+              ]
+            }
+          }
+        },
+
+
+        "filters_standard": {
+          "options": {
+            "dependencies": {
+              "report_type": "STANDARD"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "REACH"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_path_to_conversion": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_TO_CONVERSION"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_cross_dimension_reach": {
+          "options": {
+            "dependencies": {
+              "report_type": "CROSS_DIMENSION_REACH"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_floodlight": {
+          "options": {
+            "dependencies": {
+              "report_type": "FLOODLIGHT"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_path": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "filters_path_attribution": {
+          "options": {
+            "dependencies": {
+              "report_type": "PATH_ATTRIBUTION"
+            }
+          },
+          "type": "array",
+          "title": "Filters",
+          "propertyOrder": 800,
+          "format": "table",
+          "items": {
+            "type": "object",
+            "title": "Filter",
+            "properties": {
+              "name": {
+                "type": "string",
+                "title": "Filter",
+                "propertyOrder": 10,
+                "enum": [
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_ID",
+                  "FILTER_ACTIVE_VIEW_CUSTOM_METRIC_NAME",
+                  "FILTER_ACTIVE_VIEW_EXPECTED_VIEWABILITY",
+                  "FILTER_ADVERTISER",
+                  "FILTER_ADVERTISER_CURRENCY",
+                  "FILTER_ADVERTISER_INTEGRATION_CODE",
+                  "FILTER_ADVERTISER_INTEGRATION_STATUS",
+                  "FILTER_ADVERTISER_NAME",
+                  "FILTER_ADVERTISER_TIMEZONE",
+                  "FILTER_AD_POSITION",
+                  "FILTER_AD_TYPE",
+                  "FILTER_AGE",
+                  "FILTER_ZIP_POSTAL_CODE"
+                ],
+                "options": {
+                  "enum_titles": [
+                    "Active View: Custom Metric ID",
+                    "Active View: Custom Metric Name",
+                    "Active View Expected Viewability",
+                    "Advertiser ID",
+                    "Advertiser Currency",
+                    "Advertiser Integration Code",
+                    "Advertiser Status",
+                    "Advertiser",
+                    "Advertiser Time Zone",
+                    "Ad Position",
+                    "Ad Type",
+                    "Age",
+                    "Zip Code"
+                  ]
+                }
+              },
+              "value": {
+                "type": "string",
+                "title": "Value",
+                "propertyOrder": 20,
+                "minLength": 1
+              }
+            }
+          }
+        }
+      },
+      "options": {
+        "dependencies": {
+          "input_variant": "report_specification"
+        }
+      }
+    },
+    "existing_report_id": {
+      "type": "string",
+      "title": "Report ID",
+      "propertyOrder": 400,
+      "minLength": 1,
+      "description": "Enter report ID as presented in DV360 Report Builder",
+      "enum": [],
+      "options": {
+        "dependencies": {
+          "input_variant": "existing_report_id"
+        },
+        "async": {
+          "label": "Load available reports",
+          "action": "list_queries"
+        }
+      }
+    },
+    "destination": {
+      "title": "Destination",
+      "type": "object",
+      "propertyOrder": 600,
+      "required": [
+        "table_name",
+        "primary_key",
+        "incremental_loading"
+      ],
+      "properties": {
+        "selected_variant": {
+          "type": "string",
+          "title": "Selected variant",
+          "description": "Helper dummy element to render pkeys",
+          "template": "{{var}}",
+          "watch": {
+            "var": "input_variant"
+          },
+          "options": {
+            "hidden": true
+          }
+        },
+        "table_name": {
+          "type": "string",
+          "title": "Storage Table Name",
+          "propertyOrder": 10,
+          "minLength": 1,
+          "description": "Name of the destination table for this report. (e.g. standard_performance_data)."
+        },
+        "primary_key": {
+          "type": "array",
+          "title": "Primary Key",
+          "description": "List of columns (from selected dimensions) to be used as primary key of the resulting table. We recommend using ID columns where possible, to avoid ambiguity in case the dimension name is changed.",
+          "propertyOrder": 20,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "watch": {
+              "dim": "report_specification.dimensions"
+            },
+            "enumSource": "dim"
+          },
+          "options": {
+            "dependencies": {
+              "selected_variant": "report_specification"
+            }
+          }
+        },
+        "primary_key_existing": {
+          "type": "array",
+          "title": "Primary Key",
+          "description": "List of columns (load from report) to be used as primary key of the resulting table. We recommend using ID columns where possible, to avoid ambiguity in case the dimension name is changed.",
+          "propertyOrder": 21,
+          "format": "select",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "enum": [],
+            "minLength": 1,
+            "title": "Dimension"
+          },
+          "options": {
+            "async": {
+              "label": "Load available dimensions",
+              "action": "list_report_dimensions"
+            },
+            "dependencies": {
+              "selected_variant": "existing_report_id"
+            }
+          }
+        },
+        "incremental_loading": {
+          "enum": [
+            false,
+            true
+          ],
+          "type": "boolean",
+          "title": "Load Type",
+          "default": true,
+          "options": {
+            "enum_titles": [
+              "Full Load",
+              "Incremental Load"
+            ]
+          },
+          "description": "If Full load is used, the destination table will be overwritten every run. If Incremental Load is used, data will be upserted into the destination table.",
+          "propertyOrder": 30
+        }
+      }
+    },
+    "debug": {
+      "propertyOrder": 700,
+      "title": "Debug",
+      "type": "boolean",
+      "hidden": true,
+      "description": "When checked, logging will be more verbose",
+      "format": "checkbox"
+    }
+  }
+}

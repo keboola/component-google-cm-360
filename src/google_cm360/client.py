@@ -8,14 +8,14 @@ class GoogleDV360ClientException(UserException):
 
 
 class GoogleCM360Client:
-    def __init__(self, oauth_credentials):
+    def __init__(self, client_id: str, app_secret: str, token_data: dict):
         self.service = None
-        token_response = oauth_credentials.data
+        token_response = token_data
         token_response['expires_at'] = 22222
         client_secrets = {
             "web": {
-                "client_id": oauth_credentials.appKey,
-                "client_secret": oauth_credentials.appSecret,
+                "client_id": client_id,
+                "client_secret": app_secret,
                 "redirect_uris": ["https://www.example.com/oauth2callback"],
                 "auth_uri": "https://oauth2.googleapis.com/auth",
                 "token_uri": "https://oauth2.googleapis.com/token"

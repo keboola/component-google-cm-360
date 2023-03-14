@@ -39,9 +39,17 @@ class Component(ComponentBase):
         self.cfg = Configuration.fromDict(self.configuration.parameters)
         logging.debug(self.cfg)
 
-        client = GoogleCM360Client(self.configuration.oauth_credentials)
+        client = self._get_google_client()
 
         client.list_profiles_test()
+
+    def _get_google_client(self):
+        client = GoogleCM360Client(
+            self.configuration.oauth_credentials.appKey,
+            self.configuration.oauth_credentials.appSecret,
+            self.configuration.oauth_credentials.data
+        )
+        return client
 
     @staticmethod
     def download_file(url: str, result_file_path: str):

@@ -1,0 +1,479 @@
+activeViewCustomMetricId	Active View: Custom Metric ID	long
+activeViewCustomMetricName	Active View: Custom Metric Name	string
+activity	Activity	string
+activityGroup	Activity Group	string
+activityGroupId	Activity Group ID	long
+activityId	Activity ID	long
+ad	Ad	string
+adId	Ad ID	long
+adStatus	Ad Status	string
+adType	Ad Type	string
+advertiser	Advertiser	string
+advertiserGroup	Advertiser Group	string
+advertiserId	Advertiser ID	long
+app	App	string
+appId	App ID	string
+asset	Asset	string
+assetCategory	Asset Category	string
+assetId	Asset ID	long
+assetOrientation	Asset Orientation	string
+attributedEventConnectionType	Attributed Event Connection Type	string
+attributedEventEnvironment	Attributed Event Environment	string
+audienceTargeted	Audience Targeted	string
+browserPlatform	Browser/Platform	string
+campaign	Campaign	string
+campaignEndDate	Campaign End Date	string
+campaignExternalId	Campaign External ID	string
+campaignId	Campaign ID	long
+campaignStartDate	Campaign Start Date	string
+city	City	string
+clickThroughUrl	Click-through URL	string
+companionCreative	Companion Creative	string
+companionCreativeId	Companion Creative ID	long
+companionCreativeSize	Companion Creative Pixel Size	string
+connectionType	Connection Type	string
+contentCategory	Content Category	string
+country	Country	string
+creative	Creative	string
+creativeEndDate	Creative End Date	string
+creativeField1	Creative Field 1	string
+creativeField2	Creative Field 2	string
+creativeField3	Creative Field 3	string
+creativeField4	Creative Field 4	string
+creativeField5	Creative Field 5	string
+creativeField6	Creative Field 6	string
+creativeField7	Creative Field 7	string
+creativeField8	Creative Field 8	string
+creativeField9	Creative Field 9	string
+creativeField10	Creative Field 10	string
+creativeField11	Creative Field 11	string
+creativeField12	Creative Field 12	string
+creativeGroup1	Creative Groups 1	string
+creativeGroup2	Creative Groups 2	string
+creativeId	Creative ID	long
+creativeSize	Creative Pixel Size	string
+creativeStartDate	Creative Start Date	string
+creativeType	Creative Type	string
+creativeVersion	Creative Version	string
+dataSource	Data Source	string
+date	Date	string
+digitalContentLabel	Digital Content Label	string
+dmaRegion	Designated Market Area (DMA)	string
+domain	Domain	string
+dv360Advertiser	DV360 Advertiser	string
+dv360AdvertiserId	DV360 Advertiser ID	long
+dv360Campaign	DV360 Campaign	string
+dv360CampaignId	DV360 Campaign ID	long
+dv360Creative	DV360 Creative	string
+dv360CreativeId	DV360 Creative ID	long
+dv360InsertionOrder	DV360 Insertion Order	string
+dv360InsertionOrderId	DV360 Insertion Order ID	long
+dv360LineItem	DV360 Line Item	string
+dv360LineItemId	DV360 Line Item ID	long
+dv360Partner	DV360 Partner	string
+dv360PartnerId	DV360 Partner ID	long
+dv360Site	DV360 Site	string
+dv360SiteId	DV360 Site ID	long
+dynamicElement1Field1Value	Feed 1 - Reporting dimension 1 value	string
+dynamicElement1Field2Value	Feed 1 - Reporting dimension 2 value	string
+dynamicElement1Field3Value	Feed 1 - Reporting dimension 3 value	string
+dynamicElement1Field4Value	Feed 1 - Reporting dimension 4 value	string
+dynamicElement1Field5Value	Feed 1 - Reporting dimension 5 value	string
+dynamicElement1Field6Value	Feed 1 - Reporting dimension 6 value	string
+dynamicElement2Field1Value	Feed 2 - Reporting dimension 1 value	string
+dynamicElement2Field2Value	Feed 2 - Reporting dimension 2 value	string
+dynamicElement2Field3Value	Feed 2 - Reporting dimension 3 value	string
+dynamicElement2Field4Value	Feed 2 - Reporting dimension 4 value	string
+dynamicElement2Field5Value	Feed 2 - Reporting dimension 5 value	string
+dynamicElement2Field6Value	Feed 2 - Reporting dimension 6 value	string
+dynamicElement3Field1Value	Feed 3 - Reporting dimension 1 value	string
+dynamicElement3Field2Value	Feed 3 - Reporting dimension 2 value	string
+dynamicElement3Field3Value	Feed 3 - Reporting dimension 3 value	string
+dynamicElement3Field4Value	Feed 3 - Reporting dimension 4 value	string
+dynamicElement3Field5Value	Feed 3 - Reporting dimension 5 value	string
+dynamicElement3Field6Value	Feed 3 - Reporting dimension 6 value	string
+dynamicElement4Field1Value	Feed 4 - Reporting dimension 1 value	string
+dynamicElement4Field2Value	Feed 4 - Reporting dimension 2 value	string
+dynamicElement4Field3Value	Feed 4 - Reporting dimension 3 value	string
+dynamicElement4Field4Value	Feed 4 - Reporting dimension 4 value	string
+dynamicElement4Field5Value	Feed 4 - Reporting dimension 5 value	string
+dynamicElement4Field6Value	Feed 4 - Reporting dimension 6 value	string
+dynamicElement5Field1Value	Feed 5 - Reporting dimension 1 value	string
+dynamicElement5Field2Value	Feed 5 - Reporting dimension 2 value	string
+dynamicElement5Field3Value	Feed 5 - Reporting dimension 3 value	string
+dynamicElement5Field4Value	Feed 5 - Reporting dimension 4 value	string
+dynamicElement5Field5Value	Feed 5 - Reporting dimension 5 value	string
+dynamicElement5Field6Value	Feed 5 - Reporting dimension 6 value	string
+dynamicElement6Field1Value	Feed 6 - Reporting dimension 1 value	string
+dynamicElement6Field2Value	Feed 6 - Reporting dimension 2 value	string
+dynamicElement6Field3Value	Feed 6 - Reporting dimension 3 value	string
+dynamicElement6Field4Value	Feed 6 - Reporting dimension 4 value	string
+dynamicElement6Field5Value	Feed 6 - Reporting dimension 5 value	string
+dynamicElement6Field6Value	Feed 6 - Reporting dimension 6 value	string
+dynamicElement7Field1Value	Feed 7 - Reporting dimension 1 value	string
+dynamicElement7Field2Value	Feed 7 - Reporting dimension 2 value	string
+dynamicElement7Field3Value	Feed 7 - Reporting dimension 3 value	string
+dynamicElement7Field4Value	Feed 7 - Reporting dimension 4 value	string
+dynamicElement7Field5Value	Feed 7 - Reporting dimension 5 value	string
+dynamicElement7Field6Value	Feed 7 - Reporting dimension 6 value	string
+dynamicElement8Field1Value	Feed 8 - Reporting dimension 1 value	string
+dynamicElement8Field2Value	Feed 8 - Reporting dimension 2 value	string
+dynamicElement8Field3Value	Feed 8 - Reporting dimension 3 value	string
+dynamicElement8Field4Value	Feed 8 - Reporting dimension 4 value	string
+dynamicElement8Field5Value	Feed 8 - Reporting dimension 5 value	string
+dynamicElement8Field6Value	Feed 8 - Reporting dimension 6 value	string
+dynamicElement9Field1Value	Feed 9 - Reporting dimension 1 value	string
+dynamicElement9Field2Value	Feed 9 - Reporting dimension 2 value	string
+dynamicElement9Field3Value	Feed 9 - Reporting dimension 3 value	string
+dynamicElement9Field4Value	Feed 9 - Reporting dimension 4 value	string
+dynamicElement9Field5Value	Feed 9 - Reporting dimension 5 value	string
+dynamicElement9Field6Value	Feed 9 - Reporting dimension 6 value	string
+dynamicElement10Field1Value	Feed 10 - Reporting dimension 1 value	string
+dynamicElement10Field2Value	Feed 10 - Reporting dimension 2 value	string
+dynamicElement10Field3Value	Feed 10 - Reporting dimension 3 value	string
+dynamicElement10Field4Value	Feed 10 - Reporting dimension 4 value	string
+dynamicElement10Field5Value	Feed 10 - Reporting dimension 5 value	string
+dynamicElement10Field6Value	Feed 10 - Reporting dimension 6 value	string
+dynamicElement11Field1Value	Feed 11 - Reporting dimension 1 value	string
+dynamicElement11Field2Value	Feed 11 - Reporting dimension 2 value	string
+dynamicElement11Field3Value	Feed 11 - Reporting dimension 3 value	string
+dynamicElement11Field4Value	Feed 11 - Reporting dimension 4 value	string
+dynamicElement11Field5Value	Feed 11 - Reporting dimension 5 value	string
+dynamicElement11Field6Value	Feed 11 - Reporting dimension 6 value	string
+dynamicElement12Field1Value	Feed 12 - Reporting dimension 1 value	string
+dynamicElement12Field2Value	Feed 12 - Reporting dimension 2 value	string
+dynamicElement12Field3Value	Feed 12 - Reporting dimension 3 value	string
+dynamicElement12Field4Value	Feed 12 - Reporting dimension 4 value	string
+dynamicElement12Field6Value	Feed 12 - Reporting dimension 6 value	string
+dynamicElement13Field1Value	Feed 13 - Reporting dimension 1 value	string
+dynamicElement13Field2Value	Feed 13 - Reporting dimension 2 value	string
+dynamicElement13Field4Value	Feed 13 - Reporting dimension 4 value	string
+dynamicElement13Field5Value	Feed 13 - Reporting dimension 5 value	string
+dynamicElement13Field6Value	Feed 13 - Reporting dimension 6 value	string
+dynamicElement14Field1Value	Feed 14 - Reporting dimension 1 value	string
+dynamicElement14Field2Value	Feed 14 - Reporting dimension 2 value	string
+dynamicElement14Field3Value	Feed 14 - Reporting dimension 3 value	string
+dynamicElement14Field4Value	Feed 14 - Reporting dimension 4 value	string
+dynamicElement14Field5Value	Feed 14 - Reporting dimension 5 value	string
+dynamicElement14Field6Value	Feed 14 - Reporting dimension 6 value	string
+dynamicElement15Field1Value	Feed 15 - Reporting dimension 1 value	string
+dynamicElement15Field2Value	Feed 15 - Reporting dimension 2 value	string
+dynamicElement15Field3Value	Feed 15 - Reporting dimension 3 value	string
+dynamicElement15Field4Value	Feed 15 - Reporting dimension 4 value	string
+dynamicElement15Field5Value	Feed 15 - Reporting dimension 5 value	string
+dynamicElement15Field6Value	Feed 15 - Reporting dimension 6 value	string
+dynamicElement16Field1Value	Feed 16 - Reporting dimension 1 value	string
+dynamicElement16Field2Value	Feed 16 - Reporting dimension 2 value	string
+dynamicElement16Field3Value	Feed 16 - Reporting dimension 3 value	string
+dynamicElement16Field4Value	Feed 16 - Reporting dimension 4 value	string
+dynamicElement16Field5Value	Feed 16 - Reporting dimension 5 value	string
+dynamicElement16Field6Value	Feed 16 - Reporting dimension 6 value	string
+dynamicElement17Field1Value	Feed 17 - Reporting dimension 1 value	string
+dynamicElement17Field2Value	Feed 17 - Reporting dimension 2 value	string
+dynamicElement17Field3Value	Feed 17 - Reporting dimension 3 value	string
+dynamicElement17Field4Value	Feed 17 - Reporting dimension 4 value	string
+dynamicElement17Field5Value	Feed 17 - Reporting dimension 5 value	string
+dynamicElement17Field6Value	Feed 17 - Reporting dimension 6 value	string
+dynamicElement18Field1Value	Feed 18 - Reporting dimension 1 value	string
+dynamicElement18Field2Value	Feed 18 - Reporting dimension 2 value	string
+dynamicElement18Field3Value	Feed 18 - Reporting dimension 3 value	string
+dynamicElement18Field4Value	Feed 18 - Reporting dimension 4 value	string
+dynamicElement18Field5Value	Feed 18 - Reporting dimension 5 value	string
+dynamicElement18Field6Value	Feed 18 - Reporting dimension 6 value	string
+dynamicElement19Field1Value	Feed 19 - Reporting dimension 1 value	string
+dynamicElement19Field2Value	Feed 19 - Reporting dimension 2 value	string
+dynamicElement19Field3Value	Feed 19 - Reporting dimension 3 value	string
+dynamicElement19Field4Value	Feed 19 - Reporting dimension 4 value	string
+dynamicElement19Field5Value	Feed 19 - Reporting dimension 5 value	string
+dynamicElement19Field6Value	Feed 19 - Reporting dimension 6 value	string
+dynamicElement20Field1Value	Feed 20 - Reporting dimension 1 value	string
+dynamicElement20Field2Value	Feed 20 - Reporting dimension 2 value	string
+dynamicElement20Field3Value	Feed 20 - Reporting dimension 3 value	string
+dynamicElement20Field4Value	Feed 20 - Reporting dimension 4 value	string
+dynamicElement20Field5Value	Feed 20 - Reporting dimension 5 value	string
+dynamicElement20Field6Value	Feed 20 - Reporting dimension 6 value	string
+dynamicProfile	Dynamic Profile	string
+dynamicProfileId	Dynamic Profile Id	long
+environment	Environment	string
+eventPlatformType	Attributed Event Platform Type	string
+exitUrl	Exit URL	string
+feed1	Dynamic Element 1	string
+feed1ReportingLabel	Feed 1 - Reporting label	string
+feed1UniqueId	Feed 1 - Unique ID	string
+feed2	Dynamic Element 2	string
+feed2ReportingLabel	Feed 2 - Reporting label	string
+feed2UniqueId	Feed 2 - Unique ID	string
+feed3	Dynamic Element 3	string
+feed3ReportingLabel	Feed 3 - Reporting label	string
+feed3UniqueId	Feed 3 - Unique ID	string
+feed4	Dynamic Element 4	string
+feed4ReportingLabel	Feed 4 - Reporting label	string
+feed4UniqueId	Feed 4 - Unique ID	string
+feed5	Dynamic Element 5	string
+feed5ReportingLabel	Feed 5 - Reporting label	string
+feed5UniqueId	Feed 5 - Unique ID	string
+feed6	Dynamic Element 6	string
+feed6ReportingLabel	Feed 6 - Reporting label	string
+feed6UniqueId	Feed 6 - Unique ID	string
+feed7	Dynamic Element 7	string
+feed7ReportingLabel	Feed 7 - Reporting label	string
+feed7UniqueId	Feed 7 - Unique ID	string
+feed8	Dynamic Element 8	string
+feed8ReportingLabel	Feed 8 - Reporting label	string
+feed8UniqueId	Feed 8 - Unique ID	string
+feed9	Dynamic Element 9	string
+feed9ReportingLabel	Feed 9 - Reporting label	string
+feed9UniqueId	Feed 9 - Unique ID	string
+feed10	Dynamic Element 10	string
+feed10ReportingLabel	Feed 10 - Reporting label	string
+feed10UniqueId	Feed 10 - Unique ID	string
+feed11	Dynamic Element 11	string
+feed11ReportingLabel	Feed 11 - Reporting label	string
+feed11UniqueId	Feed 11 - Unique ID	string
+feed12	Dynamic Element 12	string
+feed12ReportingLabel	Feed 12 - Reporting label	string
+feed12UniqueId	Feed 12 - Unique ID	string
+feed13	Dynamic Element 13	string
+feed13ReportingLabel	Feed 13 - Reporting label	string
+feed13UniqueId	Feed 13 - Unique ID	string
+feed14	Dynamic Element 14	string
+feed14ReportingLabel	Feed 14 - Reporting label	string
+feed14UniqueId	Feed 14 - Unique ID	string
+feed15	Dynamic Element 15	string
+feed15ReportingLabel	Feed 15 - Reporting label	string
+feed15UniqueId	Feed 15 - Unique ID	string
+feed16	Dynamic Element 16	string
+feed16ReportingLabel	Feed 16 - Reporting label	string
+feed16UniqueId	Feed 16 - Unique ID	string
+feed17	Dynamic Element 17	string
+feed17ReportingLabel	Feed 17 - Reporting label	string
+feed17UniqueId	Feed 17 - Unique ID	string
+feed18	Dynamic Element 18	string
+feed18ReportingLabel	Feed 18 - Reporting label	string
+feed18UniqueId	Feed 18 - Unique ID	string
+feed19	Dynamic Element 19	string
+feed19ReportingLabel	Feed 19 - Reporting label	string
+feed19UniqueId	Feed 19 - Unique ID	string
+feed20	Dynamic Element 20	string
+feed20ReportingLabel	Feed 20 - Reporting label	string
+feed20UniqueId	Feed 20 - Unique ID	string
+flightBookedCost	Flight Booked Cost	string
+flightBookedRate	Flight Booked Rate	string
+flightBookedUnits	Flight Booked Units	string
+flightEndDate	Flight End Date	string
+flightStartDate	Flight Start Date	string
+floodlightConfigId	Floodlight Configuration	long
+floodlightVariableDimension1	Custom Floodlight Variable 1	string
+floodlightVariableDimension2	Custom Floodlight Variable 2	string
+floodlightVariableDimension3	Custom Floodlight Variable 3	string
+floodlightVariableDimension4	Custom Floodlight Variable 4	string
+floodlightVariableDimension5	Custom Floodlight Variable 5	string
+floodlightVariableDimension6	Custom Floodlight Variable 6	string
+floodlightVariableDimension7	Custom Floodlight Variable 7	string
+floodlightVariableDimension8	Custom Floodlight Variable 8	string
+floodlightVariableDimension9	Custom Floodlight Variable 9	string
+floodlightVariableDimension10	Custom Floodlight Variable 10	string
+floodlightVariableDimension11	Custom Floodlight Variable 11	string
+floodlightVariableDimension12	Custom Floodlight Variable 12	string
+floodlightVariableDimension13	Custom Floodlight Variable 13	string
+floodlightVariableDimension14	Custom Floodlight Variable 14	string
+floodlightVariableDimension15	Custom Floodlight Variable 15	string
+floodlightVariableDimension16	Custom Floodlight Variable 16	string
+floodlightVariableDimension17	Custom Floodlight Variable 17	string
+floodlightVariableDimension18	Custom Floodlight Variable 18	string
+floodlightVariableDimension19	Custom Floodlight Variable 19	string
+floodlightVariableDimension20	Custom Floodlight Variable 20	string
+floodlightVariableDimension21	Custom Floodlight Variable 21	string
+floodlightVariableDimension22	Custom Floodlight Variable 22	string
+floodlightVariableDimension23	Custom Floodlight Variable 23	string
+floodlightVariableDimension24	Custom Floodlight Variable 24	string
+floodlightVariableDimension25	Custom Floodlight Variable 25	string
+floodlightVariableDimension26	Custom Floodlight Variable 26	string
+floodlightVariableDimension27	Custom Floodlight Variable 27	string
+floodlightVariableDimension28	Custom Floodlight Variable 28	string
+floodlightVariableDimension29	Custom Floodlight Variable 29	string
+floodlightVariableDimension30	Custom Floodlight Variable 30	string
+floodlightVariableDimension31	Custom Floodlight Variable 31	string
+floodlightVariableDimension32	Custom Floodlight Variable 32	string
+floodlightVariableDimension33	Custom Floodlight Variable 33	string
+floodlightVariableDimension34	Custom Floodlight Variable 34	string
+floodlightVariableDimension35	Custom Floodlight Variable 35	string
+floodlightVariableDimension36	Custom Floodlight Variable 36	string
+floodlightVariableDimension37	Custom Floodlight Variable 37	string
+floodlightVariableDimension38	Custom Floodlight Variable 38	string
+floodlightVariableDimension39	Custom Floodlight Variable 39	string
+floodlightVariableDimension40	Custom Floodlight Variable 40	string
+floodlightVariableDimension41	Custom Floodlight Variable 41	string
+floodlightVariableDimension42	Custom Floodlight Variable 42	string
+floodlightVariableDimension43	Custom Floodlight Variable 43	string
+floodlightVariableDimension44	Custom Floodlight Variable 44	string
+floodlightVariableDimension45	Custom Floodlight Variable 45	string
+floodlightVariableDimension46	Custom Floodlight Variable 46	string
+floodlightVariableDimension47	Custom Floodlight Variable 47	string
+floodlightVariableDimension48	Custom Floodlight Variable 48	string
+floodlightVariableDimension49	Custom Floodlight Variable 49	string
+floodlightVariableDimension50	Custom Floodlight Variable 50	string
+floodlightVariableDimension51	Custom Floodlight Variable 51	string
+floodlightVariableDimension52	Custom Floodlight Variable 52	string
+floodlightVariableDimension53	Custom Floodlight Variable 53	string
+floodlightVariableDimension54	Custom Floodlight Variable 54	string
+floodlightVariableDimension55	Custom Floodlight Variable 55	string
+floodlightVariableDimension56	Custom Floodlight Variable 56	string
+floodlightVariableDimension57	Custom Floodlight Variable 57	string
+floodlightVariableDimension58	Custom Floodlight Variable 58	string
+floodlightVariableDimension59	Custom Floodlight Variable 59	string
+floodlightVariableDimension60	Custom Floodlight Variable 60	string
+floodlightVariableDimension61	Custom Floodlight Variable 61	string
+floodlightVariableDimension62	Custom Floodlight Variable 62	string
+floodlightVariableDimension63	Custom Floodlight Variable 63	string
+floodlightVariableDimension64	Custom Floodlight Variable 64	string
+floodlightVariableDimension65	Custom Floodlight Variable 65	string
+floodlightVariableDimension66	Custom Floodlight Variable 66	string
+floodlightVariableDimension67	Custom Floodlight Variable 67	string
+floodlightVariableDimension68	Custom Floodlight Variable 68	string
+floodlightVariableDimension69	Custom Floodlight Variable 69	string
+floodlightVariableDimension70	Custom Floodlight Variable 70	string
+floodlightVariableDimension71	Custom Floodlight Variable 71	string
+floodlightVariableDimension72	Custom Floodlight Variable 72	string
+floodlightVariableDimension73	Custom Floodlight Variable 73	string
+floodlightVariableDimension74	Custom Floodlight Variable 74	string
+floodlightVariableDimension75	Custom Floodlight Variable 75	string
+floodlightVariableDimension76	Custom Floodlight Variable 76	string
+floodlightVariableDimension77	Custom Floodlight Variable 77	string
+floodlightVariableDimension78	Custom Floodlight Variable 78	string
+floodlightVariableDimension79	Custom Floodlight Variable 79	string
+floodlightVariableDimension80	Custom Floodlight Variable 80	string
+floodlightVariableDimension81	Custom Floodlight Variable 81	string
+floodlightVariableDimension82	Custom Floodlight Variable 82	string
+floodlightVariableDimension83	Custom Floodlight Variable 83	string
+floodlightVariableDimension84	Custom Floodlight Variable 84	string
+floodlightVariableDimension85	Custom Floodlight Variable 85	string
+floodlightVariableDimension86	Custom Floodlight Variable 86	string
+floodlightVariableDimension87	Custom Floodlight Variable 87	string
+floodlightVariableDimension88	Custom Floodlight Variable 88	string
+floodlightVariableDimension89	Custom Floodlight Variable 89	string
+floodlightVariableDimension90	Custom Floodlight Variable 90	string
+floodlightVariableDimension91	Custom Floodlight Variable 91	string
+floodlightVariableDimension92	Custom Floodlight Variable 92	string
+floodlightVariableDimension93	Custom Floodlight Variable 93	string
+floodlightVariableDimension94	Custom Floodlight Variable 94	string
+floodlightVariableDimension95	Custom Floodlight Variable 95	string
+floodlightVariableDimension96	Custom Floodlight Variable 96	string
+floodlightVariableDimension97	Custom Floodlight Variable 97	string
+floodlightVariableDimension98	Custom Floodlight Variable 98	string
+floodlightVariableDimension99	Custom Floodlight Variable 99	string
+floodlightVariableDimension100	Custom Floodlight Variable 100	string
+hour	Hour	string
+impressionCountingMethod	Impression Counting Method	string
+keyword	Keyword	string
+landingPageUrl	Landing Page URL	string
+measurementSource	Measurement Source	string
+mediaType	Media Type	string
+mobileCarrier	Mobile Carrier	string
+month	Month	string
+naturalSearchEngineCountry	Natural Search Engine Country	string
+naturalSearchEngineProperty	Natural Search Engine Property	string
+naturalSearchLandingPage	Natural Search Landing Page	string
+naturalSearchLandingPageQueryString	Natural Search Landing Page Query String	string
+naturalSearchProcessedLandingPage	Natural Search Processed Landing Page	string
+naturalSearchProcessedLandingPageQueryString	Natural Search Processed Landing Page Query String	string
+naturalSearchQuery	Natural Search Query	string
+omSdkAvailable	OM SDK Available	string
+operatingSystem	Operating System	string
+operatingSystemVersion	Operating System Version	string
+packageRoadblock	Package/Roadblock	string
+packageRoadblockId	Package/Roadblock ID	long
+packageRoadblockStrategy	Package/Roadblock Strategy	string
+packageRoadblockTotalBookedUnits	Package/Roadblock Total Booked Units	string
+paidSearchAd	Paid Search Ad	string
+paidSearchAdGroup	Paid Search Ad Group	string
+paidSearchAdGroupId	Paid Search Ad Group ID	long
+paidSearchAdId	Paid Search Ad ID	long
+paidSearchAdvertiser	Paid Search Advertiser	string
+paidSearchAdvertiserId	Paid Search Advertiser ID	long
+paidSearchAgency	Paid Search Agency	string
+paidSearchAgencyId	Paid Search Agency ID	long
+paidSearchBidStrategy	Paid Search Bid Strategy	string
+paidSearchBidStrategyId	Paid Search Bid Strategy ID	long
+paidSearchCampaign	Paid Search Campaign	string
+paidSearchCampaignId	Paid Search Campaign ID	long
+paidSearchEngineAccount	Paid Search Engine Account	string
+paidSearchEngineAccountCategory	Paid Search Engine Account Category	string
+paidSearchEngineAccountId	Paid Search Engine Account ID	long
+paidSearchExternalAdGroupId	Paid Search External Ad Group ID	long
+paidSearchExternalAdId	Paid Search External Ad ID	long
+paidSearchExternalCampaignId	Paid Search External Campaign ID	long
+paidSearchExternalKeywordId	Paid Search External Keyword ID	long
+paidSearchKeyword	Paid Search Keyword	string
+paidSearchKeywordId	Paid Search Keyword ID	long
+paidSearchLandingPageUrl	Paid Search Landing Page URL	string
+paidSearchLegacyKeywordId	Paid Search Legacy Keyword ID	long
+paidSearchMatchType	Paid Search Match Type	string
+paidSocialAd	Paid Social Ad	string
+paidSocialAdGroup	Paid Social Ad Group	string
+paidSocialAdGroupId	Paid Social Ad Group ID	long
+paidSocialAdId	Paid Social Ad ID	long
+paidSocialAdvertiser	Paid Social Advertiser	string
+paidSocialAdvertiserId	Paid Social Advertiser ID	long
+paidSocialAgency	Paid Social Agency	string
+paidSocialAgencyId	Paid Social Agency ID	long
+paidSocialCampaign	Paid Social Campaign	string
+paidSocialCampaignId	Paid Social Campaign ID	long
+paidSocialEngineAccount	Paid Social Engine Account	string
+paidSocialEngineAccountId	Paid Social Engine Account ID	long
+paidSocialExternalAdGroupId	Paid Social External Ad Group ID	long
+paidSocialExternalAdId	Paid Social External Ad ID	long
+paidSocialExternalCampaignId	Paid Social External Campaign ID	long
+paidSocialExternalEngineAccountId	Paid Social External Engine Account ID	long
+paymentSource	Payment Source	string
+placement	Placement	string
+placementCompatibility	Placement Compatibility	string
+placementCostStructure	Placement Cost Structure	string
+placementEndDate	Placement End Date	string
+placementExternalId	Placement External ID	string
+placementId	Placement ID	long
+placementRate	Placement Rate	string
+placementSize	Placement Pixel Size	string
+placementStartDate	Placement Start Date	string
+placementStrategy	Placement Strategy	string
+placementTagType	Placement Tag Type	string
+placementTotalBookedUnits	Placement Total Booked Units	string
+placementTotalPlannedMediaCost	Placement Total Planned Media Cost	string
+platformType	Platform Type	string
+playbackMethod	Playback Method	string
+positionInContent	Position In Content	string
+publisherTrafficSource	Publisher Traffic Source	string
+refreshedAd	Refreshed Ad	string
+renderingId	Rendering ID	long
+richMediaCustomVariable	Custom Variable	string
+richMediaEvent	Rich Media Event	string
+richMediaVideo4asaId	Video 4A's Ad-ID	string
+richMediaVideoLength	Video Length	string
+sensitiveCategory	Sensitive Category	string
+servedPixelDensity	Served Pixel Density	string
+site	Site (CM360)	string
+siteDirectory	Site (Site Directory)	string
+siteDirectoryId	Site ID (Site Directory)	long
+siteId	Site ID (CM360)	long
+siteKeyname	Site Keyname	string
+state	State/Region	string
+twitterCampaignId	Twitter Campaign ID	long
+twitterCreativeId	Twitter Creative ID	long
+twitterCreativeMediaId	Twitter Creative Media ID	long
+twitterCreativeType	Twitter Creative Type	string
+twitterImpressionType	Twitter Impression Type	string
+twitterLineItemId	Twitter Line Item ID	long
+twitterPlacementType	Twitter Placement Type	string
+verificationAudibilityComplete	Audibility At Complete	string
+verificationAudibilityStart	Audibility At Start	string
+verificationVideoPlayerSize	Video Player Size	string
+verificationVideoPlayerSizeComplete	Video Player Size at Completion	string
+verificationVideoPlayerSizeFirstQuartile	Video Player Size at First Quartile	string
+verificationVideoPlayerSizeMidPoint	Video Player Size at Midpoint	string
+verificationVideoPlayerSizeStart	Video Player Size at Start	string
+verificationVideoPlayerSizeThirdQuartile	Video Player Size at Third Quartile	string
+verificationVideoProminenceScoreDimension	Video Prominence Score	string
+verificationVideoResized	Video Resized	string
+videoContinuousPlay	Video Continuous Play	string
+week	Week	string
+zipCode	ZIP/Postal Code	long

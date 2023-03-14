@@ -1,0 +1,343 @@
+actiewViewPercentAdPlayed	Active View: % of Ad Played	double
+activeViewAverageViewableTimeSecond	Active View: Average Viewable Time (Seconds)	double
+activeViewCustomMetricMeasurableImpressions	Active View: Custom Metric Measurable Impressions	long
+activeViewCustomMetricViewableImpressions	Active View: Custom Metric Viewable Impressions	long
+activeViewCustomMetricViewableRate	Active View: Custom Metric Viewable Rate	double
+activeViewEligibleImpressions	Active View: Eligible Impressions	long
+activeViewGroupmMeasurableImpressions	Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions	long
+activeViewGroupmTrvMeasurableImpressions	Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions	long
+activeViewGroupmTrvViewableImpressions	Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions	long
+activeViewGroupmViewableImpressions	Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions	long
+activeViewImpressionDistributionNotMeasurable	Active View: Impression Distribution (Not Measurable)	double
+activeViewImpressionDistributionNotViewable	Active View: Impression Distribution (Not Viewable)	double
+activeViewImpressionDistributionViewable	Active View: Impression Distribution (Viewable)	double
+activeViewImpressionsAudibleAndVisibleAtCompletion	Active View: Impressions Audible and Visible at Completion	long
+activeViewImpressionsVisible10Seconds	Active View: Impressions Visible 10 Seconds	long
+activeViewMeasurableImpressions	Active View: Measurable Impressions	long
+activeViewNotMeasurableImpressions	Active View: Not Measurable Impressions	long
+activeViewNotViewableImpressions	Active View: Not Viewable Impressions	long
+activeViewPercentAudibleAndVisibleAtCompletion	Active View: % Audible and Visible at Completion	double
+activeViewPercentAudibleAndVisibleAtFirstQuartile	Active View: % Audible and Visible at First Quartile	double
+activeViewPercentAudibleAndVisibleAtMidpoint	Active View: % Audible and Visible at Midpoint	double
+activeViewPercentAudibleAndVisibleAtStart	Active View: % Audible and Visible at Start	double
+activeViewPercentAudibleAndVisibleAtThirdQuartile	Active View: % Audible and Visible at Third Quartile	double
+activeViewPercentAudibleImpressions	Active View: % Audible Impressions	double
+activeViewPercentBackground	Active View: % In Background	double
+activeViewPercentFullscreen	Active View: % Full-Screen	double
+activeViewPercentImpressionsAudibleAndFullyOnscreen	Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate	double
+activeViewPercentImpressionsAudibleAndFullyOnscreenForHalfDuration	Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate	double
+activeViewPercentImpressionsAudibleAndVisibleAtCompletion	Active View: % of Completed Impressions Audible and Visible	double
+activeViewPercentImpressionsAudibleAndVisibleAtFirstQuartile	Active View: % of First Quartile Impressions Audible and Visible	double
+activeViewPercentImpressionsAudibleAndVisibleAtMidpoint	Active View: % of Midpoint Impressions Audible and Visible	double
+activeViewPercentImpressionsAudibleAndVisibleAtThirdQuartile	Active View: % of Third Quartile Impressions Audible and Visible	double
+activeViewPercentImpressionsVisibleAtCompletion	Active View: % of Completed Impressions Visible	double
+activeViewPercentImpressionsVisibleAtFirstQuartile	Active View: % of First Quartile Impressions Visible	double
+activeViewPercentImpressionsVisibleAtMidpoint	Active View: % of Midpoint Impressions Visible	double
+activeViewPercentImpressionsVisibleAtThirdQuartile	Active View: % of Third Quartile Impressions Visible	double
+activeViewPercentPlayTimeAudible	Active View: % Play Time Audible	double
+activeViewPercentPlayTimeAudibleAndVisible	Active View: % Play Time Audible and Visible	double
+activeViewPercentPlayTimeVisible	Active View: % Play Time Visible	double
+activeViewPercentVisible10Seconds	Active View: % Visible 10 Seconds	double
+activeViewPercentVisibleAtCompletion	Active View: % Visible at Completion	double
+activeViewPercentVisibleAtFirstQuartile	Active View: % Visible at First Quartile	double
+activeViewPercentVisibleAtMidpoint	Active View: % Visible at Midpoint	double
+activeViewPercentVisibleAtStart	Active View: % Visible at Start	double
+activeViewPercentVisibleAtThirdQuartile	Active View: % Visible at Third Quartile	double
+activeViewPercentageMeasurableImpressions	Active View: % Measurable Impressions	double
+activeViewPercentageViewableImpressions	Active View: % Viewable Impressions	double
+activeViewViewableImpressions	Active View: Viewable Impressions	long
+activityClickThroughConversions	Click-through Conversions	double
+activityClickThroughRevenue	Click-through Revenue	double
+activityDeliveryStatus	Activity Delivery Status	double
+activityPerClick	Activity Per Click	double
+activityPerThousandImpressions	Activity Per Thousand Impressions	double
+activityViewThroughConversions	View-through Conversions	double
+activityViewThroughRevenue	View-through Revenue	double
+audioCompanionClicks	Audio Companion Clicks	long
+audioCompanionImpressions	Audio Companion Views	long
+beginToRenderEligibleImpressions	Begin to Render Eligible Impressions	long
+beginToRenderImpressions	Begin to Render Impressions	long
+bookedActivities	Booked Activities	double
+bookedClicks	Booked Clicks	double
+bookedImpressions	Booked Impressions	double
+bookedViewableImpressions	Booked Viewable Impressions	double
+clickDeliveryStatus	Click Delivery Status	double
+clickRate	Click Rate	double
+clicks	Clicks	string
+cookieUnconsentedClicks	Cookie Unconsented Clicks	long
+cookieUnconsentedImpressions	Cookie Unconsented Impressions	long
+costPerActivity	Cost Per Activity	double
+costPerClick	Cost Per Click	double
+costPerRevenue	Cost Per Revenue	double
+crossDeviceClickThroughConversionQuantity	Click-through Conversions + Cross-Environment	long
+crossDeviceClickThroughConversionRevenue	Click-through Revenue + Cross-Environment	double
+crossDeviceClickThroughConversions	Click-through Conversion Events + Cross-Environment	long
+crossDeviceTotalConversionQuantity	Total Conversions + Cross-Environment	long
+crossDeviceTotalConversionRevenue	Total Revenue + Cross-Environment	double
+crossDeviceTotalConversions	Total Conversion Events + Cross-Environment	long
+crossDeviceViewThroughConversionQuantity	View-through Conversions + Cross-Environment	long
+crossDeviceViewThroughConversionRevenue	View-through Revenue + Cross-Environment	double
+crossDeviceViewThroughConversions	View-through Conversion Events + Cross-Environment	long
+downloadedImpressions	Downloaded Impressions	long
+dv360Cost	DV360 Cost (Account Currency)	double
+dv360CostUsd	DV360 Cost USD	double
+effectiveCpm	Effective CPM	double
+floodlightVariableMetric1	Custom Floodlight Variable 1	double
+floodlightVariableMetric2	Custom Floodlight Variable 2	double
+floodlightVariableMetric3	Custom Floodlight Variable 3	double
+floodlightVariableMetric4	Custom Floodlight Variable 4	double
+floodlightVariableMetric5	Custom Floodlight Variable 5	double
+floodlightVariableMetric6	Custom Floodlight Variable 6	double
+floodlightVariableMetric7	Custom Floodlight Variable 7	double
+floodlightVariableMetric8	Custom Floodlight Variable 8	double
+floodlightVariableMetric9	Custom Floodlight Variable 9	double
+floodlightVariableMetric10	Custom Floodlight Variable 10	double
+floodlightVariableMetric11	Custom Floodlight Variable 11	double
+floodlightVariableMetric12	Custom Floodlight Variable 12	double
+floodlightVariableMetric13	Custom Floodlight Variable 13	double
+floodlightVariableMetric14	Custom Floodlight Variable 14	double
+floodlightVariableMetric15	Custom Floodlight Variable 15	double
+floodlightVariableMetric16	Custom Floodlight Variable 16	double
+floodlightVariableMetric17	Custom Floodlight Variable 17	double
+floodlightVariableMetric18	Custom Floodlight Variable 18	double
+floodlightVariableMetric19	Custom Floodlight Variable 19	double
+floodlightVariableMetric20	Custom Floodlight Variable 20	double
+floodlightVariableMetric21	Custom Floodlight Variable 21	double
+floodlightVariableMetric22	Custom Floodlight Variable 22	double
+floodlightVariableMetric23	Custom Floodlight Variable 23	double
+floodlightVariableMetric24	Custom Floodlight Variable 24	double
+floodlightVariableMetric25	Custom Floodlight Variable 25	double
+floodlightVariableMetric26	Custom Floodlight Variable 26	double
+floodlightVariableMetric27	Custom Floodlight Variable 27	double
+floodlightVariableMetric28	Custom Floodlight Variable 28	double
+floodlightVariableMetric29	Custom Floodlight Variable 29	double
+floodlightVariableMetric30	Custom Floodlight Variable 30	double
+floodlightVariableMetric31	Custom Floodlight Variable 31	double
+floodlightVariableMetric32	Custom Floodlight Variable 32	double
+floodlightVariableMetric33	Custom Floodlight Variable 33	double
+floodlightVariableMetric34	Custom Floodlight Variable 34	double
+floodlightVariableMetric35	Custom Floodlight Variable 35	double
+floodlightVariableMetric36	Custom Floodlight Variable 36	double
+floodlightVariableMetric37	Custom Floodlight Variable 37	double
+floodlightVariableMetric38	Custom Floodlight Variable 38	double
+floodlightVariableMetric39	Custom Floodlight Variable 39	double
+floodlightVariableMetric40	Custom Floodlight Variable 40	double
+floodlightVariableMetric41	Custom Floodlight Variable 41	double
+floodlightVariableMetric42	Custom Floodlight Variable 42	double
+floodlightVariableMetric43	Custom Floodlight Variable 43	double
+floodlightVariableMetric44	Custom Floodlight Variable 44	double
+floodlightVariableMetric45	Custom Floodlight Variable 45	double
+floodlightVariableMetric46	Custom Floodlight Variable 46	double
+floodlightVariableMetric47	Custom Floodlight Variable 47	double
+floodlightVariableMetric48	Custom Floodlight Variable 48	double
+floodlightVariableMetric49	Custom Floodlight Variable 49	double
+floodlightVariableMetric50	Custom Floodlight Variable 50	double
+floodlightVariableMetric51	Custom Floodlight Variable 51	double
+floodlightVariableMetric52	Custom Floodlight Variable 52	double
+floodlightVariableMetric53	Custom Floodlight Variable 53	double
+floodlightVariableMetric54	Custom Floodlight Variable 54	double
+floodlightVariableMetric55	Custom Floodlight Variable 55	double
+floodlightVariableMetric56	Custom Floodlight Variable 56	double
+floodlightVariableMetric57	Custom Floodlight Variable 57	double
+floodlightVariableMetric58	Custom Floodlight Variable 58	double
+floodlightVariableMetric59	Custom Floodlight Variable 59	double
+floodlightVariableMetric60	Custom Floodlight Variable 60	double
+floodlightVariableMetric61	Custom Floodlight Variable 61	double
+floodlightVariableMetric62	Custom Floodlight Variable 62	double
+floodlightVariableMetric63	Custom Floodlight Variable 63	double
+floodlightVariableMetric64	Custom Floodlight Variable 64	double
+floodlightVariableMetric65	Custom Floodlight Variable 65	double
+floodlightVariableMetric66	Custom Floodlight Variable 66	double
+floodlightVariableMetric67	Custom Floodlight Variable 67	double
+floodlightVariableMetric68	Custom Floodlight Variable 68	double
+floodlightVariableMetric69	Custom Floodlight Variable 69	double
+floodlightVariableMetric70	Custom Floodlight Variable 70	double
+floodlightVariableMetric71	Custom Floodlight Variable 71	double
+floodlightVariableMetric72	Custom Floodlight Variable 72	double
+floodlightVariableMetric73	Custom Floodlight Variable 73	double
+floodlightVariableMetric74	Custom Floodlight Variable 74	double
+floodlightVariableMetric75	Custom Floodlight Variable 75	double
+floodlightVariableMetric76	Custom Floodlight Variable 76	double
+floodlightVariableMetric77	Custom Floodlight Variable 77	double
+floodlightVariableMetric78	Custom Floodlight Variable 78	double
+floodlightVariableMetric79	Custom Floodlight Variable 79	double
+floodlightVariableMetric80	Custom Floodlight Variable 80	double
+floodlightVariableMetric81	Custom Floodlight Variable 81	double
+floodlightVariableMetric82	Custom Floodlight Variable 82	double
+floodlightVariableMetric83	Custom Floodlight Variable 83	double
+floodlightVariableMetric84	Custom Floodlight Variable 84	double
+floodlightVariableMetric85	Custom Floodlight Variable 85	double
+floodlightVariableMetric86	Custom Floodlight Variable 86	double
+floodlightVariableMetric87	Custom Floodlight Variable 87	double
+floodlightVariableMetric88	Custom Floodlight Variable 88	double
+floodlightVariableMetric89	Custom Floodlight Variable 89	double
+floodlightVariableMetric90	Custom Floodlight Variable 90	double
+floodlightVariableMetric91	Custom Floodlight Variable 91	double
+floodlightVariableMetric92	Custom Floodlight Variable 92	double
+floodlightVariableMetric93	Custom Floodlight Variable 93	double
+floodlightVariableMetric94	Custom Floodlight Variable 94	double
+floodlightVariableMetric95	Custom Floodlight Variable 95	double
+floodlightVariableMetric96	Custom Floodlight Variable 96	double
+floodlightVariableMetric97	Custom Floodlight Variable 97	double
+floodlightVariableMetric98	Custom Floodlight Variable 98	double
+floodlightVariableMetric99	Custom Floodlight Variable 99	double
+floodlightVariableMetric100	Custom Floodlight Variable 100	double
+generalInvalidTrafficActiveViewEligibleImpressions	General Invalid Traffic (GIVT) Active View Eligible Impressions	long
+generalInvalidTrafficActiveViewMeasurableImpressions	General Invalid Traffic (GIVT) Active View Measurable Impressions	long
+generalInvalidTrafficActiveViewViewableImpressions	General Invalid Traffic (GIVT) Active View Viewable Impressions	long
+generalInvalidTrafficBeginToRenderImpressions	General Invalid Traffic (GIVT) Begin to Render Impressions	long
+generalInvalidTrafficClicks	General Invalid Traffic (GIVT) Clicks	long
+generalInvalidTrafficImpressions	General Invalid Traffic (GIVT) Impressions	long
+generalInvalidTrafficTrackedAds	General Invalid Traffic (GIVT) Tracked Ads	long
+gmailClickThroughConversions	Gmail Click-through Conversions	long
+gmailClickThroughRevenue	Gmail Click-through Revenue	double
+gmailConversions	Gmail Conversions	long
+gmailTotalRevenue	Gmail Total Revenue	double
+gmailViewThroughConversions	Gmail View-through Conversions	long
+gmailViewThroughRevenue	Gmail View-through Revenue	double
+impressionDeliveryStatus	Impression Delivery Status	double
+impressions	Impressions	string
+inactiveImpressions	Inactive Impressions	long
+invalidActiveViewEligibleImpressions	Invalid Active View Eligible Impressions	long
+invalidActiveViewMeasurableImpressions	Invalid Active View Measurable Impressions	long
+invalidActiveViewViewableImpressions	Invalid Active View Viewable Impressions	long
+invalidBeginToRenderImpressions	Invalid Begin to Render Impressions	long
+invalidClicks	Invalid Clicks	long
+invalidImpressions	Invalid Impressions	long
+invalidTrackedAds	Invalid Tracked Ads	long
+mediaCost	Media Cost	double
+naturalSearchActions	Natural Search Actions	double
+naturalSearchClicks	Natural Search Clicks	long
+naturalSearchRevenue	Natural Search Revenue	double
+naturalSearchTransactions	Natural Search Transactions	double
+paidSearchActionConversionPercentage	Floodlight: Paid Search Action Conversion Percentage	double
+paidSearchActions	Paid Search Actions	double
+paidSearchAverageCostPerAction	Floodlight: Paid Search Average Cost Per Action	double
+paidSearchAverageCostPerTransaction	Floodlight: Paid Search Average Cost Per Transaction	double
+paidSearchAverageDfaTransactionAmount	Floodlight: Paid Search Average CM360 Transaction Amount	double
+paidSearchAveragePosition	Paid Search Average Position	double
+paidSearchClickRate	Paid Search Click Rate	double
+paidSearchClicks	Paid Search Clicks	long
+paidSearchCost	Paid Search Cost	double
+paidSearchImpressions	Paid Search Impressions	long
+paidSearchRevenue	Paid Search Revenue	double
+paidSearchSpendPerTransactionRevenue	Floodlight: Paid Search Spend Per Transaction Revenue	double
+paidSearchTransactionConversionPercentage	Floodlight: Paid Search Transaction Conversion Percentage	double
+paidSearchTransactionRevenuePerSpend	Floodlight: Paid Search Transaction Revenue Per Spend	double
+paidSearchTransactions	Paid Search Transactions	double
+paidSearchVisits	Paid Search Visits	long
+paidSocialClicks	Paid Social Clicks	long
+paidSocialCost	Paid Social Cost	double
+paidSocialImpressions	Paid Social Impressions	long
+percentInvalidClicks	% Invalid Clicks	double
+percentInvalidImpressions	% Invalid Impressions	double
+plannedMediaCost	Planned Media Cost	double
+provisionalImpressions	Provisional Impressions	long
+revenuePerClick	Revenue Per Click	double
+revenuePerThousandImpressions	Revenue Per Thousand Impressions	double
+richMediaAudioCompletions	Audio Completions	long
+richMediaAudioFirstQuartileCompletes	Audio First Quartile Completions	long
+richMediaAudioMidpoints	Audio Midpoints	long
+richMediaAudioMutes	Audio Mutes	long
+richMediaAudioPauses	Audio Pauses	long
+richMediaAudioPlays	Audio Plays	long
+richMediaAudioReplays	Audio Replays	long
+richMediaAudioThirdQuartileCompletes	Audio Third Quartile Completions	long
+richMediaAudioUnmutes	Audio Unmutes	long
+richMediaAverageDisplayTime	Average Display Time	double
+richMediaAverageExpansionTime	Average Expansion Time	double
+richMediaAverageFullScreenViewTime	Full-Screen Average View Time	double
+richMediaAverageInteractionTime	Average Interaction Time	double
+richMediaAverageVideoViewTime	Video Average View Time	double
+richMediaBackupImages	Backup Image	long
+richMediaClickRate	Rich Media Click Rate	double
+richMediaClicks	Rich Media Clicks	long
+richMediaCodeServes	Code Serves	long
+richMediaCustomAverageTime	Average Time	double
+richMediaCustomCounters	Counters	long
+richMediaCustomExits	Exits	long
+richMediaCustomTimers	Timers	long
+richMediaCustomVariableCount1	Custom Variable Count 1	long
+richMediaCustomVariableCount2	Custom Variable Count 2	long
+richMediaDisplayTime	Total Display Time	long
+richMediaEngagements	Rich Media Engagements	long
+richMediaEventCounters	Event Counters	long
+richMediaEventTimers	Event Timers	double
+richMediaExpansionTime	Expansion Time	long
+richMediaExpansions	Expansions	long
+richMediaFullScreenImpressions	Full-Screen Impressions	long
+richMediaFullScreenVideoCompletes	Full-Screen Video Completions	long
+richMediaFullScreenVideoPlays	Full-Screen Video Plays	long
+richMediaHtml5Impressions	HTML5 Impressions	long
+richMediaImpressions	Rich Media Impressions	long
+richMediaInteractionRate	Interaction Rate	double
+richMediaInteractionTime	Total Interaction Time	long
+richMediaInteractions	Total Interactions	long
+richMediaInteractiveImpressions	Interactive Impressions	long
+richMediaManualCloses	Manual Closes	long
+richMediaScrolls	Rich Media Scrolls	long
+richMediaTrueViewViews	TrueView Views	long
+richMediaVideoCompanionClicks	Video Companion Clicks	long
+richMediaVideoCompletions	Video Completions	long
+richMediaVideoFirstQuartileCompletes	Video First Quartile Completions	long
+richMediaVideoFullScreens	Video Full-Screen	long
+richMediaVideoInteractionRate	Video Interaction Rate	double
+richMediaVideoInteractions	Video Interactions	long
+richMediaVideoMidpoints	Video Midpoints	long
+richMediaVideoMutes	Video Mutes	long
+richMediaVideoPauses	Video Pauses	long
+richMediaVideoPlays	Video Plays	long
+richMediaVideoProgressEvents	Video Progress Events	long
+richMediaVideoReplays	Video Replays	long
+richMediaVideoSkips	Video Skips	long
+richMediaVideoStops	Video Stops	long
+richMediaVideoThirdQuartileCompletes	Video Third Quartile Completions	long
+richMediaVideoUnmutes	Video Unmutes	long
+richMediaVideoViewRate	Video View Rate	double
+richMediaVideoViews	Video Views	long
+roadblockImpressions	Roadblock Impressions	long
+socialEngagementRate	Social Engagement Rate	double
+socialFollows	Follows	long
+socialLeadSubmissions	Twitter Leads Generated	long
+socialLikes	Likes	long
+socialOfferAccepts	Twitter Offers Accepted	long
+socialOtherInteractions	Other Social Interactions	long
+socialReplies	Replies	long
+socialSharesExternal	Shares (External)	long
+socialSharesInternal	Shares (Internal)	long
+socialTotalEngagements	Total Social Engagements	long
+totalConversions	Total Conversions	double
+totalConversionsRevenue	Total Revenue	double
+trackedAds	Tracked Ads	long
+twitterAppClicks	Twitter App Install Clicks	long
+twitterBuyNowCardClicks	Twitter Buy Now Clicks	long
+twitterBuyNowPurchaseSuccessfuls	Twitter Buy Now Purchases	long
+twitterUrlClicks	Twitter URL Clicks	long
+twitterVideo50PercentInViewFor2Seconds	Twitter: Video 50% In View For 2 Seconds	long
+twitterVideo100PercentInViewFor3Seconds	Twitter: Video 100% In View For 3 Seconds	long
+vendorBlockedAds	Vendor Blocked Ads	long
+verificationBlockedImpressions	Blocked Impressions	long
+verificationBlockedPercentage	Blocked Percentage	double
+verificationClassifiedImpressions	Classified Impressions	long
+verificationMeasurableImpressionsForAudio	Measurable Impressions For Audio	long
+verificationMeasurableImpressionsForVideoPlayerLocation	Measurable Impressions For Video Player Location	long
+verificationMeasurableImpressionsForVideoPlayerSize	Measurable Impressions For Video Player Size	long
+verificationPercentageMeasurableImpressionsForAudio	Percentage Of Measurable Impressions For Audio	double
+verificationPercentageMeasurableImpressionsForVideoPlayerLocation	Percentage Of Measurable Impressions For Video Player Location	double
+verificationPercentageMeasurableImpressionsForVideoPlayerSize	Percentage Of Measurable Impressions For Video Player Size	double
+verificationPublisherProblems	Publisher Problems	long
+verificationReportingProblems	Reporting Problems	long
+verificationServingProblems	Serving Problems	long
+verificationVerifiableImpressions	Verifiable Impressions	long
+verificationVideoMutedAtStart	Video Muted At Start	long
+verificationVideoPlayerHdSizeImpressions	HD Video Player Size Impressions	long
+verificationVideoPlayerLargeSizeImpressions	Large Video Player Size Impressions	long
+verificationVideoPlayerLocationAvgPixelsFromLeft	Video Player Location Avg Pixels From Left	long
+verificationVideoPlayerLocationAvgPixelsFromTop	Video Player Location Avg Pixels From Top	long
+verificationVideoPlayerSizeAvgHeight	Video Player Size Avg Height	long
+verificationVideoPlayerSizeAvgWidth	Video Player Size Avg Width	long
+verificationVideoPlayerSmallSizeImpressions	Small Video Player Size Impressions	long
+verificationVideoProminenceScore	Video Prominence Score	double
+verificationWarnings	Warnings	long
+videoCompanionClicks	Companion Clicks	long
+videoCompanionImpressions	Companion Views	long
