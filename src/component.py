@@ -5,6 +5,7 @@ Template Component main class.
 # from typing import List, Tuple
 import json
 import logging
+from datetime import date, timedelta
 
 import dataconf
 import requests
@@ -36,12 +37,52 @@ class Component(ComponentBase):
         """
 
         logging.debug(self.configuration.parameters)
-        self.cfg = Configuration.fromDict(self.configuration.parameters)
-        logging.debug(self.cfg)
+        # self.cfg = Configuration.fromDict(self.configuration.parameters)
+        # logging.debug(self.cfg)
 
         client = self._get_google_client()
 
-        client.list_profiles_test()
+        client.list_profiles()
+        # client.list_compatible_fields()
+        # client.list_reports()
+
+        # create report
+        report = {
+            'name': 'Toto je muj prvni report',
+            'type': 'STANDARD',
+            'fileName': 'muj_report',
+            'format': 'CSV'
+        }
+        # add criteria
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+        end_date = end_date.strftime('%Y-%m-%d')
+        start_date = start_date.strftime('%Y-%m-%d')
+        criteria = {
+            'dateRange': {
+                'startDate': start_date,
+                'endDate': end_date
+            },
+            'dimensions': [
+                {'name': 'advertiser'},
+                {'name': 'placement'},
+                {'name': 'platformType'},
+                {'name': 'site'}
+            ],
+            'metricNames': ['clicks', 'impressions']
+        }
+        report['criteria'] = criteria
+
+        # dimensions that produce errors (invalid combinationof dimension and filter dimensions):
+        # 'keyword', 'mediaType'
+        # dimensions = ['advertiser', 'placement', 'platformType', 'site']
+        # for dimension in dimensions:
+        #     client.list_dimension_values(dimension, start_date, end_date, profile_id='8467304')
+        inserted_report = client.create_report(report, profile_id='8467304')
+        # report_file = client.run_report(report_id='1079627581', profile_id='8467304')
+        report_file = client.report_status(report_id='1079627581', file_id='4080792184')
+        client.get_report_file(report_id='1079627581', file_id='4080792184')
+        pass
 
     def _get_google_client(self):
         client = GoogleCM360Client(
