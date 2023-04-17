@@ -14,13 +14,18 @@
       "description": "Select profiles to be used in reporting",
       "items": {
         "type": "string",
-        "enum": [
-          "David Keboola (id=xxxxx)",
-          "Cyril Kane (id=yyyyy)"
-        ]
+        "enum": [],
+        "minLength": 1,
+        "title": "Profiles"
       },
       "format": "select",
-      "uniqueItems": true
+      "uniqueItems": true,
+      "options": {
+        "async": {
+          "label": "Load avaiable profiles",
+          "action": "load_profiles"
+        }
+      }
     },
     "input_variant": {
       "type": "string",
