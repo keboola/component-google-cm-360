@@ -13,7 +13,7 @@ from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 
 from configuration import Configuration
-from google_cm360 import GoogleCM360Client, translate_filters, get_filter_table
+from google_cm360 import GoogleCM360Client, translate_filters
 
 
 class Component(ComponentBase):
@@ -78,7 +78,7 @@ class Component(ComponentBase):
         # dimensions = ['advertiser', 'placement', 'platformType', 'site']
         # for dimension in dimensions:
         #     client.list_dimension_values(dimension, start_date, end_date, profile_id='8467304')
-        inserted_report = client.create_report(report, profile_id='8467304')
+        # inserted_report = client.create_report(report, profile_id='8467304')
         # report_file = client.run_report(report_id='1079627581', profile_id='8467304')
         # report_file = client.report_status(report_id='1079627581', file_id='4080792184')
         client.get_report_file(report_id='1079627581', file_id='4080792184')

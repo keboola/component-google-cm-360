@@ -1,4 +1,4 @@
-import http
+# import http
 import io
 
 from google_auth_oauthlib.flow import Flow
@@ -49,7 +49,7 @@ class GoogleCM360Client:
 
         request = self.service.reports().list(profileId=profile_id)
         response = request.execute()
-        pass
+        return response
 
     def list_compatible_fields(self, report_type: str = "STANDARD", profile_id: str = None):
         if not profile_id:
@@ -74,7 +74,7 @@ class GoogleCM360Client:
                         print('\t' + key)
                     break
 
-    def list_dimension_values(self, dimension_name: str, start_date: str, end_date: str, profile_id: str=None):
+    def list_dimension_values(self, dimension_name: str, start_date: str, end_date: str, profile_id: str = None):
         body = {
             "dimensionName": dimension_name,
             # "filters": [
@@ -87,23 +87,21 @@ class GoogleCM360Client:
         }
         # doc: https://developers.google.com/doubleclick-advertisers/rest/v4/dimensionValues/query
         response = self.service.dimensionValues().query(profileId=profile_id, body=body).execute()
-        pass
+        return response
 
-    def create_report(self, report: dict, profile_id: str=None):
+    def create_report(self, report: dict, profile_id: str = None):
         inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
         return inserted_report
 
     def run_report(self, report_id: str, profile_id: str):
-        report_file = self.service.reports().run(profileId=profile_id,
-                              reportId=report_id).execute()
+        report_file = self.service.reports().run(profileId=profile_id, reportId=report_id).execute()
         return report_file
 
     def report_status(self, report_id: str, file_id: str):
-        report_file = self.service.files().get(reportId=report_id,
-                                        fileId=file_id).execute()
+        report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
         return report_file
 
-    def get_report_file(self, report_id: str, file_id: str, report_file: dict=None):
+    def get_report_file(self, report_id: str, file_id: str, report_file: dict = None):
         if not report_file:
             report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
         out_file = io.FileIO('muj_report.csv', mode='wb')
