@@ -177,7 +177,7 @@ class Component(ComponentBase):
     @sync_action('load_profiles')
     def load_profiles(self):
         resp = [
-            SelectElement(value='one', label='First Profile (one)'),
+            SelectElement(value='one', label='Prvni profile (one)'),
             SelectElement(value='two', label='Second Profile (two)')
         ]
         return resp
