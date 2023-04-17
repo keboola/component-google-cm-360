@@ -1,0 +1,94 @@
+activity	Activity	string
+activityGroup	Activity Group	string
+ad	Ad	string
+adStatus	Ad Status	string
+adType	Ad Type	string
+advertiser	Advertiser	string
+advertiserGroup	Advertiser Group	string
+attributedEventConnectionType	Attributed Event Connection Type	string
+attributedEventEnvironment	Attributed Event Environment	string
+attributionModelConfig	Attribution Model	string
+browserPlatform	Browser/Platform	string
+campaign	Campaign	string
+campaignEndDate	Campaign End Date	string
+campaignExternalId	Campaign External ID	string
+campaignStartDate	Campaign Start Date	string
+city	City	string
+clickThroughUrl	Click-through URL	string
+connectionType	Connection Type	string
+contentCategory	Content Category	string
+country	Country	string
+creative	Creative	string
+creativeEndDate	Creative End Date	string
+creativeField1	Creative Field 1	string
+creativeField2	Creative Field 2	string
+creativeField3	Creative Field 3	string
+creativeField4	Creative Field 4	string
+creativeField5	Creative Field 5	string
+creativeField6	Creative Field 6	string
+creativeField7	Creative Field 7	string
+creativeField8	Creative Field 8	string
+creativeField9	Creative Field 9	string
+creativeField10	Creative Field 10	string
+creativeField11	Creative Field 11	string
+creativeField12	Creative Field 12	string
+creativeGroup1	Creative Groups 1	string
+creativeGroup2	Creative Groups 2	string
+creativeSize	Creative Pixel Size	string
+creativeStartDate	Creative Start Date	string
+creativeType	Creative Type	string
+digitalContentLabel	Digital Content Label	string
+dmaRegion	Designated Market Area (DMA)	string
+domain	Domain	string
+environment	Environment	string
+eventPlatformType	Attributed Event Platform Type	string
+floodlightConfigId	Floodlight Configuration	long
+hour	Hour	string
+impressionCountingMethod	Impression Counting Method	string
+mediaType	Media Type	string
+mobileCarrier	Mobile Carrier	string
+naturalSearchEngineCountry	Natural Search Engine Country	string
+naturalSearchEngineProperty	Natural Search Engine Property	string
+naturalSearchLandingPage	Natural Search Landing Page	string
+naturalSearchLandingPageQueryString	Natural Search Landing Page Query String	string
+naturalSearchProcessedLandingPage	Natural Search Processed Landing Page	string
+naturalSearchProcessedLandingPageQueryString	Natural Search Processed Landing Page Query String	string
+naturalSearchQuery	Natural Search Query	string
+operatingSystem	Operating System	string
+packageRoadblockStrategy	Package/Roadblock Strategy	string
+packageRoadblockTotalBookedUnits	Package/Roadblock Total Booked Units	string
+paidSearchAd	Paid Search Ad	string
+paidSearchAdGroup	Paid Search Ad Group	string
+paidSearchAdvertiser	Paid Search Advertiser	string
+paidSearchAgency	Paid Search Agency	string
+paidSearchBidStrategy	Paid Search Bid Strategy	string
+paidSearchCampaign	Paid Search Campaign	string
+paidSearchEngineAccount	Paid Search Engine Account	string
+paidSearchKeyword	Paid Search Keyword	string
+paidSearchLandingPageUrl	Paid Search Landing Page URL	string
+paymentSource	Payment Source	string
+placement	Placement	string
+placementCompatibility	Placement Compatibility	string
+placementCostStructure	Placement Cost Structure	string
+placementExternalId	Placement External ID	string
+placementSize	Placement Pixel Size	string
+placementStrategy	Placement Strategy	string
+placementTagType	Placement Tag Type	string
+placementTotalBookedUnits	Placement Total Booked Units	string
+platformType	Platform Type	string
+positionInContent	Position In Content	string
+refreshedAd	Refreshed Ad	string
+renderingId	Rendering ID	long
+sensitiveCategory	Sensitive Category	string
+site	Site (CM360)	string
+siteDirectory	Site (Site Directory)	string
+state	State/Region	string
+verificationAudibilityComplete	Audibility At Complete	string
+verificationAudibilityStart	Audibility At Start	string
+verificationVideoPlayerSizeComplete	Video Player Size at Completion	string
+verificationVideoPlayerSizeFirstQuartile	Video Player Size at First Quartile	string
+verificationVideoPlayerSizeMidPoint	Video Player Size at Midpoint	string
+verificationVideoPlayerSizeStart	Video Player Size at Start	string
+verificationVideoPlayerSizeThirdQuartile	Video Player Size at Third Quartile	string
+verificationVideoResized	Video Resized	string
+videoContinuousPlay	Video Continuous Play	string

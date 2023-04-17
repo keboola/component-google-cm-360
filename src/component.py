@@ -5,6 +5,7 @@ Template Component main class.
 # from typing import List, Tuple
 import json
 import logging
+from datetime import date, timedelta
 
 import dataconf
 import requests
@@ -12,7 +13,7 @@ from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 
 from configuration import Configuration
-from google_cm360 import GoogleCM360Client, translate_filters, get_filter_table
+from google_cm360 import GoogleCM360Client, translate_filters
 
 
 class Component(ComponentBase):
@@ -36,12 +37,60 @@ class Component(ComponentBase):
         """
 
         logging.debug(self.configuration.parameters)
-        self.cfg = Configuration.fromDict(self.configuration.parameters)
-        logging.debug(self.cfg)
+        # self.cfg = Configuration.fromDict(self.configuration.parameters)
+        # logging.debug(self.cfg)
 
-        client = GoogleCM360Client(self.configuration.oauth_credentials)
+        client = self._get_google_client()
 
-        client.list_profiles_test()
+        # client.list_profiles()
+        # client.list_compatible_fields()
+        # client.list_reports()
+
+        # create report
+        report = {
+            'name': 'Toto je muj prvni report',
+            'type': 'STANDARD',
+            'fileName': 'muj_report',
+            'format': 'CSV'
+        }
+        # add criteria
+        end_date = date.today()
+        start_date = end_date - timedelta(days=30)
+        end_date = end_date.strftime('%Y-%m-%d')
+        start_date = start_date.strftime('%Y-%m-%d')
+        criteria = {
+            'dateRange': {
+                'startDate': start_date,
+                'endDate': end_date
+            },
+            'dimensions': [
+                {'name': 'advertiser'},
+                {'name': 'placement'},
+                {'name': 'platformType'},
+                {'name': 'site'}
+            ],
+            'metricNames': ['clicks', 'impressions']
+        }
+        report['criteria'] = criteria
+
+        # dimensions that produce errors (invalid combinationof dimension and filter dimensions):
+        # 'keyword', 'mediaType'
+        # dimensions = ['advertiser', 'placement', 'platformType', 'site']
+        # for dimension in dimensions:
+        #     client.list_dimension_values(dimension, start_date, end_date, profile_id='8467304')
+        # inserted_report = client.create_report(report, profile_id='8467304')
+        # report_file = client.run_report(report_id='1079627581', profile_id='8467304')
+        # report_file = client.report_status(report_id='1079627581', file_id='4080792184')
+        client.get_report_file(report_id='1079627581', file_id='4080792184')
+        pass
+
+    def _get_google_client(self):
+        client = GoogleCM360Client(
+            self.configuration.oauth_credentials.appKey,
+            self.configuration.oauth_credentials.appSecret,
+            self.configuration.oauth_credentials.data
+        )
+        return client
 
     @staticmethod
     def download_file(url: str, result_file_path: str):
@@ -124,43 +173,48 @@ class Component(ComponentBase):
                self.environment_variables.config_id + '_' + \
                configrow_id
 
-    @sync_action('list_queries')
-    def list_queries(self):
-        client = GoogleCM360Client(self.configuration.oauth_credentials)
-        queries = client.list_queries()
-        # wish was to include query creation date but tha info is not available in the service
-        resp = [dict(value=q[0], label=f'{q[0]} - {q[1]}') for q in queries]
+    @sync_action('load_profiles')
+    def load_profiles(self):
+        resp = [dict(value='one', label='Profile One'), dict(value='two', label='Profile Two')]
         return resp
 
-    @sync_action('list_report_dimensions')
-    def list_report_dimensions(self):
-        entry_id = self.configuration.parameters.get('entry_id')
-        if not entry_id:
-            raise UserException('No report ID provided.')
-        client = GoogleCM360Client(self.configuration.oauth_credentials)
-        query = client.get_query(query_id=entry_id)
-        if not query:
-            raise UserException(f'Report id = {entry_id} was not found')
-        table = get_filter_table()
-        resp = [dict(value=f, label=table.get(f)) for f in query["params"]["groupBys"]]
-        return resp
+    # @sync_action('list_queries')
+    # def list_queries(self):
+    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
+    #     queries = client.list_queries()
+    #     # wish was to include query creation date but tha info is not available in the service
+    #     resp = [dict(value=q[0], label=f'{q[0]} - {q[1]}') for q in queries]
+    #     return resp
 
-    @sync_action('validate_query')
-    def validate_query(self):
-        report_settings = self.configuration.parameters.get('report_settings')
-        if not report_settings:
-            raise UserException('No report settings in configuration parameters')
-        report_type = report_settings.get('report_type')
-        dimensions = report_settings.get('dimensions')
-        metrics = report_settings.get('metrics')
-        filters = report_settings.get('filters')
-        filters = [(filter_pair.get('name'), filter_pair.get('value')) for filter_pair in filters]
+    # @sync_action('list_report_dimensions')
+    # def list_report_dimensions(self):
+    #     entry_id = self.configuration.parameters.get('entry_id')
+    #     if not entry_id:
+    #         raise UserException('No report ID provided.')
+    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
+    #     query = client.get_query(query_id=entry_id)
+    #     if not query:
+    #         raise UserException(f'Report id = {entry_id} was not found')
+    #     table = get_filter_table()
+    #     resp = [dict(value=f, label=table.get(f)) for f in query["params"]["groupBys"]]
+    #     return resp
 
-        client = GoogleCM360Client(self.configuration.oauth_credentials)
-
-        report_id = client.create_report('just_dummy_2_delete', report_type, dimensions, metrics, filters)
-
-        client.delete_query(report_id)
+    # @sync_action('validate_query')
+    # def validate_query(self):
+    #     report_settings = self.configuration.parameters.get('report_settings')
+    #     if not report_settings:
+    #         raise UserException('No report settings in configuration parameters')
+    #     report_type = report_settings.get('report_type')
+    #     dimensions = report_settings.get('dimensions')
+    #     metrics = report_settings.get('metrics')
+    #     filters = report_settings.get('filters')
+    #     filters = [(filter_pair.get('name'), filter_pair.get('value')) for filter_pair in filters]
+    #
+    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
+    #
+    #     report_id = client.create_report('just_dummy_2_delete', report_type, dimensions, metrics, filters)
+    #
+    #     client.delete_query(report_id)
 
 
 """
