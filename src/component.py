@@ -11,6 +11,7 @@ import dataconf
 import requests
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
+from keboola.component.sync_actions import SelectElement
 
 from configuration import Configuration
 from google_cm360 import GoogleCM360Client, translate_filters
@@ -175,7 +176,10 @@ class Component(ComponentBase):
 
     @sync_action('load_profiles')
     def load_profiles(self):
-        resp = [dict(value='one', label='Profile One'), dict(value='two', label='Profile Two')]
+        resp = [
+            SelectElement(value='one', label='First Profile (one)'),
+            SelectElement(value='two', label='Second Profile (two)')
+        ]
         return resp
 
     # @sync_action('list_queries')

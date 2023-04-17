@@ -64,6 +64,7 @@ def read_ids_labels(file_name):
                 break
     return ids, labels
 
+
 def update_item(item: str):
     file_name = f'{item}.csv'
     ids, labels = read_ids_labels(file_name)
@@ -73,6 +74,7 @@ def update_item(item: str):
     else:
         report_properties[item]['items']['enum'] = ids
         report_properties[item]['items']['options']['enum_titles'] = labels
+
 
 for item in dimensions + metrics + filters:
     update_item(item)
