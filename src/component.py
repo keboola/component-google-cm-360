@@ -15,7 +15,7 @@ from keboola.component.sync_actions import SelectElement
 
 from configuration import Configuration
 from google_cm360 import GoogleCM360Client, translate_filters
-from src.docscraper import scrape_props_from_doc
+from docscraper import scrape_props_from_doc
 
 
 class Component(ComponentBase):
