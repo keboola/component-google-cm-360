@@ -15,6 +15,7 @@ from keboola.component.sync_actions import SelectElement
 
 from configuration import Configuration
 from google_cm360 import GoogleCM360Client, translate_filters
+from src.docscraper import scrape_props_from_doc
 
 
 class Component(ComponentBase):
@@ -181,9 +182,37 @@ class Component(ComponentBase):
         prof_w_labels = [SelectElement(value=profile[0], label=f'{profile[1]} ({profile[0]})') for profile in profiles]
         return prof_w_labels
 
-    def load_dimensions(self):
-        self.configuration
-        pass
+    map_report_type_2_compatible_section = {
+        'STANDARD': 'reportCompatibleFields',
+        'REACH': 'reachReportCompatibleFields',
+        'FLOODLIGHT': 'floodlightReportCompatibleFields',
+        'PATH': 'pathReportCompatibleFields',
+        'PATH_ATTRIBUTION': 'pathAttributionReportCompatibleFields'
+    }
+
+    def _load_dimensions(self, report_type: str):
+        dims = scrape_props_from_doc(report_type, ['dimensions'])
+        return [SelectElement(value=k, label=v) for k, v in dims[0].items()]
+
+    def _load_metrics(self, report_type: str):
+        mtrs = scrape_props_from_doc(report_type, ['metrics'])
+        return [SelectElement(value=k, label=v) for k, v in mtrs[0].items()]
+
+    @sync_action('load_dimensions_standard')
+    def load_dimensions_standard(self):
+        return self._load_dimensions('STANDARD')
+
+    @sync_action('load_dimensions_reach')
+    def load_dimensions_reach(self):
+        return self._load_dimensions('REACH')
+
+    @sync_action('load_metrics_standard')
+    def load_metrics_standard(self):
+        return self._load_metrics('STANDARD')
+
+    @sync_action('load_metrics_reach')
+    def load_metrics_reach(self):
+        return self._load_metrics('REACH')
 
     # @sync_action('list_queries')
     # def list_queries(self):

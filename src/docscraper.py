@@ -32,11 +32,12 @@ def scrape_props_from_doc(report_type: str, attributes: list([str])):
                     result[cols[0].text] = cols[1].text
             except Exception:  # noqa: F841
                 pass
-        return (result for result in results)
+        return [result for result in results]
     except Exception:
-        return ({} for it in attributes)  # noqa: F841
+        return [{} for it in attributes]  # noqa: F841
 
 # if __name__ == '__main__':
+#     _dims = scrape_props_from_doc('STANDARD', ['dimensions'])
 #     _dims, _metrics = scrape_props_from_doc('STANDARD', ['dimensions', 'metrics'])
 #     _dims, _metrics = scrape_props_from_doc('REACH', ['dimensions', 'metrics'])
 #     _dims, _metrics = scrape_props_from_doc('FLOODLIGHT', ['dimensions', 'metrics'])
