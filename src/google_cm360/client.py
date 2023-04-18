@@ -35,13 +35,15 @@ class GoogleCM360Client:
             credentials=credentials)
 
     def list_profiles(self) -> list[(str, str)]:
-        request = self.service.userProfiles().list()
-        # Execute request and print response.
-        response = request.execute()
+        """Call API to retrieve available profiles
 
-        for profile in response['items']:
-            print('Found user profile with ID %s and user name "%s".' %
-                  (profile['profileId'], profile['userName']))
+        Returns: List of tuples - (profileId, userName)
+
+        """
+        request = self.service.userProfiles().list()
+        response = request.execute()
+        list_of_ids_names = [(p['profileId'], p['userName']) for p in response['items']]
+        return list_of_ids_names
 
     def list_reports(self, profile_id: str = '8467304'):
         if not profile_id:
