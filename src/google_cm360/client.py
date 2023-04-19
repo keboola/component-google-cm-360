@@ -53,28 +53,15 @@ class GoogleCM360Client:
         response = request.execute()
         return response
 
-    def list_compatible_fields(self, report_type: str = "STANDARD", profile_id: str = None):
+    def list_compatible_fields(self, report_type: str = "STANDARD", compat_fields: str = "reportCompatibleFields",
+                               attribute: str = "dimensions", profile_id: str = None):
         if not profile_id:
             profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
 
-        for report_type in [
-            "STANDARD",
-            "REACH",
-            "PATH_TO_CONVERSION",
-            "CROSS_DIMENSION_REACH",
-            "FLOODLIGHT",
-            "PATH",
-            "PATH_ATTRIBUTION"
-        ]:
-            request = self.service.reports().compatibleFields().query(profileId=profile_id, body={"type": report_type})
-            response = request.execute()
+        request = self.service.reports().compatibleFields().query(profileId=profile_id, body={"type": report_type})
+        response = request.execute()
 
-            for fldkey in response:
-                if 'Fields' in fldkey:
-                    print(f'{report_type}: {fldkey}')
-                    for key in response[fldkey]:
-                        print('\t' + key)
-                    break
+        return [item['name'] for item in response[compat_fields][attribute]]
 
     def list_dimension_values(self, dimension_name: str, start_date: str, end_date: str, profile_id: str = None):
         body = {

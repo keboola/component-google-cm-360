@@ -190,29 +190,44 @@ class Component(ComponentBase):
         'PATH_ATTRIBUTION': 'pathAttributionReportCompatibleFields'
     }
 
-    def _load_dimensions(self, report_type: str):
-        dims = scrape_props_from_doc(report_type, ['dimensions'])
-        return [SelectElement(value=k, label=v) for k, v in dims[0].items()]
+    def _load_attribute_values(self, report_type: str, attribute: str):
 
-    def _load_metrics(self, report_type: str):
-        mtrs = scrape_props_from_doc(report_type, ['metrics'])
-        return [SelectElement(value=k, label=v) for k, v in mtrs[0].items()]
+        client = self._get_google_client()
+        # profiles = client.list_profiles()
+        # profile = profiles[0][0]
+        ids = client.list_compatible_fields(report_type=report_type,
+                                            compat_fields=self.map_report_type_2_compatible_section[report_type],
+                                            attribute=attribute
+                                            )
+        dims = scrape_props_from_doc(report_type, [attribute])[0]
+        result = []
+        for id in ids:
+            label = dims.get(id)
+            if not label:
+                label = id
+            result.append(SelectElement(value=id, label=label))
+        return result
+        # return [SelectElement(value=k, label=v) for k, v in dims.items()]
+
+    # def _load_metrics(self, report_type: str):
+    #     mtrs = scrape_props_from_doc(report_type, ['metrics'])
+    #     return [SelectElement(value=k, label=v) for k, v in mtrs[0].items()]
 
     @sync_action('load_dimensions_standard')
     def load_dimensions_standard(self):
-        return self._load_dimensions('STANDARD')
+        return self._load_attribute_values('STANDARD', 'dimensions')
 
     @sync_action('load_dimensions_reach')
     def load_dimensions_reach(self):
-        return self._load_dimensions('REACH')
+        return self._load_attribute_values('REACH', 'dimensions')
 
     @sync_action('load_metrics_standard')
     def load_metrics_standard(self):
-        return self._load_metrics('STANDARD')
+        return self._load_attribute_values('STANDARD', 'metrics')
 
     @sync_action('load_metrics_reach')
     def load_metrics_reach(self):
-        return self._load_metrics('REACH')
+        return self._load_attribute_values('REACH', 'metrics')
 
     # @sync_action('list_queries')
     # def list_queries(self):
