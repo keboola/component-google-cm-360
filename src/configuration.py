@@ -1,10 +1,9 @@
 from dataclasses import dataclass, field
 import dataconf
-
-
 from pyhocon.config_tree import ConfigTree
-
 from keboola.component.exceptions import UserException
+
+FILE_JSON_LABELS = 'labels.json'
 
 
 class ConfigurationException(UserException):
@@ -36,7 +35,6 @@ class ReportSettings:
     report_type: str = ""
     dimensions: list[str] = None
     metrics: list[str] = None
-    filters: list[FilterPair] = None
 
 
 class ConfigurationBase:
@@ -49,10 +47,11 @@ class ConfigurationBase:
 
 @dataclass
 class Configuration(ConfigurationBase):
+    profiles: list[str]
     input_variant: str
     destination: Destination
     time_range: TimeRange
-    report_settings: ReportSettings = field(default_factory=lambda: ConfigTree({}))
+    report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))
     entry_id: str = ""
     debug: bool = False
 
@@ -60,7 +59,7 @@ class Configuration(ConfigurationBase):
         if self.input_variant == "entry_id":
             return self.entry_id == other.entry_id
         else:
-            return self.report_settings == other.report_settings
+            return self.report_specification == other.report_specification
 
 
 if __name__ == '__main__':

@@ -147,14 +147,11 @@
           },
           "propertyOrder": 500
         },
-        "dimensions_standard": {
+        "dimensions": {
           "options": {
-            "dependencies": {
-              "report_type": "STANDARD"
-            },
             "async": {
               "label": "Load available dimensions",
-              "action": "load_dimensions_standard"
+              "action": "load_dimensions"
             }
           },
           "title": "Dimensions",
@@ -169,200 +166,15 @@
           },
           "propertyOrder": 600
         },
-        "dimensions_reach": {
+        "metrics": {
           "options": {
-            "dependencies": {
-              "report_type": "REACH"
-            },
-            "async": {
-              "label": "Load available dimensions",
-              "action": "load_dimensions_reach"
-            }
-          },
-          "title": "Dimensions",
-          "type": "array",
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [],
-            "minLength": 1,
-            "title": "Dimensions"
-          },
-          "propertyOrder": 600
-        },
-        "dimensions_floodlight": {
-          "options": {
-            "dependencies": {
-              "report_type": "FLOODLIGHT"
-            }
-          },
-          "title": "Dimensions",
-          "type": "array",
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "activity",
-              "activityId",
-              "ad",
-              "adId",
-              "campaign",
-              "campaignId",
-              "creative",
-              "creativeId",
-              "eventType",
-              "pathChannelGroupingName",
-              "pathEventIndex",
-              "pathPatternId",
-              "placement",
-              "placementId",
-              "site",
-              "siteId"
-            ],
-            "options": {
-              "enum_titles": [
-                "Prehodili jsme REACH",
-                "Activity ID",
-                "Ad",
-                "Ad ID",
-                "Campaign",
-                "Campaign ID",
-                "Creative",
-                "Creative ID",
-                "Event Type",
-                "Channel Grouping",
-                "Path Event Index",
-                "Path Pattern ID",
-                "Placement",
-                "Placement ID",
-                "Site (CM360)",
-                "Site ID (CM360)"
-              ]
-            }
-          },
-          "propertyOrder": 600
-        },
-        "dimensions_path": {
-          "options": {
-            "dependencies": {
-              "report_type": "PATH"
-            }
-          },
-          "title": "Dimensions",
-          "type": "array",
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "activity",
-              "activityId",
-              "ad",
-              "adId",
-              "campaign",
-              "campaignId",
-              "creative",
-              "creativeId",
-              "eventType",
-              "pathChannelGroupingName",
-              "pathEventIndex",
-              "pathPatternId",
-              "placement",
-              "placementId",
-              "site",
-              "siteId"
-            ],
-            "options": {
-              "enum_titles": [
-                "Prehodili jsme REACH",
-                "Activity ID",
-                "Ad",
-                "Ad ID",
-                "Campaign",
-                "Campaign ID",
-                "Creative",
-                "Creative ID",
-                "Event Type",
-                "Channel Grouping",
-                "Path Event Index",
-                "Path Pattern ID",
-                "Placement",
-                "Placement ID",
-                "Site (CM360)",
-                "Site ID (CM360)"
-              ]
-            }
-          },
-          "propertyOrder": 600
-        },
-        "dimensions_path_attribution": {
-          "options": {
-            "dependencies": {
-              "report_type": "PATH_ATTRIBUTION"
-            }
-          },
-          "title": "Dimensions",
-          "type": "array",
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "activity",
-              "activityId",
-              "ad",
-              "adId",
-              "campaign",
-              "campaignId",
-              "creative",
-              "creativeId",
-              "eventType",
-              "pathChannelGroupingName",
-              "pathEventIndex",
-              "pathPatternId",
-              "placement",
-              "placementId",
-              "site",
-              "siteId"
-            ],
-            "options": {
-              "enum_titles": [
-                "Prehodili jsme REACH",
-                "Activity ID",
-                "Ad",
-                "Ad ID",
-                "Campaign",
-                "Campaign ID",
-                "Creative",
-                "Creative ID",
-                "Event Type",
-                "Channel Grouping",
-                "Path Event Index",
-                "Path Pattern ID",
-                "Placement",
-                "Placement ID",
-                "Site (CM360)",
-                "Site ID (CM360)"
-              ]
-            }
-          },
-          "propertyOrder": 600
-        },
-        "metrics_standard": {
-          "options": {
-            "dependencies": {
-              "report_type": "STANDARD"
-            },
             "async": {
               "label": "Load available metrics",
-              "action": "load_metrics_standard"
+              "action": "load_metrics"
             }
           },
           "type": "array",
           "title": "Metrics",
-          "propertyOrder": 700,
           "format": "select",
           "uniqueItems": true,
           "items": {
@@ -370,146 +182,8 @@
             "enum": [],
             "minLength": 1,
             "title": "Metrics"
-          }
-        },
-        "metrics_reach": {
-          "options": {
-            "dependencies": {
-              "report_type": "REACH"
-            },
-            "async": {
-              "label": "Load available metrics",
-              "action": "load_metrics_reach"
-            }
           },
-          "type": "array",
-          "title": "Metrics",
-          "propertyOrder": 700,
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [],
-            "minLength": 1,
-            "title": "Metrics"
-          }
-        },
-        "metrics_floodlight": {
-          "options": {
-            "dependencies": {
-              "report_type": "FLOODLIGHT"
-            }
-          },
-          "type": "array",
-          "title": "Metrics",
-          "propertyOrder": 700,
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
-              "METRIC_WIN_LOSS_RATE"
-            ],
-            "options": {
-              "enum_titles": [
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
-                "Active View: Impressions Audible and Visible at Completion",
-                "Active View: Average Viewable Time (Seconds)",
-                "Win Rate"
-              ]
-            }
-          }
-        },
-        "metrics_path": {
-          "options": {
-            "dependencies": {
-              "report_type": "PATH"
-            }
-          },
-          "type": "array",
-          "title": "Metrics",
-          "propertyOrder": 700,
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
-              "METRIC_WIN_LOSS_RATE"
-            ],
-            "options": {
-              "enum_titles": [
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
-                "Active View: Impressions Audible and Visible at Completion",
-                "Active View: Average Viewable Time (Seconds)",
-                "Win Rate"
-              ]
-            }
-          }
-        },
-        "metrics_path_attribution": {
-          "options": {
-            "dependencies": {
-              "report_type": "PATH_ATTRIBUTION"
-            }
-          },
-          "type": "array",
-          "title": "Metrics",
-          "propertyOrder": 700,
-          "format": "select",
-          "uniqueItems": true,
-          "items": {
-            "type": "string",
-            "enum": [
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_MEASURABLE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_FULLY_ON_SCREEN_HALF_OF_DURATION_TRUEVIEW_RATE",
-              "METRIC_ACTIVE_VIEW_AUDIBLE_VISIBLE_ON_COMPLETE_IMPRESSIONS",
-              "METRIC_ACTIVE_VIEW_AVERAGE_VIEWABLE_TIME",
-              "METRIC_WIN_LOSS_RATE"
-            ],
-            "options": {
-              "enum_titles": [
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (15 sec. cap) Rate",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Measurable Impressions",
-                "Active View: Audible & Fully On-Screen for Half of Duration (TrueView) Rate",
-                "Active View: Impressions Audible and Visible at Completion",
-                "Active View: Average Viewable Time (Seconds)",
-                "Win Rate"
-              ]
-            }
-          }
+          "propertyOrder": 700
         }
       },
       "options": {
@@ -536,8 +210,8 @@
         }
       },
     "destination": {
-      "title": "Destination",
       "type": "object",
+      "title": "Destination",
       "propertyOrder": 600,
       "required": [
         "table_name",
@@ -627,9 +301,9 @@
       }
     },
     "debug": {
+      "type": "boolean",
       "propertyOrder": 700,
       "title": "Debug",
-      "type": "boolean",
       "hidden": true,
       "description": "When checked, logging will be more verbose",
       "format": "checkbox"

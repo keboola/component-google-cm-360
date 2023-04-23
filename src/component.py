@@ -5,7 +5,7 @@ Template Component main class.
 # from typing import List, Tuple
 import json
 import logging
-from datetime import date, timedelta
+import time
 
 import dataconf
 import requests
@@ -15,7 +15,34 @@ from keboola.component.sync_actions import SelectElement
 
 from configuration import Configuration
 from google_cm360 import GoogleCM360Client, translate_filters
-from docscraper import scrape_props_from_doc
+from configuration import FILE_JSON_LABELS
+
+
+map_report_type_2_compatible_section = {
+    'STANDARD': 'reportCompatibleFields',
+    'REACH': 'reachReportCompatibleFields',
+    'FLOODLIGHT': 'floodlightReportCompatibleFields',
+    'PATH': 'pathReportCompatibleFields',
+    'PATH_ATTRIBUTION': 'pathAttributionReportCompatibleFields'
+}
+
+map_report_type_2_criteria = {
+    'STANDARD': 'criteria',
+    'REACH': 'reachCriteria',
+    'FLOODLIGHT': 'floodlightCriteria',
+    'PATH': 'pathCriteria',
+    'PATH_ATTRIBUTION': 'pathAttributionCriteria'
+}
+
+
+def _load_attribute_labels_from_json(report_type, attribute):
+    all_labels = None
+    try:
+        with open(FILE_JSON_LABELS, mode='r') as file:
+            all_labels = json.load(fp=file)
+        return all_labels.get(report_type).get(attribute)
+    except Exception:
+        return {}
 
 
 class Component(ComponentBase):
@@ -31,7 +58,32 @@ class Component(ComponentBase):
 
     def __init__(self):
         super().__init__()
-        self.cfg = None
+        self.cfg: Configuration = None
+
+    def create_report_from_specification(self):
+        specification = self.cfg.report_specification
+        report = {
+            'name': 'kebola-ex-generated',
+            'type': specification.report_type,
+            'fileName': 'kebola-ex-file',
+            'format': 'CSV'
+        }
+
+        # end_date = date.today()
+        # start_date = end_date - timedelta(days=30)
+        # end_date = end_date.strftime('%Y-%m-%d')
+        # start_date = start_date.strftime('%Y-%m-%d')
+        date_range = {
+            'relativeDateRange': self.cfg.time_range.period
+        }
+        criteria = {
+            'dateRange': date_range,
+            'dimensions': [{'name': name} for name in specification.dimensions],
+            'metricNames': specification.metrics,
+            'dateRange': date_range
+        }
+        report[map_report_type_2_criteria[specification.report_type]] = criteria
+        return report
 
     def run(self):
         """
@@ -39,41 +91,26 @@ class Component(ComponentBase):
         """
 
         logging.debug(self.configuration.parameters)
-        # self.cfg = Configuration.fromDict(self.configuration.parameters)
-        # logging.debug(self.cfg)
+        self.cfg = Configuration.fromDict(self.configuration.parameters)
+        logging.debug(self.cfg)
+
+        report = self.create_report_from_specification()
 
         client = self._get_google_client()
 
-        # client.list_profiles()
-        # client.list_compatible_fields()
-        # client.list_reports()
+        inserted_report = client.create_report(report=report, profile_id=self.cfg.profiles[0])
 
-        # create report
-        report = {
-            'name': 'Toto je muj prvni report',
-            'type': 'STANDARD',
-            'fileName': 'muj_report',
-            'format': 'CSV'
-        }
-        # add criteria
-        end_date = date.today()
-        start_date = end_date - timedelta(days=30)
-        end_date = end_date.strftime('%Y-%m-%d')
-        start_date = start_date.strftime('%Y-%m-%d')
-        criteria = {
-            'dateRange': {
-                'startDate': start_date,
-                'endDate': end_date
-            },
-            'dimensions': [
-                {'name': 'advertiser'},
-                {'name': 'placement'},
-                {'name': 'platformType'},
-                {'name': 'site'}
-            ],
-            'metricNames': ['clicks', 'impressions']
-        }
-        report['criteria'] = criteria
+        report_file = client.run_report(report_id=inserted_report['id'], profile_id=self.cfg.profiles[0])
+
+        while True:
+            report_file = client.report_status(report_id=report_file['reportId'], file_id=report_file['id'])
+            status = report_file['status']
+            if status == 'REPORT_AVAILABLE':
+                client.get_report_file(report_id=report_file['reportId'], file_id=report_file['id'])
+                break
+            time.sleep(20)
+
+        pass
 
         # dimensions that produce errors (invalid combinationof dimension and filter dimensions):
         # 'keyword', 'mediaType'
@@ -83,7 +120,7 @@ class Component(ComponentBase):
         # inserted_report = client.create_report(report, profile_id='8467304')
         # report_file = client.run_report(report_id='1079627581', profile_id='8467304')
         # report_file = client.report_status(report_id='1079627581', file_id='4080792184')
-        client.get_report_file(report_id='1079627581', file_id='4080792184')
+        # client.get_report_file(report_id='1079627581', file_id='4080792184')
         pass
 
     def _get_google_client(self):
@@ -182,24 +219,19 @@ class Component(ComponentBase):
         prof_w_labels = [SelectElement(value=profile[0], label=f'{profile[1]} ({profile[0]})') for profile in profiles]
         return prof_w_labels
 
-    map_report_type_2_compatible_section = {
-        'STANDARD': 'reportCompatibleFields',
-        'REACH': 'reachReportCompatibleFields',
-        'FLOODLIGHT': 'floodlightReportCompatibleFields',
-        'PATH': 'pathReportCompatibleFields',
-        'PATH_ATTRIBUTION': 'pathAttributionReportCompatibleFields'
-    }
+    def _load_attribute_values(self, attribute: str):
 
-    def _load_attribute_values(self, report_type: str, attribute: str):
+        report_type = self.configuration.parameters.get('report_specification').get('report_type')
+        if not report_type or report_type not in map_report_type_2_compatible_section:
+            raise ValueError('No or invalid report_type')
 
+        dims = _load_attribute_labels_from_json(report_type, attribute)
         client = self._get_google_client()
-        # profiles = client.list_profiles()
-        # profile = profiles[0][0]
         ids = client.list_compatible_fields(report_type=report_type,
-                                            compat_fields=self.map_report_type_2_compatible_section[report_type],
-                                            attribute=attribute
-                                            )
-        dims = scrape_props_from_doc(report_type, [attribute])[0]
+                                            compat_fields=map_report_type_2_compatible_section[report_type],
+                                            attribute=attribute)
+
+        # assign labels to attribute ids an generate a response to action
         result = []
         for id in ids:
             label = dims.get(id)
@@ -209,63 +241,13 @@ class Component(ComponentBase):
         return result
         # return [SelectElement(value=k, label=v) for k, v in dims.items()]
 
-    # def _load_metrics(self, report_type: str):
-    #     mtrs = scrape_props_from_doc(report_type, ['metrics'])
-    #     return [SelectElement(value=k, label=v) for k, v in mtrs[0].items()]
-
-    @sync_action('load_dimensions_standard')
+    @sync_action('load_dimensions')
     def load_dimensions_standard(self):
-        return self._load_attribute_values('STANDARD', 'dimensions')
+        return self._load_attribute_values('dimensions')
 
-    @sync_action('load_dimensions_reach')
-    def load_dimensions_reach(self):
-        return self._load_attribute_values('REACH', 'dimensions')
-
-    @sync_action('load_metrics_standard')
-    def load_metrics_standard(self):
-        return self._load_attribute_values('STANDARD', 'metrics')
-
-    @sync_action('load_metrics_reach')
-    def load_metrics_reach(self):
-        return self._load_attribute_values('REACH', 'metrics')
-
-    # @sync_action('list_queries')
-    # def list_queries(self):
-    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
-    #     queries = client.list_queries()
-    #     # wish was to include query creation date but tha info is not available in the service
-    #     resp = [dict(value=q[0], label=f'{q[0]} - {q[1]}') for q in queries]
-    #     return resp
-
-    # @sync_action('list_report_dimensions')
-    # def list_report_dimensions(self):
-    #     entry_id = self.configuration.parameters.get('entry_id')
-    #     if not entry_id:
-    #         raise UserException('No report ID provided.')
-    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
-    #     query = client.get_query(query_id=entry_id)
-    #     if not query:
-    #         raise UserException(f'Report id = {entry_id} was not found')
-    #     table = get_filter_table()
-    #     resp = [dict(value=f, label=table.get(f)) for f in query["params"]["groupBys"]]
-    #     return resp
-
-    # @sync_action('validate_query')
-    # def validate_query(self):
-    #     report_settings = self.configuration.parameters.get('report_settings')
-    #     if not report_settings:
-    #         raise UserException('No report settings in configuration parameters')
-    #     report_type = report_settings.get('report_type')
-    #     dimensions = report_settings.get('dimensions')
-    #     metrics = report_settings.get('metrics')
-    #     filters = report_settings.get('filters')
-    #     filters = [(filter_pair.get('name'), filter_pair.get('value')) for filter_pair in filters]
-    #
-    #     client = GoogleCM360Client(self.configuration.oauth_credentials)
-    #
-    #     report_id = client.create_report('just_dummy_2_delete', report_type, dimensions, metrics, filters)
-    #
-    #     client.delete_query(report_id)
+    @sync_action('load_metrics')
+    def load_metrics(self):
+        return self._load_attribute_values('metrics')
 
 
 """
