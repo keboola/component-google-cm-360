@@ -6,6 +6,7 @@ Template Component main class.
 import json
 import logging
 import time
+import os
 
 import dataconf
 import requests
@@ -38,7 +39,8 @@ map_report_type_2_criteria = {
 def _load_attribute_labels_from_json(report_type, attribute):
     all_labels = None
     try:
-        with open(FILE_JSON_LABELS, mode='r') as file:
+        path = os.path.join(os.path.dirname(__file__), FILE_JSON_LABELS)
+        with open(path, mode='r') as file:
             all_labels = json.load(fp=file)
         return all_labels.get(report_type).get(attribute)
     except Exception:
@@ -98,7 +100,7 @@ class Component(ComponentBase):
         print(prev_state)
 
         cur_state = dict(
-            report={},
+            reports={},
             configuration=json.loads(dataconf.dumps(self.cfg, out="json"))
         )
         self.write_state_file(cur_state)
