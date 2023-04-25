@@ -94,6 +94,15 @@ class Component(ComponentBase):
         self.cfg = Configuration.fromDict(self.configuration.parameters)
         logging.debug(self.cfg)
 
+        prev_state = self.get_state_file()
+        print(prev_state)
+
+        cur_state = dict(
+            report={},
+            configuration=json.loads(dataconf.dumps(self.cfg, out="json"))
+        )
+        self.write_state_file(cur_state)
+
         report = self.create_report_from_specification()
 
         client = self._get_google_client()
@@ -248,6 +257,20 @@ class Component(ComponentBase):
     @sync_action('load_metrics')
     def load_metrics(self):
         return self._load_attribute_values('metrics')
+
+    @sync_action('load_reports')
+    def load_reports(self):
+        client = self._get_google_client()
+        reports = client.list_reports()
+        reports_w_labels = [SelectElement(value=report['id'], label=f'{report["name"]} ({report["id"]})')
+                            for report in reports['items']]
+        return reports_w_labels
+
+    # @sync_action('dummy')
+    # def dummy(self):
+    #     client = self._get_google_client()
+    #     report = client.get_report(report_id='1087268864')
+    #     return []
 
 
 """

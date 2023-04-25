@@ -45,11 +45,19 @@ class GoogleCM360Client:
         list_of_ids_names = [(p['profileId'], p['userName']) for p in response['items']]
         return list_of_ids_names
 
-    def list_reports(self, profile_id: str = '8467304'):
+    def list_reports(self, profile_id: str = None):
         if not profile_id:
             profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
 
         request = self.service.reports().list(profileId=profile_id)
+        response = request.execute()
+        return response
+
+    def get_report(self, report_id: str, profile_id: str = None):
+        if not profile_id:
+            profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
+
+        request = self.service.reports().get(profileId=profile_id, reportId=report_id)
         response = request.execute()
         return response
 

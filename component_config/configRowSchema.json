@@ -197,7 +197,7 @@
         "title": "Report ID",
         "propertyOrder": 400,
         "minLength": 1,
-        "description": "Enter report ID as presented in DV360 Report Builder",
+        "description": "Enter report ID to be used as a template",
         "enum": [],
         "options": {
           "dependencies": {
@@ -205,7 +205,7 @@
           },
           "async": {
             "label": "Load available reports",
-            "action": "list_queries"
+            "action": "load_reports"
           }
         }
       },
