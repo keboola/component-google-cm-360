@@ -3,6 +3,7 @@ import io
 
 from google_auth_oauthlib.flow import Flow
 from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from keboola.component.exceptions import UserException
 
@@ -53,13 +54,26 @@ class GoogleCM360Client:
         response = request.execute()
         return response
 
-    def get_report(self, report_id: str, profile_id: str = None):
+    def get_report(self, report_id: str, profile_id: str = None, ignore_error: bool = False):
         if not profile_id:
             profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
-
         request = self.service.reports().get(profileId=profile_id, reportId=report_id)
-        response = request.execute()
+        try:
+            response = request.execute()
+        except HttpError as ex:
+            if ignore_error:
+                return None
+            else:
+                raise UserException(f'Get report {report_id} for {profile_id}: {ex.reason}')
         return response
+
+    def delete_report(self, report_id: str, profile_id: str, ignore_error: bool = False):
+        # TODO: supply code
+        pass
+
+    def patch_report(self, time_range: dict, report_id: str, profile_id: str = None):
+        # TODO: supply code
+        pass
 
     def list_compatible_fields(self, report_type: str = "STANDARD", compat_fields: str = "reportCompatibleFields",
                                attribute: str = "dimensions", profile_id: str = None):
