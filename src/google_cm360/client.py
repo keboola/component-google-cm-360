@@ -68,12 +68,19 @@ class GoogleCM360Client:
         return response
 
     def delete_report(self, report_id: str, profile_id: str, ignore_error: bool = False):
-        # TODO: supply code
+        request = self.service.reports().delete(profileId=profile_id, reportId=report_id)
+        request.execute()
         pass
 
-    def patch_report(self, time_range: dict, report_id: str, profile_id: str = None):
-        # TODO: supply code
+    def patch_report(self, report: dict, report_id: str, profile_id: str):
+        request = self.service.reports().delete(profileId=profile_id, reportId=report_id, body=report)
+        response = request.execute()
         pass
+
+    def update_report(self, report: dict, report_id: str, profile_id: str):
+        request = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report)
+        response = request.execute()
+        return response
 
     def list_compatible_fields(self, report_type: str = "STANDARD", compat_fields: str = "reportCompatibleFields",
                                attribute: str = "dimensions", profile_id: str = None):

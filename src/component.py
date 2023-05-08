@@ -377,12 +377,133 @@ class Component(ComponentBase):
                                      for report in reports])
         return reports_w_labels
 
-    # @sync_action('dummy')
-    # def dummy(self):
-    #     client = self._get_google_client()
-    #     report = client.get_report(report_id='1087268864')
-    #     return []
+    @sync_action('dummy')
+    def dummy(self):
 
+        rep_def = {
+            # "id": "1089010172",
+            # "ownerProfileId": "8653652",
+            # "accountId": "1254895",
+            "name": "keboola_generated_8888_646464_456456",
+            "fileName": "kebola-ex-file",
+            "kind": "dfareporting#report",
+            "type": "STANDARD",
+            # "etag": "\"da0c96863a6df56073700ac781ecb155ddd92801\"",
+            # "lastModifiedTime": "1682672902000",
+            "format": "CSV",
+            "criteria": {
+                "dateRange": {
+                    "relativeDateRange": "LAST_7_DAYS",
+                    "kind": "dfareporting#dateRange"
+                },
+                "dimensions": [
+                    {
+                        "name": "activity",
+                        "kind": "dfareporting#sortedDimension"
+                    },
+                    {
+                        "name": "country",
+                        "kind": "dfareporting#sortedDimension"
+                    },
+                    {
+                        "name": "environment",
+                        "kind": "dfareporting#sortedDimension"
+                    }
+                ],
+                "metricNames": [
+                    "costPerClick",
+                    "clicks"
+                ],
+                "dimensionFilters": [
+                    {
+                        "dimensionName": "activity",
+                        # "value": "fdsd",
+                        "id": "sfds",
+                        "matchType": "EXACT",
+                        "kind": "dfareporting#dimensionValue",
+                        # "etag": "fdsfdsfds"
+                    }
+                ],
+                # "activities": {
+                #
+                # },
+                # "customRichMediaEvents": {
+                #
+                # }
+            }
+        }
+
+        client = self._get_google_client()
+        report = client.create_report(report=rep_def, profile_id='8653652')
+        return []
+
+    @sync_action('dummy1')
+    def dummy1(self):
+        rep_def = {
+                "criteria": {
+                "dateRange": {
+                    "relativeDateRange": None,
+                    "startDate": "2023-01-01",
+                    "endDate": "2023-04-29"
+                },
+                "dimensions": [
+                    {
+                        "name": "country",
+                    }
+
+                ],
+                #     [
+                #     {
+                #         "name": "activity",
+                #         "kind": "dfareporting#sortedDimension"
+                #     }
+                # ],
+                "dimensionFilters": [
+                  {
+                    "dimensionName": "activity",
+                    "id": "sfds",
+                    "matchType": "EXACT",
+                    "kind": "dfareporting#dimensionValue",
+                    "etag": "\"17c6732718b13af837839ea084ffae812cc07134\""
+                  },
+                    {
+                        "dimensionName": "country",
+                        "id": "sfds",
+                        "matchType": "EXACT"
+                    }
+                ]
+            },
+            "name": "keboola_generated_8888_646464_456456"
+        }
+        client = self._get_google_client()
+        report = client.patch_report(report=rep_def, report_id='1090921139', profile_id='8653652')
+        return []
+
+
+    @sync_action('dummy2')
+    def dummy2(self):
+        rep_def = {
+            # these fields need be set
+            "ownerProfileId": "8653652",
+            # "lastModifiedTime": 0,
+            "accountId": "1254895",
+
+            # these are optional
+            "criteria": {
+                "dateRange": {
+                    "relativeDateRange": "MONTH_TO_DATE"
+                }
+            }
+        }
+        client = self._get_google_client()
+        report = client.update_report(report=rep_def, report_id='1090921139', profile_id='8653652')
+        return []
+
+    @sync_action('dummy3')
+    def dummy3(self):
+        client = self._get_google_client()
+        client.delete_report(profile_id='8467304', report_id='1087268864')
+        pass
 
 """
         Main entrypoint
