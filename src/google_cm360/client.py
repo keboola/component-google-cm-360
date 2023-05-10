@@ -69,13 +69,19 @@ class GoogleCM360Client:
 
     def delete_report(self, report_id: str, profile_id: str, ignore_error: bool = False):
         request = self.service.reports().delete(profileId=profile_id, reportId=report_id)
-        request.execute()
-        pass
+        try:
+            response = request.execute()
+        except HttpError as ex:
+            if ignore_error:
+                return None
+            else:
+                raise UserException(f'Error deleting report {report_id} for {profile_id}: {ex.reason}')
+        return response
 
     def patch_report(self, report: dict, report_id: str, profile_id: str):
         request = self.service.reports().delete(profileId=profile_id, reportId=report_id, body=report)
         response = request.execute()
-        pass
+        return response
 
     def update_report(self, report: dict, report_id: str, profile_id: str):
         request = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report)
@@ -122,7 +128,7 @@ class GoogleCM360Client:
     def get_report_file(self, report_id: str, file_id: str, report_file: dict = None):
         if not report_file:
             report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
-        out_file = io.FileIO('muj_report.csv', mode='wb')
+        out_file = io.FileIO(f'report_{report_id}.csv', mode='wb')
         request = self.service.files().get_media(reportId=report_id, fileId=file_id)
         CHUNK_SIZE = 8192
         downloader = MediaIoBaseDownload(

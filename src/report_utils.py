@@ -93,6 +93,58 @@ def special_copy(report: dict) -> dict:
     return result
 
 
+def prepare_patch(report_def, report) -> dict:
+    criteria_attribute = map_report_type_2_criteria[report_def['type']]
+    body = {}
+    if report_def['name'] != report['name']:
+        body['name'] = report_def['name']
+    if report_def['type'] != report['type']:
+        body['type'] = report_def['type']
+    if report_def['fileName'] != report['fileName']:
+        body['fileName'] = report_def['fileName']
+    if report_def['format'] != report['format']:
+        body['format'] = report_def['format']
+
+    if report_def['type'] != report['type']:
+        report_criteria_attribute = map_report_type_2_criteria[report['type']]
+        body[report_criteria_attribute] = None
+        body[criteria_attribute] = report_def[criteria_attribute].copy()
+        return body
+
+    report_criteria = special_copy(report[criteria_attribute])
+    def_criteria = report_def[criteria_attribute]
+
+    date_range = {}
+    def_range = def_criteria['dateRange']
+    rep_range = report_criteria['dateRange']
+    for key, value in def_range.items():
+        rval = rep_range.get(key)
+        if not rval or value != rval:
+            date_range[key] = value
+    for key in rep_range:
+        if key not in def_range:
+            date_range[key] = None
+    if date_range:
+        date_range = {'dateRange': date_range}
+
+    others = {}
+    for key, value in def_criteria.items():
+        if key == 'dateRange':
+            continue
+        rval = report_criteria.get(key)
+        if not rval or value != rval:
+            others[key] = value
+    for key in report_criteria:
+        if key not in def_criteria:
+            others[key] = None
+
+    others = others | date_range
+    if others:
+        body[criteria_attribute] = others
+
+    return body
+
+
 if __name__ == '__main__':
     src = {
         "id": "1090921139",

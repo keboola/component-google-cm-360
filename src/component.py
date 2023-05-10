@@ -17,6 +17,7 @@ from keboola.component.sync_actions import SelectElement
 from configuration import Configuration
 from google_cm360 import GoogleCM360Client, translate_filters
 from configuration import FILE_JSON_LABELS
+from report_utils import special_copy, prepare_patch
 
 
 map_report_type_2_compatible_section = {
@@ -62,14 +63,14 @@ class Component(ComponentBase):
         super().__init__()
         self.cfg: Configuration = None
 
-    def create_date_range_from_cfg(self) -> dict:
+    def create_date_range(self) -> dict:
         # TODO: complete all possible options - start / end dates
         date_range = {
             'relativeDateRange': self.cfg.time_range.period
         }
         return date_range
 
-    def create_report_definition(self):
+    def create_report_definition_from_specification(self):
         """Method creates a report definition that can be used in an API call
             to insert a new report. It uses current configuration only.
             Method makes sense for 'report_specification' input variant only.
@@ -81,7 +82,7 @@ class Component(ComponentBase):
             'fileName': 'kebola-ex-file',
             'format': 'CSV'
         }
-        date_range = self.create_date_range_from_cfg()
+        date_range = self.create_date_range()
         if self.cfg.input_variant == 'report_specification':
             criteria = {
                 'dateRange': date_range,
@@ -91,7 +92,7 @@ class Component(ComponentBase):
             report[map_report_type_2_criteria[specification.report_type]] = criteria
         return report
 
-    def create_report_definition_from_existing(self, report_instance: dict) -> dict:
+    def create_report_definition_from_instance(self, report_instance: dict) -> dict:
         """Method creates a report definition that can be used in an API call
             to insert a new report. It uses criteria and report type of existing report instance.
             It then uses current configuration to add dateRange and current runtime environment
@@ -103,14 +104,12 @@ class Component(ComponentBase):
             'fileName': 'kebola-ex-file',
             'format': 'CSV'
         }
-        date_range = self.create_date_range_from_cfg()
+        date_range = self.create_date_range()
         criteria_attribute = map_report_type_2_criteria[report_instance['type']]
-        criteria = {
-            'dateRange': date_range,
-            'dimensions': [{'name': item['name']} for item in report_instance[criteria_attribute]['dimensions']],
-            'metricNames': [item for item in report_instance[criteria_attribute]['metricNames']]
-        }
-        report[criteria_attribute] = criteria
+        report[criteria_attribute] = special_copy(report_instance[criteria_attribute])
+        report[criteria_attribute]['dateRange'] = date_range
+        if report_instance.get('delivery'):
+            report['delivery'] = special_copy(report_instance.get('delivery'))
         return report
 
     @staticmethod
@@ -150,8 +149,14 @@ class Component(ComponentBase):
         report_tgt[criteria_tgt]['dateRange'] = report_tgt[criteria_src]['dateRange'].copy()
 
     def run(self):
-        """
-        BDM example auth
+        """Main extractor method - it reads current configuration, run report(s)
+        and collects reported data into CSV tables.
+
+        Main steps
+        - Prepare a list reports
+        - Run all prepared reports
+        - Wait for completion of reports
+        - Collect reported data into an output table(s)
         """
 
         logging.debug(self.configuration.parameters)
@@ -162,53 +167,86 @@ class Component(ComponentBase):
         existing_reports = prev_state.get('reports') if prev_state else {}
         current_reports = {}
 
+        """
+            Prepare a list reports
+                Create a report definition based on configuration.
+                (either from report specification or from existing report template)
+                for each profile:
+                    Check whether re-usable report exists in current state
+                    If a report was found apply a patch if necessary (date changed...)
+                    If no report was found create a new one based on report definition
+        """
         client = self._get_google_client()
         if self.cfg.input_variant == 'report_specification' or self.cfg.input_variant == 'report_template_id':
+
             if self.cfg.input_variant == 'report_specification':
-                report_def = self.create_report_definition()
+                logging.debug('Input variant: report_specification')
+                report_def = self.create_report_definition_from_specification()
             elif self.cfg.input_variant == "report_template_id":
+                logging.debug('Input variant: report_template_id')
                 src_profile_id, src_report_id = self.cfg.report_template_id.split(':')
                 report_template = client.get_report(profile_id=src_profile_id, report_id=src_report_id)
-                report_def = self.create_report_definition_from_existing(report_template)
+                report_def = self.create_report_definition_from_instance(report_template)
+
             for profile_id in self.cfg.profiles:
                 report_candidate_id = existing_reports.get(profile_id)
                 if report_candidate_id:
+                    # We have a candidate report ID - check whether it is available, patch it if necessary
                     report = client.get_report(profile_id=profile_id, report_id=report_candidate_id, ignore_error=True)
                     if not report:
+                        # Report is no longer available - remove it from the state and cancel the candidate ID
                         existing_reports.pop(profile_id)
                         report_candidate_id = None
                     else:
-                        if not self.equate_report_criteria(report, report_def):
-                            client.delete_report(profile_id=profile_id, report_id=report_candidate_id)
-                            existing_reports.pop(profile_id)
-                            report_candidate_id = None
-                        else:
-                            if not self.equate_report_time_range(report, report_def):
-                                self.patch_time_range(report, report_def)
-                                client.patch_report(report, profile_id=profile_id, report_id=report_candidate_id)
+                        # Report is available - check whether it needs a patch
+                        logging.debug(f'Report will be re-used {report_candidate_id} for {profile_id}')
+                        patch_body = prepare_patch(report_def, report)
+                        if patch_body:
+                            logging.debug(f'Report will be patched {patch_body}')
+                            client.patch_report(report=patch_body, profile_id=profile_id, report_id=report_candidate_id)
                 if not report_candidate_id:
-                    # TODO: Crash with more explanation if create_report() fails
+                    # We could not use any existing report, we must create one
                     report = client.create_report(report_def, profile_id=profile_id)
                     report_candidate_id = report['id']
+                    logging.debug(f'New report {report_candidate_id} created for {profile_id}')
+
+                # Register a report ID in current state
                 current_reports[profile_id] = report_candidate_id
         else:
-            ValueError('Input variant existing_report_ids not yet implemented')
+            # ValueError('Input variant existing_report_ids not yet implemented')
+            # TODO: Check that each report specified exists
+            pass
 
-        # Now we have a list of reports to be run in current_reports.
-        # It is time to clean up - any report in old status not in current_reports may be deleted.
+        """
+            We now have current set of reports in current_reports dictionary
+            Let's remove any report that will not be re-used.
+        """
         for profile_id, report_id in existing_reports.items():
             if profile_id not in current_reports or report_id != current_reports[profile_id]:
                 client.delete_report(profile_id=profile_id, report_id=report_id, ignore_error=True)
 
+        self.write_state_file(state_dict=dict(reports=current_reports))
+
+        if self.cfg.input_variant == 'report_specification' or self.cfg.input_variant == 'report_template_id':
+            reports_2_run = [dict(profile_id=key, report_id=value) for key, value in current_reports.items()]
+        else:
+            reports_2_run = [dict(profile_id=item.split(':')[0], report_id=item.split(':')[1])
+                             for item in self.cfg.existing_report_ids]
+
         # Run all reports
         report_files = []
-        for profile_id, report_id in current_reports.items():
+        for item in reports_2_run:
+            profile_id = item['profile_id']
+            report_id = item['report_id']
             report_file = client.run_report(profile_id=profile_id, report_id=report_id)
+            logging.info(f'Report {report_id} started')
             report_files.append(report_file)
 
-        # Wait for report runs completion
+        time.sleep(5)
 
+        # Wait for report runs completion
         while report_files:
+            logging.info(f'Waiting for {len(report_files)}')
             wait_files = report_files.copy()
             report_files = []
             was_processed = False
@@ -225,14 +263,22 @@ class Component(ComponentBase):
                 if status == 'REPORT_AVAILABLE':
                     # TODO: pass on as parameter or generate unique file name where to write data
                     client.get_report_file(report_id=file['reportId'], file_id=file['id'], report_file=file)
+                    logging.info(f'Report {file["reportId"]} saved')
                     was_processed = True
-                if status == 'FAILED' or 'CANCELLED':
                     continue
+                if status == 'FAILED' or status == 'CANCELLED':
+                    logging.info(f'Report {file["reportId"]} failed or canceled')
+                    continue
+                logging.info(f'Report {file["reportId"]} : {status}')
                 report_files.append(report_file)
+
+            if not report_files:
+                break
             if was_processed:
-                time.sleep(10)
+                time.sleep(1)
             else:
-                time.sleep(30)
+                time.sleep(15)
+
         pass
         # TODO: Process result files into a table - generate manifest
 
@@ -290,32 +336,6 @@ class Component(ComponentBase):
             configuration=json.loads(dataconf.dumps(self.cfg, out="json"))
         )
         self.write_state_file(cur_state)
-
-    def get_existing_report_id(self, client):
-        """ Retrieves existing query ID
-
-        Decide whether we may use already existing query generated previously.
-        If state contains configuration identical to current configuration we check
-        that correspondent query still exists in dv360 and if so we use its id.
-        In any other case, we return None and caller will use a new query (either generated or supplied externally).
-
-        Args:
-            client: Service used to check query availability
-
-        Returns: Query id if found else None
-
-        """
-        prev_state = self.get_state_file()
-        if not prev_state.get('configuration') or not prev_state.get('report'):
-            return None
-        prev_report_id = prev_state['report']['key']['queryId']
-        prev_cfg = Configuration.fromDict(prev_state.get('configuration'))
-        if prev_cfg == self.cfg:
-            # check for query existence
-            q = client.get_query(prev_report_id)
-            return prev_report_id if q else None
-        # TODO: think over: delete orphan report_id - check input_variant was not entry_id case
-        return None
 
     def generate_report_name(self):
         return 'keboola_generated_' + self.environment_variables.project_id + '_' + \
@@ -435,12 +455,12 @@ class Component(ComponentBase):
 
         client = self._get_google_client()
         report = client.create_report(report=rep_def, profile_id='8653652')
-        return []
+        return report
 
     @sync_action('dummy1')
     def dummy1(self):
         rep_def = {
-                "criteria": {
+            "criteria": {
                 "dateRange": {
                     "relativeDateRange": None,
                     "startDate": "2023-01-01",
@@ -459,13 +479,13 @@ class Component(ComponentBase):
                 #     }
                 # ],
                 "dimensionFilters": [
-                  {
-                    "dimensionName": "activity",
-                    "id": "sfds",
-                    "matchType": "EXACT",
-                    "kind": "dfareporting#dimensionValue",
-                    "etag": "\"17c6732718b13af837839ea084ffae812cc07134\""
-                  },
+                    {
+                        "dimensionName": "activity",
+                        "id": "sfds",
+                        "matchType": "EXACT",
+                        "kind": "dfareporting#dimensionValue",
+                        "etag": "\"17c6732718b13af837839ea084ffae812cc07134\""
+                    },
                     {
                         "dimensionName": "country",
                         "id": "sfds",
@@ -477,33 +497,8 @@ class Component(ComponentBase):
         }
         client = self._get_google_client()
         report = client.patch_report(report=rep_def, report_id='1090921139', profile_id='8653652')
-        return []
+        return report
 
-
-    @sync_action('dummy2')
-    def dummy2(self):
-        rep_def = {
-            # these fields need be set
-            "ownerProfileId": "8653652",
-            # "lastModifiedTime": 0,
-            "accountId": "1254895",
-
-            # these are optional
-            "criteria": {
-                "dateRange": {
-                    "relativeDateRange": "MONTH_TO_DATE"
-                }
-            }
-        }
-        client = self._get_google_client()
-        report = client.update_report(report=rep_def, report_id='1090921139', profile_id='8653652')
-        return []
-
-    @sync_action('dummy3')
-    def dummy3(self):
-        client = self._get_google_client()
-        client.delete_report(profile_id='8467304', report_id='1087268864')
-        pass
 
 """
         Main entrypoint
