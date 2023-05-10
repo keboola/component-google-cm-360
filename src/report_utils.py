@@ -1,5 +1,3 @@
-from configuration import Configuration
-
 map_report_type_2_criteria = {
     'STANDARD': 'criteria',
     'REACH': 'reachCriteria',
@@ -7,60 +5,6 @@ map_report_type_2_criteria = {
     'PATH': 'pathCriteria',
     'PATH_ATTRIBUTION': 'pathAttributionCriteria'
 }
-
-
-def create_date_range_from_cfg(cfg: Configuration) -> dict:
-    # TODO: complete all possible options - start / end dates
-    date_range = {
-        'relativeDateRange': cfg.time_range.period
-    }
-    return date_range
-
-
-def create_report_definition(cfg: Configuration, name: str) -> dict:
-    """Method creates a report definition that can be used in an API call
-        to insert a new report. It uses current configuration only.
-        Method makes sense for 'report_specification' input variant only.
-    """
-    specification = cfg.report_specification
-    report = {
-        'name': name,
-        'type': specification.report_type,
-        'fileName': 'kebola-ex-file',
-        'format': 'CSV'
-    }
-    date_range = create_date_range_from_cfg(cfg)
-    if cfg.input_variant == 'report_specification':
-        criteria = {
-            'dateRange': date_range,
-            'dimensions': [{'name': name} for name in specification.dimensions] if specification.dimensions else [],
-            'metricNames': specification.metrics if specification.metrics else []
-        }
-        report[map_report_type_2_criteria[specification.report_type]] = criteria
-    return report
-
-
-def create_report_definition_from_existing(cfg: Configuration, report_instance: dict, keep_time: bool = False) -> dict:
-    """Method creates a report definition that can be used in an API call
-        to insert a new report. It uses criteria and report type of existing report instance.
-        It then uses current configuration to add dateRange and current runtime environment
-        to generate report's name.
-    """
-    report = {
-        'name': report_instance['name'],
-        'type': report_instance['type'],
-        'fileName': report_instance['fileName'],
-        'format': report_instance['format']
-    }
-    # date_range =  if keep_time else create_date_range_from_cfg(cfg)
-    criteria_attribute = map_report_type_2_criteria[report_instance['type']]
-    criteria = special_copy(report_instance[criteria_attribute])
-    report[criteria_attribute] = criteria
-    if not keep_time:
-        # TODO: code to create time from CFG
-        pass
-    return report
-
 
 IGNORED_KEYS = ['kind', 'etag']
 
@@ -193,8 +137,5 @@ if __name__ == '__main__':
         }
     }
     dst = special_copy(src)
-
-    rep_def1 = create_report_definition_from_existing(cfg=None, report_instance=src)
-    rep_def2 = create_report_definition_from_existing(cfg=None, report_instance=src)
 
     pass
