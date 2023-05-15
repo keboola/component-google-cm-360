@@ -1,7 +1,9 @@
 from dataclasses import dataclass, field
+from enum import Enum
+
 import dataconf
-from pyhocon.config_tree import ConfigTree
 from keboola.component.exceptions import UserException
+from pyhocon.config_tree import ConfigTree
 
 FILE_JSON_LABELS = 'labels.json'
 
@@ -45,10 +47,16 @@ class ConfigurationBase:
         pass
 
 
+class InputVariant(str, Enum):
+    REPORT_SPEC = "report_specification"
+    REPORT_TEMPLATE = "report_template_id"
+    REPORT_IDS = "existing_report_ids"
+
+
 @dataclass
 class Configuration(ConfigurationBase):
     profiles: list[str]
-    input_variant: str
+    input_variant: InputVariant
     destination: Destination
     time_range: TimeRange
     report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))

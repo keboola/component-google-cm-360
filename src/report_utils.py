@@ -1,3 +1,4 @@
+# TODO: Not needed, remove
 map_report_type_2_criteria = {
     'STANDARD': 'criteria',
     'REACH': 'reachCriteria',
