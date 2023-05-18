@@ -3,6 +3,7 @@ import io
 
 from google_auth_oauthlib.flow import Flow
 from googleapiclient import discovery
+from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from keboola.component.exceptions import UserException
 
@@ -34,16 +35,16 @@ class GoogleCM360Client:
             discoveryServiceUrl=discovery_url,
             credentials=credentials)
 
-    def list_profiles(self) -> list[(str, str)]:
+    def list_profiles(self) -> dict:
         """Call API to retrieve available profiles
 
-        Returns: List of tuples - (profileId, userName)
+        Returns: mapping of profileId -> userName
 
         """
         request = self.service.userProfiles().list()
         response = request.execute()
-        list_of_ids_names = [(p['profileId'], p['userName']) for p in response['items']]
-        return list_of_ids_names
+        id_2_name = [(p['profileId'], p['userName']) for p in response['items']]
+        return id_2_name
 
     def list_reports(self, profile_id: str = None):
         if not profile_id:
@@ -53,11 +54,37 @@ class GoogleCM360Client:
         response = request.execute()
         return response
 
-    def get_report(self, report_id: str, profile_id: str = None):
+    def get_report(self, report_id: str, profile_id: str = None, ignore_error: bool = False):
         if not profile_id:
             profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
-
         request = self.service.reports().get(profileId=profile_id, reportId=report_id)
+        try:
+            response = request.execute()
+        except HttpError as ex:
+            if ignore_error:
+                return None
+            else:
+                raise UserException(f'Get report {report_id} for {profile_id}: {ex.reason}')
+        return response
+
+    def delete_report(self, report_id: str, profile_id: str, ignore_error: bool = False):
+        request = self.service.reports().delete(profileId=profile_id, reportId=report_id)
+        try:
+            response = request.execute()
+        except HttpError as ex:
+            if ignore_error:
+                return None
+            else:
+                raise UserException(f'Error deleting report {report_id} for {profile_id}: {ex.reason}')
+        return response
+
+    def patch_report(self, report: dict, report_id: str, profile_id: str):
+        request = self.service.reports().delete(profileId=profile_id, reportId=report_id, body=report)
+        response = request.execute()
+        return response
+
+    def update_report(self, report: dict, report_id: str, profile_id: str):
+        request = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report)
         response = request.execute()
         return response
 
@@ -71,21 +98,6 @@ class GoogleCM360Client:
 
         return [item['name'] for item in response[compat_fields][attribute]]
 
-    def list_dimension_values(self, dimension_name: str, start_date: str, end_date: str, profile_id: str = None):
-        body = {
-            "dimensionName": dimension_name,
-            # "filters": [
-            #   {
-            #     object (DimensionFilter)
-            #   }
-            # ],
-            "startDate": start_date,  # "yyyy-MM-dd",
-            "endDate": end_date  # "yyyy-MM-dd"
-        }
-        # doc: https://developers.google.com/doubleclick-advertisers/rest/v4/dimensionValues/query
-        response = self.service.dimensionValues().query(profileId=profile_id, body=body).execute()
-        return response
-
     def create_report(self, report: dict, profile_id: str = None):
         inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
         return inserted_report
@@ -98,10 +110,8 @@ class GoogleCM360Client:
         report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
         return report_file
 
-    def get_report_file(self, report_id: str, file_id: str, report_file: dict = None):
-        if not report_file:
-            report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
-        out_file = io.FileIO('muj_report.csv', mode='wb')
+    def get_report_file(self, report_id: str, file_id: str, local_file_name: str):
+        out_file = io.FileIO(local_file_name, mode='wb')
         request = self.service.files().get_media(reportId=report_id, fileId=file_id)
         CHUNK_SIZE = 8192
         downloader = MediaIoBaseDownload(

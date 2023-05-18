@@ -29,17 +29,19 @@
     },
     "input_variant": {
       "type": "string",
-      "title": "Input variant",
+      "title": "Specification variant",
       "propertyOrder": 100,
       "description": "You may choose to either define a new report or to enter existing report ID",
       "enum": [
         "report_specification",
-        "existing_report_id"
+        "report_template_id",
+        "existing_report_ids"
       ],
       "options": {
         "enum_titles": [
           "Report specification",
-          "Existing report ID"
+          "Report template",
+          "Existing report ID(s)"
         ]
       },
       "default": "report_specification"
@@ -119,6 +121,11 @@
             }
           }
         }
+      },
+      "options": {
+        "dependencies": {
+          "input_variant": ["report_specification", "report_template_id"]
+        }
       }
     },
     "report_specification": {
@@ -192,30 +199,53 @@
         }
       }
     },
-    "existing_report_id": {
-        "type": "string",
-        "title": "Report ID",
-        "propertyOrder": 400,
-        "minLength": 1,
-        "description": "Enter report ID to be used as a template",
-        "enum": [],
-        "options": {
-          "dependencies": {
-            "input_variant": "existing_report_id"
-          },
-          "async": {
-            "label": "Load available reports",
-            "action": "load_reports"
-          }
+    "report_template_id": {
+      "type": "string",
+      "title": "Report ID as a Template",
+      "propertyOrder": 350,
+      "minLength": 1,
+      "description": "Select a report that becomes a template for all profiles",
+      "enum": [],
+      "options": {
+        "dependencies": {
+          "input_variant": "report_template_id"
+        },
+        "async": {
+          "label": "Load available reports",
+          "action": "load_reports"
         }
+      }
+    },
+    "existing_report_ids": {
+      "type": "array",
+      "title": "Report ID(s) to be run in parallel",
+      "propertyOrder": 400,
+      "minLength": 1,
+      "description": "Select reports that will run in parallel",
+      "format": "select",
+      "uniqueItems": true,
+      "items": {
+        "title": "Report ID",
+        "type": "string",
+        "enum": [],
+        "minLength": 1
       },
+      "options": {
+        "dependencies": {
+          "input_variant": "existing_report_ids"
+        },
+        "async": {
+          "label": "Load available reports",
+          "action": "load_reports"
+        }
+      }
+    },
     "destination": {
       "type": "object",
       "title": "Destination",
       "propertyOrder": 600,
       "required": [
         "table_name",
-        "primary_key",
         "incremental_loading"
       ],
       "properties": {
@@ -277,7 +307,7 @@
               "action": "list_report_dimensions"
             },
             "dependencies": {
-              "selected_variant": "existing_report_id"
+              "selected_variant": ["report_template_id", "existing_report_ids"]
             }
           }
         },
