@@ -62,7 +62,7 @@ class Configuration(ConfigurationBase):
     time_range: TimeRange
     report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))
     existing_report_ids: list[str] = field(default_factory=lambda: "")
-    report_template_id: str = None
+    report_template_id: str = ""
 
     debug: bool = False
 

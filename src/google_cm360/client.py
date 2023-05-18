@@ -43,7 +43,7 @@ class GoogleCM360Client:
         """
         request = self.service.userProfiles().list()
         response = request.execute()
-        id_2_name = [(p['profileId'], p['userName']) for p in response['items']]
+        id_2_name = dict([(p['profileId'], p['userName']) for p in response['items']])
         return id_2_name
 
     def list_reports(self, profile_id: str = None):
@@ -52,7 +52,7 @@ class GoogleCM360Client:
 
         request = self.service.reports().list(profileId=profile_id)
         response = request.execute()
-        return response
+        return response['items']
 
     def get_report(self, report_id: str, profile_id: str = None, ignore_error: bool = False):
         if not profile_id:
