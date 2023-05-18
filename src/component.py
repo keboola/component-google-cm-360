@@ -2,6 +2,7 @@
 Template Component main class.
 
 """
+import csv
 # from typing import List, Tuple
 import json
 import logging
@@ -9,16 +10,17 @@ import os
 import time
 from typing import Dict, List
 
-import dataconf
 import requests
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
+from keboola.utils.header_normalizer import DefaultHeaderNormalizer
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
-from google_cm360 import GoogleCM360Client, translate_filters
-from google_cm360.report_specification import CsvReportSpecification, MAP_REPORT_TYPE_2_COMPATIBLE_SECTION
+from google_cm360 import GoogleCM360Client
+from google_cm360.report_specification import \
+    CsvReportSpecification, MAP_REPORT_TYPE_2_COMPATIBLE_SECTION, MAP_REPORT_TYPE_2_CRITERIA
 
 
 def _load_attribute_labels_from_json(report_type, attribute):
@@ -30,6 +32,11 @@ def _load_attribute_labels_from_json(report_type, attribute):
         return all_labels.get(report_type).get(attribute)
     except Exception:
         return {}
+
+
+def _translate_dimensions(report_type: str, dims: list):
+    labels = _load_attribute_labels_from_json(report_type=report_type, attribute="dimensions")
+    return [labels.get(dim_id) if dim_id in labels else dim_id for dim_id in dims]
 
 
 class Component(ComponentBase):
@@ -48,8 +55,10 @@ class Component(ComponentBase):
         self.cfg: Configuration = None
         self.google_client: GoogleCM360Client
 
-        prev_state = self.get_state_file()
-        self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
+        # prev_state = self.get_state_file()
+        # self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
+        self.existing_reports_cache: dict = None
+        self.common_report_type: str = None
 
     def create_date_range(self) -> dict:
         # TODO: complete all possible options - start / end dates
@@ -57,6 +66,58 @@ class Component(ComponentBase):
             'relativeDateRange': self.cfg.time_range.period
         }
         return date_range
+
+    def get_report_raw_file_path(self, profile_id, report_id) -> str:
+        path = f'{self.files_out_path}/{profile_id}_{report_id}.raw'
+        return path
+
+    def get_final_directory(self) -> str:
+        path = f'{self.tables_out_path}/{self.cfg.destination.table_name}.csv'
+        return path
+
+    def get_final_file_path(self, profile_id, report_id) -> str:
+        path = f'{self.get_final_directory()}/{profile_id}_{report_id}.csv'
+        return path
+
+    def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
+        # TODO: Raw data contain '(not set)' if value is not available. Shall we change it?
+        in_file = self.get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+        out_file = self.get_final_file_path(profile_id=profile_id, report_id=report_id)
+        with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
+            csv_src = csv.reader(src, delimiter=',')
+            csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
+            for row in csv_src:
+                if row == ['Report Fields']:
+                    break
+
+            header = next(csv_src)
+            header.insert(0, 'ProfileName')
+            header.insert(0, 'ProfileId')
+
+            for row in csv_src:
+                if row[0] == 'Grand Total:':
+                    break
+                row.insert(0, profile_name)
+                row.insert(0, profile_id)
+                csv_tgt.writerow(row)
+
+        logging.debug(f'Final table file {out_file} was saved')
+        return header
+
+    def _process_report_files(self, report_files: list):
+        os.makedirs(self.get_final_directory(), exist_ok=True)
+        header = []
+        for rf in report_files:
+            cur_header = self._retrieve_table_from_raw(rf['profile_id'], rf['profile_name'], rf['report_id'])
+            header_normalizer = DefaultHeaderNormalizer()
+            cur_header = header_normalizer.normalize_header(cur_header)
+            if not header:
+                header = cur_header
+            else:
+                if header != cur_header:
+                    raise UserException(f'missmatch in headers found: {header} x {cur_header}')
+
+        return header
 
     def run(self):
         """Main extractor method - it reads current configuration, run report(s)
@@ -72,6 +133,9 @@ class Component(ComponentBase):
         logging.debug(self.configuration.parameters)
         self.cfg: Configuration = Configuration.fromDict(self.configuration.parameters)
         logging.debug(self.cfg)
+
+        prev_state = self.get_state_file()
+        self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
 
         """
             Prepare a list reports
@@ -99,47 +163,62 @@ class Component(ComponentBase):
             report_id = item['report_id']
             report_file = self.google_client.run_report(profile_id=profile_id, report_id=report_id)
             logging.info(f'Report {report_id} started')
-            report_files.append(report_file)
+            report_files.append(dict(profile_id=profile_id, report_id=report_id, file_id=report_file['id']))
 
+        self._assign_profile_names(report_files)
         time.sleep(5)
 
-        # Wait for report runs completion
-        while report_files:
-            logging.info(f'Waiting for {len(report_files)}')
-            wait_files = report_files.copy()
-            report_files = []
-            was_processed = False
-            for report_file in wait_files:
-                file = self.google_client.report_status(report_id=report_file['reportId'], file_id=report_file['id'])
-                status = file['status']
-                """Available statuses:
-                    PROCESSING
-                    REPORT_AVAILABLE
-                    FAILED
-                    CANCELLED
-                    QUEUED
-                """
-                if status == 'REPORT_AVAILABLE':
-                    # TODO: pass on as parameter or generate unique file name where to write data
-                    self.google_client.get_report_file(report_id=file['reportId'], file_id=file['id'], report_file=file)
-                    logging.info(f'Report {file["reportId"]} saved')
-                    was_processed = True
-                    continue
-                if status == 'FAILED' or status == 'CANCELLED':
-                    logging.info(f'Report {file["reportId"]} failed or canceled')
-                    continue
-                logging.info(f'Report {file["reportId"]} : {status}')
-                report_files.append(report_file)
-
-            if not report_files:
-                break
-            if was_processed:
-                time.sleep(1)
-            else:
-                time.sleep(15)
+        wait_files = report_files.copy()
+        while wait_files:
+            logging.info(f'Waiting for {len(wait_files)} running report(s)')
+            wait_files = self._wait_process_report_files(wait_files)
+            if wait_files:
+                time.sleep(20)
 
         self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
-        # TODO: Process result files into a table - generate manifest
+
+        header = self._process_report_files(report_files)
+        self._write_common_manifest(header=header)
+
+    def _assign_profile_names(self, report_files):
+        profiles_2_names = self.google_client.list_profiles()
+        for report_file in report_files:
+            report_file['profile_name'] = profiles_2_names[report_file['profile_id']] \
+                if report_file['profile_id'] in profiles_2_names else report_file['profile_id']
+            pass
+
+    def _write_common_manifest(self, header):
+        pks_raw = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_id' else \
+            self.cfg.destination.primary_key
+        header_normalizer = DefaultHeaderNormalizer()
+        pks = header_normalizer.normalize_header(_translate_dimensions(self.common_report_type, pks_raw))
+        pks.insert(0, header[1])
+        pks.insert(0, header[0])
+        result_table = self.create_out_table_definition(f"{self.cfg.destination.table_name}.csv",
+                                                        primary_key=pks,
+                                                        incremental=self.cfg.destination.incremental_loading,
+                                                        columns=header)
+        self.write_manifest(result_table)
+
+    def _wait_process_report_files(self, wait_files):
+        report_files = []
+        for report_file in wait_files:
+            profile_id, report_id, file_id = report_file['profile_id'], report_file['report_id'], \
+                report_file['file_id']
+            file = self.google_client.report_status(report_id=report_id, file_id=file_id)
+            status = file['status']
+            # Available statuses: PROCESSING|REPORT_AVAILABLE|FAILED|CANCELLED|QUEUED
+            if status == 'REPORT_AVAILABLE':
+                file_name = self.get_report_raw_file_path(profile_id, report_id)
+                self.google_client.get_report_file(report_id=report_id, file_id=file_id, local_file_name=file_name)
+                logging.debug(f'Report file {file_name} was saved')
+            elif status == 'FAILED' or status == 'CANCELLED':
+                logging.info(f'Report {report_id} failed or canceled')
+            else:
+                logging.debug(f'Report {file["reportId"]} : {status}')
+                report_files.append(report_file)
+
+        return report_files
 
     def _process_generated_reports(self) -> List[Dict[str, str]]:
         """
@@ -152,6 +231,7 @@ class Component(ComponentBase):
         """
 
         new_report_definition = self._get_report_definition()
+        self.common_report_type = new_report_definition.report_representation.get('type')
 
         current_reports = {}
         for profile_id in self.cfg.profiles:
@@ -240,10 +320,19 @@ class Component(ComponentBase):
                 # Report is no longer available - remove it from the state and cancel the candidate ID
                 logging.warning(f"The report ID {existing_report_id} in state was deleted manually from the source!")
                 self.existing_reports_cache.pop(profile_id)
+                return None
 
         return CsvReportSpecification(report_response)
 
     def _get_report_definition(self) -> CsvReportSpecification:
+        """Method creates a report definition based either on report specification in GUI or on existing report,
+        which acts as a template. The method is not used for existing reports variant.
+
+        In both cases the date range specification is based on GUI settings.
+
+        Returns: Report definition in a form of CsvReportSpecification class.
+
+        """
         if self.cfg.input_variant == 'report_specification':
             logging.debug('Input variant: report_specification')
             specification = self.cfg.report_specification
@@ -252,7 +341,7 @@ class Component(ComponentBase):
                           specification.dimensions] if specification.dimensions else [],
             metrics = specification.metrics if specification.metrics else []
 
-            report_def = CsvReportSpecification.custom_from_specification(report_name=self.generate_report_name(),
+            report_def = CsvReportSpecification.custom_from_specification(report_name=self._generate_report_name(),
                                                                           report_type=specification.report_type,
                                                                           date_range=self.create_date_range(),
                                                                           dimensions=dimensions,
@@ -261,6 +350,7 @@ class Component(ComponentBase):
             logging.debug('Input variant: report_template_id')
             src_profile_id, src_report_id = self.cfg.report_template_id.split(':')
             report_template = self.google_client.get_report(profile_id=src_profile_id, report_id=src_report_id)
+            # TODO: Check w. David - date_range should be setup/updated according to self.create_date_range()
             report_def = CsvReportSpecification(report_template)
         else:
             raise UserException(f'Unsupported mode: {self.cfg.input_variant}')
@@ -286,7 +376,7 @@ class Component(ComponentBase):
                 out.write(chunk)
 
     @staticmethod
-    def extract_csv_from_raw(raw_file: str, csv_file: str):
+    def extract_csv_from_raw__not_used(raw_file: str, csv_file: str):
         with open(raw_file, 'r') as src, open(csv_file, 'w') as dst:
             while True:
                 line = src.readline()
@@ -296,33 +386,7 @@ class Component(ComponentBase):
 
             pass
 
-    def write_report(self, contents_url: str):
-        """
-
-        Args:
-            contents_url: URL where Google stored report contents
-
-        Returns:
-
-        """
-        pks = translate_filters(self.cfg.destination.primary_key)
-        result_table = self.create_out_table_definition(f"{self.cfg.destination.table_name}.csv",
-                                                        primary_key=pks,
-                                                        incremental=self.cfg.destination.incremental_loading)
-        self.write_manifest(result_table)
-
-        raw_output_file = self.files_out_path + '/' + result_table.name + '.raw.txt'
-        self.download_file(contents_url, raw_output_file)
-        self.extract_csv_from_raw(raw_output_file, result_table.full_path)
-
-    def save_state(self, report_response):
-        cur_state = dict(
-            report=report_response,
-            configuration=json.loads(dataconf.dumps(self.cfg, out="json"))
-        )
-        self.write_state_file(cur_state)
-
-    def generate_report_name(self):
+    def _generate_report_name(self):
         return 'keboola_generated_' + self.environment_variables.project_id + '_' + \
                self.environment_variables.config_id + '_' + \
                self.environment_variables.config_row_id
@@ -330,8 +394,8 @@ class Component(ComponentBase):
     @sync_action('load_profiles')
     def load_profiles(self):
         self._init_google_client()
-        profiles = self.google_client.list_profiles()
-        prof_w_labels = [SelectElement(value=profile[0], label=f'{profile[1]} ({profile[0]})') for profile in profiles]
+        ids_2_names = self.google_client.list_profiles()
+        prof_w_labels = [SelectElement(value=pid, label=f'{pid} ({name})') for pid, name in ids_2_names.items()]
         return prof_w_labels
 
     def _load_attribute_values(self, attribute: str):
@@ -371,8 +435,7 @@ class Component(ComponentBase):
         if not profile_ids or len(profile_ids) == 0:
             raise ValueError('No profiles were specified')
         self._init_google_client()
-        list_profiles = self.google_client.list_profiles()
-        profiles_2_names = {it[0]: it[1] for it in list_profiles}
+        profiles_2_names = self.google_client.list_profiles()
         reports_w_labels = []
         for profile_id in profile_ids:
             reports = self.google_client.list_reports(profile_id=profile_id)
@@ -382,107 +445,35 @@ class Component(ComponentBase):
                                      for report in reports])
         return reports_w_labels
 
-    @sync_action('dummy')
-    def dummy(self):
+    @sync_action('list_report_dimensions')
+    def list_report_dimensions(self):
+        input_variant = self.configuration.parameters.get('input_variant')
+        try:
+            profile_id = None
+            report_id = None
+            if input_variant == 'report_template_id':
+                value = self.configuration.parameters.get('report_template_id')
+            else:
+                value = self.configuration.parameters.get('existing_report_ids')[0]
+            profile_id, report_id = value.split(':')
+        except Exception:
+            raise UserException(f'Report id / profile id not specified: {report_id} / {profile_id}')
 
-        rep_def = {
-            # "id": "1089010172",
-            # "ownerProfileId": "8653652",
-            # "accountId": "1254895",
-            "name": "keboola_generated_8888_646464_456456",
-            "fileName": "kebola-ex-file",
-            "kind": "dfareporting#report",
-            "type": "STANDARD",
-            # "etag": "\"da0c96863a6df56073700ac781ecb155ddd92801\"",
-            # "lastModifiedTime": "1682672902000",
-            "format": "CSV",
-            "criteria": {
-                "dateRange": {
-                    "relativeDateRange": "LAST_7_DAYS",
-                    "kind": "dfareporting#dateRange"
-                },
-                "dimensions": [
-                    {
-                        "name": "activity",
-                        "kind": "dfareporting#sortedDimension"
-                    },
-                    {
-                        "name": "country",
-                        "kind": "dfareporting#sortedDimension"
-                    },
-                    {
-                        "name": "environment",
-                        "kind": "dfareporting#sortedDimension"
-                    }
-                ],
-                "metricNames": [
-                    "costPerClick",
-                    "clicks"
-                ],
-                "dimensionFilters": [
-                    {
-                        "dimensionName": "activity",
-                        # "value": "fdsd",
-                        "id": "sfds",
-                        "matchType": "EXACT",
-                        "kind": "dfareporting#dimensionValue",
-                        # "etag": "fdsfdsfds"
-                    }
-                ],
-                # "activities": {
-                #
-                # },
-                # "customRichMediaEvents": {
-                #
-                # }
-            }
-        }
+        try:
+            self._init_google_client()
+            report = self.google_client.get_report(profile_id=profile_id, report_id=report_id)
+            report_type = report.get('type')
+            if not report_type or report_type not in MAP_REPORT_TYPE_2_CRITERIA:
+                raise ValueError('No or invalid report_type')
 
-        self._init_google_client()
-        report = self.google_client.create_report(report=rep_def, profile_id='8653652')
-        return report
-
-    @sync_action('dummy1')
-    def dummy1(self):
-        rep_def = {
-            "criteria": {
-                "dateRange": {
-                    "relativeDateRange": None,
-                    "startDate": "2023-01-01",
-                    "endDate": "2023-04-29"
-                },
-                "dimensions": [
-                    {
-                        "name": "country",
-                    }
-
-                ],
-                #     [
-                #     {
-                #         "name": "activity",
-                #         "kind": "dfareporting#sortedDimension"
-                #     }
-                # ],
-                "dimensionFilters": [
-                    {
-                        "dimensionName": "activity",
-                        "id": "sfds",
-                        "matchType": "EXACT",
-                        "kind": "dfareporting#dimensionValue",
-                        "etag": "\"17c6732718b13af837839ea084ffae812cc07134\""
-                    },
-                    {
-                        "dimensionName": "country",
-                        "id": "sfds",
-                        "matchType": "EXACT"
-                    }
-                ]
-            },
-            "name": "keboola_generated_8888_646464_456456"
-        }
-        self._init_google_client()
-        report = self.google_client.patch_report(report=rep_def, report_id='1090921139', profile_id='8653652')
-        return report
+            dimensions = report.get(MAP_REPORT_TYPE_2_CRITERIA[report_type]).get('dimensions')
+            dimensions = [item['name'] for item in dimensions]
+            map_2_labels = _load_attribute_labels_from_json(report_type=report_type, attribute="dimensions")
+            dims_w_labels = [SelectElement(value=id, label=map_2_labels[id] if id in map_2_labels else id)
+                             for id in dimensions]
+            return dims_w_labels
+        except Exception:
+            raise UserException(f'Cannot load Report id / profile: {report_id} / {profile_id}')
 
 
 """

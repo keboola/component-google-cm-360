@@ -76,7 +76,8 @@ class CsvReportSpecification:
 
     @property
     def report_criteria(self) -> dict:
-        return self.report_representation['accountId']
+        criteria_key = MAP_REPORT_TYPE_2_CRITERIA[self.report_representation["type"]]
+        return self.report_representation[criteria_key]
 
     @report_criteria.setter
     def report_criteria(self, criteria: dict):

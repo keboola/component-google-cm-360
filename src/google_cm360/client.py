@@ -35,16 +35,16 @@ class GoogleCM360Client:
             discoveryServiceUrl=discovery_url,
             credentials=credentials)
 
-    def list_profiles(self) -> list[(str, str)]:
+    def list_profiles(self) -> dict:
         """Call API to retrieve available profiles
 
-        Returns: List of tuples - (profileId, userName)
+        Returns: mapping of profileId -> userName
 
         """
         request = self.service.userProfiles().list()
         response = request.execute()
-        list_of_ids_names = [(p['profileId'], p['userName']) for p in response['items']]
-        return list_of_ids_names
+        id_2_name = [(p['profileId'], p['userName']) for p in response['items']]
+        return id_2_name
 
     def list_reports(self, profile_id: str = None):
         if not profile_id:
@@ -98,21 +98,6 @@ class GoogleCM360Client:
 
         return [item['name'] for item in response[compat_fields][attribute]]
 
-    def list_dimension_values(self, dimension_name: str, start_date: str, end_date: str, profile_id: str = None):
-        body = {
-            "dimensionName": dimension_name,
-            # "filters": [
-            #   {
-            #     object (DimensionFilter)
-            #   }
-            # ],
-            "startDate": start_date,  # "yyyy-MM-dd",
-            "endDate": end_date  # "yyyy-MM-dd"
-        }
-        # doc: https://developers.google.com/doubleclick-advertisers/rest/v4/dimensionValues/query
-        response = self.service.dimensionValues().query(profileId=profile_id, body=body).execute()
-        return response
-
     def create_report(self, report: dict, profile_id: str = None):
         inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
         return inserted_report
@@ -125,10 +110,8 @@ class GoogleCM360Client:
         report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
         return report_file
 
-    def get_report_file(self, report_id: str, file_id: str, report_file: dict = None):
-        if not report_file:
-            report_file = self.service.files().get(reportId=report_id, fileId=file_id).execute()
-        out_file = io.FileIO(f'report_{report_id}.csv', mode='wb')
+    def get_report_file(self, report_id: str, file_id: str, local_file_name: str):
+        out_file = io.FileIO(local_file_name, mode='wb')
         request = self.service.files().get_media(reportId=report_id, fileId=file_id)
         CHUNK_SIZE = 8192
         downloader = MediaIoBaseDownload(

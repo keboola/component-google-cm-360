@@ -121,6 +121,11 @@
             }
           }
         }
+      },
+      "options": {
+        "dependencies": {
+          "input_variant": ["report_specification", "report_template_id"]
+        }
       }
     },
     "report_specification": {
@@ -241,7 +246,6 @@
       "propertyOrder": 600,
       "required": [
         "table_name",
-        "primary_key",
         "incremental_loading"
       ],
       "properties": {
@@ -303,7 +307,7 @@
               "action": "list_report_dimensions"
             },
             "dependencies": {
-              "selected_variant": "existing_report_id"
+              "selected_variant": ["report_template_id", "existing_report_ids"]
             }
           }
         },

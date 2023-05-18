@@ -23,6 +23,7 @@ class Destination:
     table_name: str
     incremental_loading: bool = True
     primary_key: list[str] = None
+    primary_key_existing: list[str] = None
 
 
 @dataclass
@@ -60,8 +61,8 @@ class Configuration(ConfigurationBase):
     destination: Destination
     time_range: TimeRange
     report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))
-    report_template_id: str = ""
     existing_report_ids: list[str] = field(default_factory=lambda: "")
+    report_template_id: str = None
 
     debug: bool = False
 
