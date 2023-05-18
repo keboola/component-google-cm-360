@@ -76,29 +76,38 @@ class Configuration(ConfigurationBase):
 if __name__ == '__main__':
     json_conf_1 = """
     {
-      "profiles": ["8467304", "8653652"]
-      "input_variant": "report_specification",
-      "time_range": {
-        "period": "LAST_90_DAYS"
-        "date_from": "yesterday"
-        "date_to": "dneska"
-      },
-      "report_specification": {
-        "report_type": "STANDARD",
-        "dimensions": ["FILTER_ADVERTISER","FILTER_ADVERTISER_NAME","FILTER_BROWSER"],
-        "metrics": ["METRIC_CLICKS", "METRIC_COUNTERS", "METRIC_ENGAGEMENTS"]
-      },
-      "destination": {
-        "table_name": "report_row_1.csv",
-        "incremental_loading": true,
-        "primary_key": [
-          "FILTER_ADVERTISER",
-          "FILTER_BROWSER"
-        ]
-      },
-      "debug": true,
-      "dalsi_parametr": 12
+    "debug": true,
+    "profiles": [
+      "8467304",
+      "8653652"
+    ],
+    "time_range": {
+      "period": "LAST_7_DAYS"
+    },
+    "destination": {
+      "table_name": "vystup",
+      "primary_key": [
+        "activity",
+        "country",
+        "environment"
+      ],
+      "selected_variant": "report_specification",
+      "incremental_loading": true
+    },
+    "input_variant": "report_specification",
+    "report_specification": {
+      "metrics": [
+        "costPerClick",
+        "clicks"
+      ],
+      "dimensions": [
+        "activity",
+        "country",
+        "environment"
+      ],
+      "report_type": "STANDARD"
     }
+  }
     """
 
     json_conf_2 = """

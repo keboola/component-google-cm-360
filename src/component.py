@@ -57,7 +57,7 @@ class Component(ComponentBase):
 
         # prev_state = self.get_state_file()
         # self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
-        self.existing_reports_cache: dict = None
+        self.existing_reports_cache: dict = {}
         self.common_report_type: str = None
 
     def create_date_range(self) -> dict:
@@ -135,7 +135,9 @@ class Component(ComponentBase):
         logging.debug(self.cfg)
 
         prev_state = self.get_state_file()
-        self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
+        self.existing_reports_cache = prev_state.get('reports')
+        if not self.existing_reports_cache:
+            self.existing_reports_cache = {}
 
         """
             Prepare a list reports
@@ -321,8 +323,9 @@ class Component(ComponentBase):
                 logging.warning(f"The report ID {existing_report_id} in state was deleted manually from the source!")
                 self.existing_reports_cache.pop(profile_id)
                 return None
-
-        return CsvReportSpecification(report_response)
+            return CsvReportSpecification(report_response)
+        else:
+            return None
 
     def _get_report_definition(self) -> CsvReportSpecification:
         """Method creates a report definition based either on report specification in GUI or on existing report,
