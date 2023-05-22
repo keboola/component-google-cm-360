@@ -67,22 +67,22 @@ class Component(ComponentBase):
         }
         return date_range
 
-    def get_report_raw_file_path(self, profile_id, report_id) -> str:
+    def _get_report_raw_file_path(self, profile_id, report_id) -> str:
         path = f'{self.files_out_path}/{profile_id}_{report_id}.raw'
         return path
 
-    def get_final_directory(self) -> str:
+    def _get_final_directory(self) -> str:
         path = f'{self.tables_out_path}/{self.cfg.destination.table_name}.csv'
         return path
 
-    def get_final_file_path(self, profile_id, report_id) -> str:
-        path = f'{self.get_final_directory()}/{profile_id}_{report_id}.csv'
+    def _get_final_file_path(self, profile_id, report_id) -> str:
+        path = f'{self._get_final_directory()}/{profile_id}_{report_id}.csv'
         return path
 
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
         # TODO: Raw data contain '(not set)' if value is not available. Shall we change it?
-        in_file = self.get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
-        out_file = self.get_final_file_path(profile_id=profile_id, report_id=report_id)
+        in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+        out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
         with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
             csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
@@ -105,7 +105,7 @@ class Component(ComponentBase):
         return header
 
     def _process_report_files(self, report_files: list):
-        os.makedirs(self.get_final_directory(), exist_ok=True)
+        os.makedirs(self._get_final_directory(), exist_ok=True)
         header = []
         for rf in report_files:
             cur_header = self._retrieve_table_from_raw(rf['profile_id'], rf['profile_name'], rf['report_id'])
@@ -182,7 +182,7 @@ class Component(ComponentBase):
         header = self._process_report_files(report_files)
         self._write_common_manifest(header=header)
 
-    def _assign_profile_names(self, report_files):
+    def _assign_profile_names(self, report_files: list):
         profiles_2_names = self.google_client.list_profiles()
         for report_file in report_files:
             report_file['profile_name'] = profiles_2_names[report_file['profile_id']] \
@@ -211,7 +211,7 @@ class Component(ComponentBase):
             status = file['status']
             # Available statuses: PROCESSING|REPORT_AVAILABLE|FAILED|CANCELLED|QUEUED
             if status == 'REPORT_AVAILABLE':
-                file_name = self.get_report_raw_file_path(profile_id, report_id)
+                file_name = self._get_report_raw_file_path(profile_id, report_id)
                 self.google_client.get_report_file(report_id=report_id, file_id=file_id, local_file_name=file_name)
                 logging.debug(f'Report file {file_name} was saved')
             elif status == 'FAILED' or status == 'CANCELLED':
@@ -275,15 +275,22 @@ class Component(ComponentBase):
         logging.debug(f'Report will be re-used {existing_report.report_id} for {profile_id}')
 
         # updating relevant parts just in case the definition / template had changed
-        new_report.update_template_commons(existing_report.report_id,
-                                           profile_id,
-                                           existing_report.account_id)
+        # new_report.update_template_commons(existing_report.report_id,
+        #                                    profile_id,
+        #                                    existing_report.account_id)
 
-        logging.debug(f'Report will be updated {new_report.report_representation}')
+        # TODO: Just a temporary solution as a POC
+        updated_report_body = new_report.report_representation.copy()
+        updated_report_body['id'] = existing_report.report_id
+        updated_report_body['ownerProfileId'] = existing_report.profile_id
+        updated_report_body['lastModifiedTime'] = existing_report.report_representation['lastModifiedTime']
+        updated_report_body['accountId'] = existing_report.report_representation['accountId']
 
-        self.google_client.update_report(report=new_report.report_representation,
+        logging.debug(f'Report will be updated {updated_report_body}')
+
+        self.google_client.update_report(report=updated_report_body,
                                          profile_id=profile_id,
-                                         report_id=new_report.report_id)
+                                         report_id=existing_report.report_id)
         return existing_report.report_id
 
     def _create_new_report(self, profile_id: str, new_report: CsvReportSpecification) -> str:
@@ -297,8 +304,13 @@ class Component(ComponentBase):
 
         """
         # We could not use any existing report, we must create one
-        report = self.google_client.create_report(new_report.report_representation,
-                                                  profile_id=profile_id)
+        # TODO: Just a temporary solution as a POC
+        new_report_body = new_report.report_representation.copy()
+        for key in ['id', 'ownerProfileId', 'lastModifiedTime', 'etag']:
+            if key in new_report_body:
+                new_report_body.pop(key)
+
+        report = self.google_client.create_report(new_report_body, profile_id=profile_id)
         # Register a report ID in current state
         self.existing_reports_cache[profile_id] = report['id']
         logging.debug(f'New report {report["id"]} created for {profile_id}')
@@ -314,7 +326,6 @@ class Component(ComponentBase):
 
         """
         existing_report_id = self.existing_reports_cache.get(profile_id)
-        report_response = None
         if existing_report_id:
             report_response = self.google_client.get_report(profile_id=profile_id, report_id=existing_report_id,
                                                             ignore_error=True)
@@ -328,10 +339,10 @@ class Component(ComponentBase):
             return None
 
     def _get_report_definition(self) -> CsvReportSpecification:
-        """Method creates a report definition based either on report specification in GUI or on existing report,
-        which acts as a template. The method is not used for existing reports variant.
+        """Method creates a report definition based either on a report specification found in parameters
+        or on existing report, which acts as a template. The method is not used for existing reports variant.
 
-        In both cases the date range specification is based on GUI settings.
+        In both cases the date range specification is based on parameters settings.
 
         Returns: Report definition in a form of CsvReportSpecification class.
 
@@ -353,11 +364,10 @@ class Component(ComponentBase):
             logging.debug('Input variant: report_template_id')
             src_profile_id, src_report_id = self.cfg.report_template_id.split(':')
             report_template = self.google_client.get_report(profile_id=src_profile_id, report_id=src_report_id)
-            # TODO: Check w. David - date_range should be setup/updated according to self.create_date_range()
             report_def = CsvReportSpecification(report_template)
         else:
             raise UserException(f'Unsupported mode: {self.cfg.input_variant}')
-
+        # TODO: make sure that date range will be updated according to what parameters say
         return report_def
 
     def _init_google_client(self):
@@ -377,17 +387,6 @@ class Component(ComponentBase):
         with open(result_file_path, 'wb') as out:
             for chunk in res.iter_content(chunk_size=8192):
                 out.write(chunk)
-
-    @staticmethod
-    def extract_csv_from_raw__not_used(raw_file: str, csv_file: str):
-        with open(raw_file, 'r') as src, open(csv_file, 'w') as dst:
-            while True:
-                line = src.readline()
-                if not line or line.startswith(',') or line == '\n':
-                    break
-                dst.write(line)
-
-            pass
 
     def _generate_report_name(self):
         return 'keboola_generated_' + self.environment_variables.project_id + '_' + \

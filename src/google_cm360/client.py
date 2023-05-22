@@ -84,6 +84,10 @@ class GoogleCM360Client:
         return response
 
     def update_report(self, report: dict, report_id: str, profile_id: str):
+        # TODO: check whether there exists other solution
+        # report['lastModifiedTime'] = int(time.time()) * 1000
+        # current = self.get_report(report_id=report_id, profile_id=profile_id)
+        # report['lastModifiedTime'] = current['lastModifiedTime']
         request = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report)
         response = request.execute()
         return response
