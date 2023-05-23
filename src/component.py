@@ -9,12 +9,12 @@ import logging
 import os
 import time
 from typing import Dict, List
+import dateparser
 
 import requests
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
-from keboola.utils.header_normalizer import DefaultHeaderNormalizer
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
@@ -59,12 +59,30 @@ class Component(ComponentBase):
         # self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
         self.existing_reports_cache: dict = {}
         self.common_report_type: str = None
+        self.common_dimensions: list = None
+        self.common_metrics: list = None
 
     def create_date_range(self) -> dict:
         # TODO: complete all possible options - start / end dates
-        date_range = {
-            'relativeDateRange': self.cfg.time_range.period
-        }
+        if self.cfg.time_range.period == 'CUSTOM_DATES':
+            date_from = dateparser.parse(self.cfg.time_range.date_from)
+            date_to = dateparser.parse(self.cfg.time_range.date_to)
+            if not date_from or not date_to:
+                raise UserException("Error with dates, make sure both start and end date are defined properly")
+            day_diff = (date_to - date_from).days
+            if day_diff < 0:
+                raise UserException("start_date cannot exceed end_date.")
+            date_range = {
+                'relativeDateRange': None,
+                'startDate': f'{date_from.year:04}-{date_from.month:02}-{date_from.day:02}',
+                'endDate': f'{date_to.year:04}-{date_to.month:02}-{date_to.day:02}'
+            }
+        else:
+            date_range = {
+                'relativeDateRange': self.cfg.time_range.period,
+                'startDate': None,
+                'endDate': None
+            }
         return date_range
 
     def _get_report_raw_file_path(self, profile_id, report_id) -> str:
@@ -91,8 +109,8 @@ class Component(ComponentBase):
                     break
 
             header = next(csv_src)
-            header.insert(0, 'ProfileName')
-            header.insert(0, 'ProfileId')
+            header.insert(0, 'profile_name')
+            header.insert(0, 'profile_id')
 
             for row in csv_src:
                 if row[0] == 'Grand Total:':
@@ -109,8 +127,8 @@ class Component(ComponentBase):
         header = []
         for rf in report_files:
             cur_header = self._retrieve_table_from_raw(rf['profile_id'], rf['profile_name'], rf['report_id'])
-            header_normalizer = DefaultHeaderNormalizer()
-            cur_header = header_normalizer.normalize_header(cur_header)
+            # header_normalizer = DefaultHeaderNormalizer()
+            # cur_header = header_normalizer.normalize_header(cur_header)
             if not header:
                 header = cur_header
             else:
@@ -180,7 +198,10 @@ class Component(ComponentBase):
         self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
 
         header = self._process_report_files(report_files)
-        self._write_common_manifest(header=header)
+        final_header = self.common_dimensions.copy()
+        final_header.insert(0, header[1])
+        final_header.insert(0, header[0])
+        self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
 
     def _assign_profile_names(self, report_files: list):
         profiles_2_names = self.google_client.list_profiles()
@@ -189,17 +210,15 @@ class Component(ComponentBase):
                 if report_file['profile_id'] in profiles_2_names else report_file['profile_id']
             pass
 
-    def _write_common_manifest(self, header):
-        pks_raw = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_id' else \
+    def _write_common_manifest(self, dimensions, metrics):
+        pks = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_id' else \
             self.cfg.destination.primary_key
-        header_normalizer = DefaultHeaderNormalizer()
-        pks = header_normalizer.normalize_header(_translate_dimensions(self.common_report_type, pks_raw))
-        pks.insert(0, header[1])
-        pks.insert(0, header[0])
+        pks.insert(0, dimensions[1])
+        pks.insert(0, dimensions[0])
         result_table = self.create_out_table_definition(f"{self.cfg.destination.table_name}.csv",
                                                         primary_key=pks,
                                                         incremental=self.cfg.destination.incremental_loading,
-                                                        columns=header)
+                                                        columns=dimensions + metrics)
         self.write_manifest(result_table)
 
     def _wait_process_report_files(self, wait_files):
@@ -232,8 +251,10 @@ class Component(ComponentBase):
 
         """
 
-        new_report_definition = self._get_report_definition()
-        self.common_report_type = new_report_definition.report_representation.get('type')
+        report_definition = self._get_report_definition()
+        self.common_report_type = report_definition.report_representation.get('type')
+        self.common_dimensions = report_definition.get_dimensions_names()
+        self.common_metrics = report_definition.get_metrics_names()
 
         current_reports = {}
         for profile_id in self.cfg.profiles:
@@ -241,10 +262,10 @@ class Component(ComponentBase):
 
             if existing_report_def:
                 current_report_id = self._update_existing_report(profile_id, existing_report_def,
-                                                                 new_report_definition)
+                                                                 report_definition)
             else:
                 logging.info(f"Creating a new report in profile {profile_id}")
-                current_report_id = self._create_new_report(profile_id, new_report_definition)
+                current_report_id = self._create_new_report(profile_id, report_definition)
 
             # Register a report ID in current state
             current_reports[profile_id] = current_report_id
@@ -259,7 +280,7 @@ class Component(ComponentBase):
         return [dict(profile_id=key, report_id=value) for key, value in current_reports.items()]
 
     def _update_existing_report(self, profile_id: str, existing_report: CsvReportSpecification,
-                                new_report: CsvReportSpecification) -> str:
+                                report_definition: CsvReportSpecification) -> str:
         """
         Updates existing report definition based on the new definition (user or template)
         Args:
@@ -274,17 +295,7 @@ class Component(ComponentBase):
         # Report is available - check whether it needs a patch
         logging.debug(f'Report will be re-used {existing_report.report_id} for {profile_id}')
 
-        # updating relevant parts just in case the definition / template had changed
-        # new_report.update_template_commons(existing_report.report_id,
-        #                                    profile_id,
-        #                                    existing_report.account_id)
-
-        # TODO: Just a temporary solution as a POC
-        updated_report_body = new_report.report_representation.copy()
-        updated_report_body['id'] = existing_report.report_id
-        updated_report_body['ownerProfileId'] = existing_report.profile_id
-        updated_report_body['lastModifiedTime'] = existing_report.report_representation['lastModifiedTime']
-        updated_report_body['accountId'] = existing_report.report_representation['accountId']
+        updated_report_body = existing_report.prepare_update_body(report_definition)
 
         logging.debug(f'Report will be updated {updated_report_body}')
 
@@ -293,25 +304,19 @@ class Component(ComponentBase):
                                          report_id=existing_report.report_id)
         return existing_report.report_id
 
-    def _create_new_report(self, profile_id: str, new_report: CsvReportSpecification) -> str:
+    def _create_new_report(self, profile_id: str, report_definition: CsvReportSpecification) -> str:
         """
         Creates new report based on the specification. Updates state.
         Args:
             profile_id:
-            new_report:
+            report_definition:
 
         Returns: Id of the newly created report.
 
         """
-        # We could not use any existing report, we must create one
-        # TODO: Just a temporary solution as a POC
-        new_report_body = new_report.report_representation.copy()
-        for key in ['id', 'ownerProfileId', 'lastModifiedTime', 'etag']:
-            if key in new_report_body:
-                new_report_body.pop(key)
+        new_report_body = report_definition.prepare_insert_body()
 
         report = self.google_client.create_report(new_report_body, profile_id=profile_id)
-        # Register a report ID in current state
         self.existing_reports_cache[profile_id] = report['id']
         logging.debug(f'New report {report["id"]} created for {profile_id}')
         return report['id']
@@ -352,7 +357,7 @@ class Component(ComponentBase):
             specification = self.cfg.report_specification
 
             dimensions = [{'name': name} for name in
-                          specification.dimensions] if specification.dimensions else [],
+                          (specification.dimensions if specification.dimensions else [])]
             metrics = specification.metrics if specification.metrics else []
 
             report_def = CsvReportSpecification.custom_from_specification(report_name=self._generate_report_name(),
@@ -365,9 +370,9 @@ class Component(ComponentBase):
             src_profile_id, src_report_id = self.cfg.report_template_id.split(':')
             report_template = self.google_client.get_report(profile_id=src_profile_id, report_id=src_report_id)
             report_def = CsvReportSpecification(report_template)
+            report_def.modify_date_range(date_range=self.create_date_range())
         else:
             raise UserException(f'Unsupported mode: {self.cfg.input_variant}')
-        # TODO: make sure that date range will be updated according to what parameters say
         return report_def
 
     def _init_google_client(self):
@@ -420,7 +425,6 @@ class Component(ComponentBase):
                 label = id
             result.append(SelectElement(value=id, label=label))
         return result
-        # return [SelectElement(value=k, label=v) for k, v in dims.items()]
 
     @sync_action('load_dimensions')
     def load_dimensions_standard(self):

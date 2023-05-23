@@ -58,8 +58,8 @@
           "default": "LAST_7_DAYS",
           "enum": [
             "CUSTOM_DATES",
-            "CURRENT_DAY",
-            "PREVIOUS_DAY",
+            "TODAY",
+            "YESTERDAY",
             "WEEK_TO_DATE",
             "MONTH_TO_DATE",
             "QUARTER_TO_DATE",
@@ -72,15 +72,15 @@
             "LAST_30_DAYS",
             "LAST_90_DAYS",
             "LAST_365_DAYS",
-            "ALL_TIME",
+            "LAST_24_MONTHS",
             "LAST_14_DAYS",
             "LAST_60_DAYS"
           ],
           "options": {
             "enum_titles": [
               "Custom date range",
-              "Current day",
-              "Previous day",
+              "Today",
+              "Yesterday",
               "All days, including the current day, since the most recent Sunday",
               "All days, including the current day, since the start of the current month",
               "All days, including the current day, since the start of the current quarter",
@@ -93,7 +93,7 @@
               "The previous 30 days, excluding the current day",
               "The previous 90 days, excluding the current day",
               "The previous 365 days, excluding the current day",
-              "All time for which data is available, excluding the current day",
+              "The previous 24 months",
               "The previous 14 days, excluding the current day",
               "The previous 60 days, excluding the current day"
             ]
