@@ -62,7 +62,7 @@ class Component(ComponentBase):
         self.common_dimensions: list = None
         self.common_metrics: list = None
 
-    def create_date_range(self) -> dict:
+    def _create_date_range(self) -> dict:
         # TODO: complete all possible options - start / end dates
         if self.cfg.time_range.period == 'CUSTOM_DATES':
             date_from = dateparser.parse(self.cfg.time_range.date_from)
@@ -109,8 +109,8 @@ class Component(ComponentBase):
                     break
 
             header = next(csv_src)
-            header.insert(0, 'profile_name')
-            header.insert(0, 'profile_id')
+            header.insert(0, 'profileName')
+            header.insert(0, 'profileId')
 
             for row in csv_src:
                 if row[0] == 'Grand Total:':
@@ -171,10 +171,7 @@ class Component(ComponentBase):
         if self.cfg.input_variant != InputVariant.REPORT_IDS:
             reports_2_run = self._process_generated_reports()
         else:
-            # existing reports
-            # TODO: handle 404 when existing report is deleted
-            reports_2_run = [dict(profile_id=item.split(':')[0], report_id=item.split(':')[1])
-                             for item in self.cfg.existing_report_ids]
+            reports_2_run = self._process_existing_reports()
 
         # Run all reports
         report_files = []
@@ -211,7 +208,7 @@ class Component(ComponentBase):
             pass
 
     def _write_common_manifest(self, dimensions, metrics):
-        pks = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_id' else \
+        pks = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_ids' else \
             self.cfg.destination.primary_key
         pks.insert(0, dimensions[1])
         pks.insert(0, dimensions[0])
@@ -278,6 +275,47 @@ class Component(ComponentBase):
                 self.google_client.delete_report(profile_id=profile_id, report_id=report_id, ignore_error=True)
 
         return [dict(profile_id=key, report_id=value) for key, value in current_reports.items()]
+
+    def _process_existing_reports(self) -> List[Dict[str, str]]:
+        """
+        Process reports found in configuration.
+        Cleans unused profiles from remote.
+        No state handling.
+        Only used for existing reports input variant.
+
+        Returns: List of profile and report ids to process
+
+        """
+        reports_2_process = []
+        for rep_ids in self.cfg.existing_report_ids:
+            profile_id, report_id = rep_ids.split(':')
+            report_spec = self._get_existing_report(profile_id=profile_id, report_id=report_id)
+            if not self.common_report_type:
+                self.common_report_type = report_spec.report_type
+                self.common_dimensions = report_spec.get_dimensions_names()
+                self.common_metrics = report_spec.get_metrics_names()
+            else:
+                if self.common_report_type != report_spec.report_type:
+                    logging.debug(f'Missmatch in report type {self.common_report_type} x {report_spec.report_type} '
+                                  f'for profile {profile_id} / report {report_id}')
+                    raise UserException('Missmatch in report type')
+
+                if self.common_dimensions != report_spec.get_dimensions_names():
+                    logging.debug(f'Missmatch in report dimensions {self.common_dimensions} x '
+                                  f'{report_spec.get_dimensions_names()} '
+                                  f'for profile {profile_id} / report {report_id}')
+                    raise UserException('Missmatch in report dimensions')
+                if self.common_metrics != report_spec.get_metrics_names():
+                    logging.debug(f'Missmatch in report metrics {self.common_metrics} x '
+                                  f'{report_spec.get_metrics_names()} '
+                                  f'for profile {profile_id} / report {report_id}')
+                    raise UserException('Missmatch in report metrics')
+            reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
+        return reports_2_process
+
+    def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
+        report_response = self.google_client.get_report(profile_id=profile_id, report_id=report_id)
+        return CsvReportSpecification(report_response)
 
     def _update_existing_report(self, profile_id: str, existing_report: CsvReportSpecification,
                                 report_definition: CsvReportSpecification) -> str:
@@ -362,7 +400,7 @@ class Component(ComponentBase):
 
             report_def = CsvReportSpecification.custom_from_specification(report_name=self._generate_report_name(),
                                                                           report_type=specification.report_type,
-                                                                          date_range=self.create_date_range(),
+                                                                          date_range=self._create_date_range(),
                                                                           dimensions=dimensions,
                                                                           metrics=metrics)
         elif self.cfg.input_variant == "report_template_id":
@@ -370,7 +408,7 @@ class Component(ComponentBase):
             src_profile_id, src_report_id = self.cfg.report_template_id.split(':')
             report_template = self.google_client.get_report(profile_id=src_profile_id, report_id=src_report_id)
             report_def = CsvReportSpecification(report_template)
-            report_def.modify_date_range(date_range=self.create_date_range())
+            report_def.modify_date_range(date_range=self._create_date_range())
         else:
             raise UserException(f'Unsupported mode: {self.cfg.input_variant}')
         return report_def

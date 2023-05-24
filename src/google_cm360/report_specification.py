@@ -64,6 +64,10 @@ class CsvReportSpecification:
             new_report_body.pop(key, None)
         return new_report_body
 
+    @property
+    def report_type(self) -> str:
+        return self.report_representation['type']
+
     def get_dimensions_names(self):
         dimensions = [item['name'] for item in self.report_criteria['dimensions']]
         return dimensions

@@ -28,7 +28,7 @@ class Destination:
 
 @dataclass
 class TimeRange:
-    period: str
+    period: str = ""
     date_from: str = ""
     date_to: str = ""
 
@@ -58,7 +58,7 @@ class Configuration(ConfigurationBase):
     profiles: list[str]
     input_variant: InputVariant
     destination: Destination
-    time_range: TimeRange
+    time_range: TimeRange = field(default_factory=lambda: ConfigTree({}))
     report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))
     existing_report_ids: list[str] = field(default_factory=lambda: "")
     report_template_id: str = ""
