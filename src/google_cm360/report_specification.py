@@ -60,7 +60,7 @@ class CsvReportSpecification:
 
     def prepare_insert_body(self):
         new_report_body = self.report_representation.copy()
-        for key in ['id', 'ownerProfileId', 'lastModifiedTime', 'etag']:
+        for key in ['id', 'ownerProfileId', 'lastModifiedTime', 'etag', 'accountId']:
             new_report_body.pop(key, None)
         return new_report_body
 

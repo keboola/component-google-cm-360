@@ -208,8 +208,8 @@ class Component(ComponentBase):
             pass
 
     def _write_common_manifest(self, dimensions, metrics):
-        pks = self.cfg.destination.primary_key_existing if self.cfg.input_variant == 'existing_report_ids' else \
-            self.cfg.destination.primary_key
+        pks = self.cfg.destination.primary_key if self.cfg.input_variant == 'report_specification' else \
+            self.cfg.destination.primary_key_existing
         pks.insert(0, dimensions[1])
         pks.insert(0, dimensions[0])
         result_table = self.create_out_table_definition(f"{self.cfg.destination.table_name}.csv",
@@ -249,7 +249,7 @@ class Component(ComponentBase):
         """
 
         report_definition = self._get_report_definition()
-        self.common_report_type = report_definition.report_representation.get('type')
+        self.common_report_type = report_definition.report_type
         self.common_dimensions = report_definition.get_dimensions_names()
         self.common_metrics = report_definition.get_metrics_names()
 
