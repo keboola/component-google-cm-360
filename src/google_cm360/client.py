@@ -79,17 +79,11 @@ class GoogleCM360Client:
         return response
 
     def patch_report(self, report: dict, report_id: str, profile_id: str):
-        request = self.service.reports().delete(profileId=profile_id, reportId=report_id, body=report)
-        response = request.execute()
+        response = self.service.reports().delete(profileId=profile_id, reportId=report_id, body=report).execute()
         return response
 
     def update_report(self, report: dict, report_id: str, profile_id: str):
-        # TODO: check whether there exists other solution
-        # report['lastModifiedTime'] = int(time.time()) * 1000
-        # current = self.get_report(report_id=report_id, profile_id=profile_id)
-        # report['lastModifiedTime'] = current['lastModifiedTime']
-        request = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report)
-        response = request.execute()
+        response = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report).execute()
         return response
 
     def list_compatible_fields(self, report_type: str = "STANDARD", compat_fields: str = "reportCompatibleFields",

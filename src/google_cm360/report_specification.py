@@ -1,9 +1,7 @@
 REPORT_KEBOOLA_BASE_STRUCTURE = {"name": "kebola-ex-generated",
                                  "fileName": "kebola-ex-file",
                                  "kind": "dfareporting#report",
-                                 "type": "STANDARD",
-                                 "format": "CSV",
-                                 "criteria": {}
+                                 "format": "CSV"
                                  }
 
 MAP_REPORT_TYPE_2_COMPATIBLE_SECTION = {
@@ -54,6 +52,19 @@ class CsvReportSpecification:
         updated_report_body: dict = report_definition.report_representation.copy()
         updated_report_body['id'] = self.report_id
         updated_report_body['ownerProfileId'] = self.profile_id
+        """
+        IMPORTANT: When we want to update existing report, the lastModifiedTime field
+        must exactly match existing report's value. API uses this as a precaution
+        to avoid concurrent update of the same object from different clients.
+        Notice:
+        1) Client reads in a report specification
+        2) Client modifies certain value
+        3) Client asks for update of a report specification
+        When 2 clients try to update the same report object at the same time
+        only the first one succeeds. The second user would fail and that's intentional
+        else he would be updating already updated object - in a state different
+        from what he saw when reading original report specification.
+        """
         updated_report_body['lastModifiedTime'] = self.report_representation['lastModifiedTime']
         updated_report_body['accountId'] = self.report_representation['accountId']
         return updated_report_body

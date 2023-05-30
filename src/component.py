@@ -63,7 +63,6 @@ class Component(ComponentBase):
         self.common_metrics: list = None
 
     def _create_date_range(self) -> dict:
-        # TODO: complete all possible options - start / end dates
         if self.cfg.time_range.period == 'CUSTOM_DATES':
             date_from = dateparser.parse(self.cfg.time_range.date_from)
             date_to = dateparser.parse(self.cfg.time_range.date_to)
@@ -98,7 +97,6 @@ class Component(ComponentBase):
         return path
 
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
-        # TODO: Raw data contain '(not set)' if value is not available. Shall we change it?
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
         with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
