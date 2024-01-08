@@ -49,7 +49,7 @@
     "time_range": {
       "type": "object",
       "title": "Time Range",
-      "propertyOrder": 200,
+      "propertyOrder": 450,
       "properties": {
         "period": {
           "type": "string",
