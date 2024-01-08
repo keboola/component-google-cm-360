@@ -9,8 +9,8 @@ import logging
 import os
 import time
 from typing import Dict, List
-import dateparser
 
+import dateparser
 import requests
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
@@ -55,12 +55,71 @@ class Component(ComponentBase):
         self.cfg: Configuration = None
         self.google_client: GoogleCM360Client
 
-        # prev_state = self.get_state_file()
-        # self.existing_reports_cache = prev_state.get('reports') if prev_state else {}
         self.existing_reports_cache: dict = {}
         self.common_report_type: str = None
         self.common_dimensions: list = None
         self.common_metrics: list = None
+
+    def run(self):
+        """Main extractor method - it reads current configuration, run report(s)
+        and collects reported data into CSV tables.
+
+        Main steps
+        - Prepare a list reports
+        - Run all prepared reports
+        - Wait for completion of reports
+        - Collect reported data into an output table(s)
+        """
+
+        self.init_configuration()
+
+        prev_state = self.get_state_file()
+        self.existing_reports_cache = prev_state.get('reports')
+        if not self.existing_reports_cache:
+            self.existing_reports_cache = {}
+
+        """
+            Prepare a list reports
+                Create a report definition based on configuration.
+                (either from report specification or from existing report template)
+                for each profile:
+                    Check whether re-usable report exists in current state
+                    If a report was found apply a patch if necessary (date changed...)
+                    If no report was found create a new one based on report definition
+        """
+        self._init_google_client()
+
+        if self.cfg.input_variant != InputVariant.REPORT_IDS:
+            reports_2_run = self._process_generated_reports()
+        else:
+            reports_2_run = self._process_existing_reports()
+
+        # Run all reports
+        report_files = []
+        for item in reports_2_run:
+            profile_id = item['profile_id']
+            report_id = item['report_id']
+            report_file = self.google_client.run_report(profile_id=profile_id, report_id=report_id)
+            logging.info(f'Report {report_id} started')
+            report_files.append(dict(profile_id=profile_id, report_id=report_id, file_id=report_file['id']))
+
+        self._assign_profile_names(report_files)
+        time.sleep(5)
+
+        wait_files = report_files.copy()
+        while wait_files:
+            logging.info(f'Waiting for {len(wait_files)} running report(s)')
+            wait_files = self._wait_process_report_files(wait_files)
+            if wait_files:
+                time.sleep(20)
+
+        self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
+
+        header = self._process_report_files(report_files)
+        final_header = self.common_dimensions.copy()
+        final_header.insert(0, header[1])
+        final_header.insert(0, header[0])
+        self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
 
     def _create_date_range(self) -> dict:
         if self.cfg.time_range.period == 'CUSTOM_DATES':
@@ -120,6 +179,12 @@ class Component(ComponentBase):
         logging.debug(f'Final table file {out_file} was saved')
         return header
 
+    def init_configuration(self):
+        self.cfg: Configuration = Configuration.load_from_dict(self.configuration.parameters)
+
+        if not self.cfg.destination.table_name:
+            raise UserException("Destination table name is missing!")
+
     def _process_report_files(self, report_files: list):
         os.makedirs(self._get_final_directory(), exist_ok=True)
         header = []
@@ -135,69 +200,6 @@ class Component(ComponentBase):
 
         return header
 
-    def run(self):
-        """Main extractor method - it reads current configuration, run report(s)
-        and collects reported data into CSV tables.
-
-        Main steps
-        - Prepare a list reports
-        - Run all prepared reports
-        - Wait for completion of reports
-        - Collect reported data into an output table(s)
-        """
-
-        logging.debug(self.configuration.parameters)
-        self.cfg: Configuration = Configuration.fromDict(self.configuration.parameters)
-        logging.debug(self.cfg)
-
-        prev_state = self.get_state_file()
-        self.existing_reports_cache = prev_state.get('reports')
-        if not self.existing_reports_cache:
-            self.existing_reports_cache = {}
-
-        """
-            Prepare a list reports
-                Create a report definition based on configuration.
-                (either from report specification or from existing report template)
-                for each profile:
-                    Check whether re-usable report exists in current state
-                    If a report was found apply a patch if necessary (date changed...)
-                    If no report was found create a new one based on report definition
-        """
-        self._init_google_client()
-
-        if self.cfg.input_variant != InputVariant.REPORT_IDS:
-            reports_2_run = self._process_generated_reports()
-        else:
-            reports_2_run = self._process_existing_reports()
-
-        # Run all reports
-        report_files = []
-        for item in reports_2_run:
-            profile_id = item['profile_id']
-            report_id = item['report_id']
-            report_file = self.google_client.run_report(profile_id=profile_id, report_id=report_id)
-            logging.info(f'Report {report_id} started')
-            report_files.append(dict(profile_id=profile_id, report_id=report_id, file_id=report_file['id']))
-
-        self._assign_profile_names(report_files)
-        time.sleep(5)
-
-        wait_files = report_files.copy()
-        while wait_files:
-            logging.info(f'Waiting for {len(wait_files)} running report(s)')
-            wait_files = self._wait_process_report_files(wait_files)
-            if wait_files:
-                time.sleep(20)
-
-        self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
-
-        header = self._process_report_files(report_files)
-        final_header = self.common_dimensions.copy()
-        final_header.insert(0, header[1])
-        final_header.insert(0, header[0])
-        self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
-
     def _assign_profile_names(self, report_files: list):
         profiles_2_names = self.google_client.list_profiles()
         for report_file in report_files:
@@ -208,8 +210,10 @@ class Component(ComponentBase):
     def _write_common_manifest(self, dimensions, metrics):
         pks = self.cfg.destination.primary_key if self.cfg.input_variant == 'report_specification' else \
             self.cfg.destination.primary_key_existing
-        pks.insert(0, dimensions[1])
-        pks.insert(0, dimensions[0])
+        # if any primary key is defined, make sure also profile_id and profile_name are added
+        if pks:
+            pks.insert(0, dimensions[1])
+            pks.insert(0, dimensions[0])
         result_table = self.create_out_table_definition(f"{self.cfg.destination.table_name}.csv",
                                                         primary_key=pks,
                                                         incremental=self.cfg.destination.incremental_loading,
@@ -431,8 +435,8 @@ class Component(ComponentBase):
 
     def _generate_report_name(self):
         return 'keboola_generated_' + self.environment_variables.project_id + '_' + \
-               self.environment_variables.config_id + '_' + \
-               self.environment_variables.config_row_id
+            self.environment_variables.config_id + '_' + \
+            self.environment_variables.config_row_id
 
     @sync_action('load_profiles')
     def load_profiles(self):

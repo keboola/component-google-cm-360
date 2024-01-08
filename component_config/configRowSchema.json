@@ -29,7 +29,7 @@
     },
     "input_variant": {
       "type": "string",
-      "title": "Specification variant",
+      "title": "Report specification mode",
       "propertyOrder": 100,
       "description": "You may choose to either define a new report or to enter existing report ID",
       "enum": [
