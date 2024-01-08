@@ -1,3 +1,5 @@
+import dataclasses
+import json
 from dataclasses import dataclass, field
 from enum import Enum
 
@@ -43,8 +45,40 @@ class ReportSettings:
 class ConfigurationBase:
 
     @staticmethod
-    def fromDict(parameters: dict):
-        return dataconf.dict(parameters, Configuration, ignore_unexpected=True)
+    def _convert_private_value(value: str):
+        return value.replace('"#', '"pswd_')
+
+    @staticmethod
+    def _convert_private_value_inv(value: str):
+        if value and value.startswith('pswd_'):
+            return value.replace('pswd_', '#', 1)
+        else:
+            return value
+
+    @classmethod
+    def load_from_dict(cls, configuration: dict):
+        """
+        Initialize the configuration dataclass object from dictionary.
+        Args:
+            configuration: Dictionary loaded from json configuration.
+
+        Returns:
+
+        """
+        json_conf = json.dumps(configuration)
+        json_conf = ConfigurationBase._convert_private_value(json_conf)
+        return dataconf.loads(json_conf, cls, ignore_unexpected=True)
+
+    @classmethod
+    def get_dataclass_required_parameters(cls) -> list[str]:
+        """
+        Return list of required parameters based on the dataclass definition (no default value)
+        Returns: List[str]
+
+        """
+        return [cls._convert_private_value_inv(f.name) for f in dataclasses.fields(cls)
+                if f.default == dataclasses.MISSING
+                and f.default_factory == dataclasses.MISSING]
 
 
 class InputVariant(str, Enum):
@@ -64,121 +98,3 @@ class Configuration(ConfigurationBase):
     report_template_id: str = ""
 
     debug: bool = False
-
-    # def __eq__(self, other):
-    #     if self.input_variant == "entry_id":
-    #         return self.entry_id == other.entry_id
-    #     else:
-    #         return self.report_specification == other.report_specification
-
-
-if __name__ == '__main__':
-    json_conf_1 = """
-    {
-    "debug": true,
-    "profiles": [
-      "8467304",
-      "8653652"
-    ],
-    "time_range": {
-      "period": "LAST_7_DAYS"
-    },
-    "destination": {
-      "table_name": "vystup",
-      "primary_key": [
-        "activity",
-        "country",
-        "environment"
-      ],
-      "selected_variant": "report_specification",
-      "incremental_loading": true
-    },
-    "input_variant": "report_specification",
-    "report_specification": {
-      "metrics": [
-        "costPerClick",
-        "clicks"
-      ],
-      "dimensions": [
-        "activity",
-        "country",
-        "environment"
-      ],
-      "report_type": "STANDARD"
-    }
-  }
-    """
-
-    json_conf_2 = """
-    {
-      "profiles": ["8467304", "8653652"]
-      "input_variant": "report_template_id",
-      "time_range": {
-        "period": "LAST_90_DAYS"
-        "date_from": "yesterday"
-        "date_to": "dneska"
-      },
-      "report_template_id": "777777:5000000",
-      "destination": {
-        "table_name": "report_row_1.csv",
-        "incremental_loading": true,
-        "primary_key": [
-          "FILTER_ADVERTISER",
-          "FILTER_BROWSER"
-        ]
-      },
-      "debug": true,
-      "dalsi_parametr": 12
-    }
-    """
-
-    json_conf_3 = """
-    {
-      "profiles": ["8467304", "8653652"]
-      "input_variant": "existing_report_ids",
-      "time_range": {
-        "period": "LAST_90_DAYS"
-        "date_from": "yesterday"
-        "date_to": "dneska"
-      },
-      "existing_report_ids": ["3333333:88888888","111111:22222222"]
-      "destination": {
-        "table_name": "report_row_1.csv",
-        "incremental_loading": true,
-        "primary_key": [
-          "FILTER_ADVERTISER",
-          "FILTER_BROWSER"
-        ]
-      },
-      "debug": true,
-      "dalsi_parametr": 12
-    }
-    """
-
-    cf1 = dataconf.loads(json_conf_1, Configuration, ignore_unexpected=True)
-    cf2 = dataconf.loads(json_conf_2, Configuration, ignore_unexpected=True)
-    cf3 = dataconf.loads(json_conf_3, Configuration, ignore_unexpected=True)
-    pass
-
-    # print(f'Equality cf1 == cf2 {cf1 == cf2}')
-
-    # pars = {
-    #     "input_variant": "report_settings",
-    #     "time_range": {
-    #         "period": "LAST_90_DAYS",
-    #         "date_from": "yesterday",
-    #         "date_to": "dneska"
-    #     },
-    #     "destination": {
-    #         "table_name": "report_row_1.csv",
-    #         "primary_key": [
-    #             "FILTER_ADVERTISER",
-    #             "FILTER_BROWSER"
-    #         ],
-    #         "incremental_loading": True,
-    #     }
-    # }
-    #
-    # cf3 = Configuration.fromDict(pars)
-
-    pass
