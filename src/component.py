@@ -12,6 +12,7 @@ from typing import Dict, List
 
 import dateparser
 import requests
+from google.auth.exceptions import RefreshError
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
@@ -531,6 +532,9 @@ if __name__ == "__main__":
         comp.execute_action()
     except UserException as exc:
         logging.exception(exc)
+        exit(1)
+    except RefreshError as exc:
+        logging.error("The OAuth token has expired. Please reauthorize the application.", extra={"exception": exc})
         exit(1)
     except Exception as exc:
         logging.exception(exc)
