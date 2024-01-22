@@ -11,7 +11,7 @@
       "type": "array",
       "title": "Profiles",
       "propertyOrder": 50,
-      "description": "Select profiles to be used in reporting",
+      "description": "Select profiles to be used in reporting.",
       "items": {
         "type": "string",
         "enum": [],
@@ -22,16 +22,16 @@
       "uniqueItems": true,
       "options": {
         "async": {
-          "label": "Load avaiable profiles",
+          "label": "Load available profiles",
           "action": "load_profiles"
         }
       }
     },
     "input_variant": {
       "type": "string",
-      "title": "Report specification mode",
+      "title": "Report Definition Mode",
       "propertyOrder": 100,
-      "description": "You may choose to either define a new report or to enter existing report ID",
+      "description": "You may choose to either specify a new report or to enter an existing report ID.",
       "enum": [
         "report_specification",
         "report_template_id",
@@ -69,12 +69,12 @@
             "PREVIOUS_QUARTER",
             "PREVIOUS_YEAR",
             "LAST_7_DAYS",
+            "LAST_14_DAYS",
             "LAST_30_DAYS",
+            "LAST_60_DAYS",
             "LAST_90_DAYS",
             "LAST_365_DAYS",
-            "LAST_24_MONTHS",
-            "LAST_14_DAYS",
-            "LAST_60_DAYS"
+            "LAST_24_MONTHS"
           ],
           "options": {
             "enum_titles": [
@@ -90,12 +90,12 @@
               "The previous completed quarter",
               "The previous completed calendar year",
               "The previous 7 days, excluding the current day",
+              "The previous 14 days, excluding the current day",
               "The previous 30 days, excluding the current day",
+              "The previous 60 days, excluding the current day",
               "The previous 90 days, excluding the current day",
               "The previous 365 days, excluding the current day",
-              "The previous 24 months",
-              "The previous 14 days, excluding the current day",
-              "The previous 60 days, excluding the current day"
+              "The previous 24 months"
             ]
           }
         },
@@ -103,7 +103,7 @@
           "type": "string",
           "title": "Date from",
           "propertyOrder": 20,
-          "description": "Start date: Either date in YYYY-MM-DD format or a relative date string i.e. 5 days ago, 1 month ago, yesterday, etc.",
+          "description": "Start date: either in YYYY-MM-DD format or a relative date string, e.g., 5 days ago, 1 month ago, yesterday, etc.",
           "options": {
             "dependencies": {
               "period": "CUSTOM_DATES"
@@ -114,7 +114,7 @@
           "type": "string",
           "title": "Date to",
           "propertyOrder": 30,
-          "description": "End date: Either date in YYYY-MM-DD format or a relative date string i.e. 5 days ago, 1 month ago, yesterday, etc.",
+          "description": "End date: either in YYYY-MM-DD format or a relative date string, e.g. 5 days ago, 1 month ago, yesterday, etc.",
           "options": {
             "dependencies": {
               "period": "CUSTOM_DATES"
@@ -149,7 +149,7 @@
               "Reach",
               "Floodlight",
               "Path",
-              "Path Attribution"
+              "Path attribution"
             ]
           },
           "propertyOrder": 500
@@ -266,12 +266,12 @@
           "title": "Storage Table Name",
           "propertyOrder": 10,
           "minLength": 1,
-          "description": "Name of the destination table for this report. (e.g. standard_performance_data)."
+          "description": "Name of the destination table for this report (e.g., standard_performance_data)"
         },
         "primary_key": {
           "type": "array",
           "title": "Primary Key",
-          "description": "List of columns (from selected dimensions) to be used as primary key of the resulting table. We recommend using ID columns where possible, to avoid ambiguity in case the dimension name is changed.",
+          "description": "List of columns (from selected dimensions) to be used as the primary key of the resulting table. We recommend using ID columns where possible to avoid ambiguity if the dimension name changes.",
           "propertyOrder": 20,
           "format": "select",
           "uniqueItems": true,
@@ -291,7 +291,7 @@
         "primary_key_existing": {
           "type": "array",
           "title": "Primary Key",
-          "description": "List of columns (load from report) to be used as primary key of the resulting table. We recommend using ID columns where possible, to avoid ambiguity in case the dimension name is changed.",
+          "description": "List of columns (loaded from the report) to be used as the primary key of the resulting table. We recommend using ID columns where possible to avoid ambiguity if the dimension name changes.",
           "propertyOrder": 21,
           "format": "select",
           "uniqueItems": true,
@@ -321,11 +321,11 @@
           "default": true,
           "options": {
             "enum_titles": [
-              "Full Load",
-              "Incremental Load"
+              "Full load",
+              "Incremental load"
             ]
           },
-          "description": "If Full load is used, the destination table will be overwritten every run. If Incremental Load is used, data will be upserted into the destination table.",
+          "description": "  ",
           "propertyOrder": 30
         }
       }
