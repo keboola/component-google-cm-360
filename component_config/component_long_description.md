@@ -3,9 +3,9 @@ channels.
 
 This connector enables retrieval of Campaign Manager 360 reports **across multiple Ad Accounts**. It allows you to run CM360 reports in several modes:
 
-1. Define custom report directly in the UI.
-2. Select multiple existing reports with the same structure across multiple accounts. The reports can be created via the [CM360 Report Builder](https://www.google.com/analytics/dfa/)
-3. Select one existing report definition that is used as a template and run across multiple selected accounts. The reports can be created via the [CM360 Report Builder](https://www.google.com/analytics/dfa/)
+1. Define custom reports directly in the UI.
+2. Select multiple existing reports with the same structure across multiple accounts. The reports can be created via the [CM360 Report Builder](https://www.google.com/analytics/dfa/).
+3. Select one existing report definition that is used as a template and run across multiple selected accounts. The reports can be created via the [CM360 Report Builder](https://www.google.com/analytics/dfa/).
 
 
 **Google Limited Use Policy Disclosure:**

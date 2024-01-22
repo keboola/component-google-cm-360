@@ -114,7 +114,7 @@
           "type": "string",
           "title": "Date to",
           "propertyOrder": 30,
-          "description": "End date: either in YYYY-MM-DD format or a relative date string, e.g. 5 days ago, 1 month ago, yesterday, etc.",
+          "description": "End date: either in YYYY-MM-DD format or a relative date string, e.g., 5 days ago, 1 month ago, yesterday, etc.",
           "options": {
             "dependencies": {
               "period": "CUSTOM_DATES"
@@ -204,7 +204,7 @@
       "title": "Report ID as a Template",
       "propertyOrder": 350,
       "minLength": 1,
-      "description": "Select a report that becomes a template for all profiles",
+      "description": "Select a report that becomes the template for all profiles.",
       "enum": [],
       "options": {
         "dependencies": {
@@ -221,7 +221,7 @@
       "title": "Report ID(s) to be run in parallel",
       "propertyOrder": 400,
       "minLength": 1,
-      "description": "Select reports that will run in parallel",
+      "description": "Select reports that will run in parallel.",
       "format": "select",
       "uniqueItems": true,
       "items": {
@@ -251,7 +251,7 @@
       "properties": {
         "selected_variant": {
           "type": "string",
-          "title": "Selected variant",
+          "title": "Selected Variant",
           "description": "Helper dummy element to render pkeys",
           "template": "{{var}}",
           "watch": {
@@ -325,7 +325,7 @@
               "Incremental load"
             ]
           },
-          "description": "  ",
+          "description": "If full load is used, the destination table will be overwritten every run. If incremental load is used, data will be upserted into the destination table.",
           "propertyOrder": 30
         }
       }
