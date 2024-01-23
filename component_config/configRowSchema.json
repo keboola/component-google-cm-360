@@ -1,5 +1,5 @@
 {
-  "title": "DM360 Report",
+  "title": "DM360 report",
   "type": "object",
   "required": [
     "input_variant",
@@ -29,7 +29,7 @@
     },
     "input_variant": {
       "type": "string",
-      "title": "Report Definition Mode",
+      "title": "Report definition mode",
       "propertyOrder": 100,
       "description": "You may choose to either specify a new report or to enter an existing report ID.",
       "enum": [
@@ -48,12 +48,12 @@
     },
     "time_range": {
       "type": "object",
-      "title": "Time Range",
+      "title": "Time range",
       "propertyOrder": 450,
       "properties": {
         "period": {
           "type": "string",
-          "title": "Report Period",
+          "title": "Report period",
           "propertyOrder": 10,
           "default": "LAST_7_DAYS",
           "enum": [
@@ -130,11 +130,11 @@
     },
     "report_specification": {
       "type": "object",
-      "title": "Report Details",
+      "title": "Report details",
       "propertyOrder": 300,
       "properties": {
         "report_type": {
-          "title": "Report Type",
+          "title": "Report type",
           "type": "string",
           "enum": [
             "STANDARD",
@@ -201,7 +201,7 @@
     },
     "report_template_id": {
       "type": "string",
-      "title": "Report ID as a Template",
+      "title": "Report ID as a template",
       "propertyOrder": 350,
       "minLength": 1,
       "description": "Select a report that becomes the template for all profiles.",
@@ -251,7 +251,7 @@
       "properties": {
         "selected_variant": {
           "type": "string",
-          "title": "Selected Variant",
+          "title": "Selected variant",
           "description": "Helper dummy element to render pkeys",
           "template": "{{var}}",
           "watch": {
@@ -263,14 +263,14 @@
         },
         "table_name": {
           "type": "string",
-          "title": "Storage Table Name",
+          "title": "Storage table name",
           "propertyOrder": 10,
           "minLength": 1,
           "description": "Name of the destination table for this report (e.g., standard_performance_data)"
         },
         "primary_key": {
           "type": "array",
-          "title": "Primary Key",
+          "title": "Primary key",
           "description": "List of columns (from selected dimensions) to be used as the primary key of the resulting table. We recommend using ID columns where possible to avoid ambiguity if the dimension name changes.",
           "propertyOrder": 20,
           "format": "select",
@@ -290,7 +290,7 @@
         },
         "primary_key_existing": {
           "type": "array",
-          "title": "Primary Key",
+          "title": "Primary key",
           "description": "List of columns (loaded from the report) to be used as the primary key of the resulting table. We recommend using ID columns where possible to avoid ambiguity if the dimension name changes.",
           "propertyOrder": 21,
           "format": "select",
@@ -317,7 +317,7 @@
             true
           ],
           "type": "boolean",
-          "title": "Load Type",
+          "title": "Load type",
           "default": true,
           "options": {
             "enum_titles": [
