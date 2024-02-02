@@ -31,7 +31,7 @@
       "type": "string",
       "title": "Report definition mode",
       "propertyOrder": 100,
-      "description": "You may choose to either specify a new report or to enter an existing report ID.",
+      "description": "You may choose to either create a new report or to enter an existing report ID.",
       "enum": [
         "report_specification",
         "report_template_id",
@@ -204,7 +204,7 @@
       "title": "Report ID as a template",
       "propertyOrder": 350,
       "minLength": 1,
-      "description": "Select a report that becomes the template for all profiles.",
+      "description": "Select a report to be used as a template for all profiles.",
       "enum": [],
       "options": {
         "dependencies": {
