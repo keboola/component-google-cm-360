@@ -1,15 +1,13 @@
-# Google Campaign Manager 360 Extractor
+# Google Campaign Manager 360 Data Source
 
-[Google Campaign Manager 360](https://support.google.com/campaignmanager/answer/2709362?hl=en) orchestrates digital advertising campaigns, enabling precise ad placements across multiple
+[Google Campaign Manager 360](https://support.google.com/campaignmanager/answer/2709362?hl=en) orchestrates digital advertising campaigns, offering precise ad placements across multiple
 channels. 
 
-This connector enables retrieval of Campaign Manager 360 reports **across multiple Ad Accounts**. It allows you to run CM360 reports in several modes:
+This connector enables easy retrieval of Campaign Manager 360 reports **from multiple ad accounts** and allows you to run CM360 reports in several modes:
 
-1. Define custom report directly in the UI.
+1. Define customized reports directly in the UI.
 2. Select multiple reports with the same structure across multiple accounts.
-3. Select one existing report definition that is used as a template and run across multiple selected accounts.
-
-
+3. Use an existing report as a template and run it across multiple selected accounts.
 
 **Table of contents:**
 
@@ -18,9 +16,9 @@ This connector enables retrieval of Campaign Manager 360 reports **across multip
 
 ## Prerequisites
 
-1. Get access to [https://support.google.com/campaignmanager?sjid=16894252783161215189-EU#topic=2758513) account.
+1. Get access to your [account](https://support.google.com/campaignmanager?sjid=16894252783161215189-EU#topic=2758513).
 
-2. Log into your account using the Authorize Account button in the Keboola interface. 
+2. Log in to your account using the Authorize Account button in the Keboola interface. 
 
 ![OAuth Authorization](docs/imgs/config_oauth.png)
 
@@ -28,85 +26,75 @@ This connector enables retrieval of Campaign Manager 360 reports **across multip
 
 The connector supports three modes:
 
-1. Using existing report definition as a template and executing it across selected accounts.
-   - This option is extremely useful if you need to define complex report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/) and use it across multiple accounts. 
-   - The selected report is left untouched, and it's copy is created in all selected accounts. The resulting reports are linked to the configuration. The naming convention of the created report is: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}`
-2. Running and downloading existing report definitions. Such report may be defined using the [CM360 Report Builder](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1)
-   - This option is suitable when you already have multiple same reports defined across required Ad Accounts.
-2. Defining report definition directly in the UI.
-   - This allows you to define simple report definition directly in the configuration UI.
-   - This mode will automatically create an Offline report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/), that will be linked to the configuration. The naming convention of the created report is: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}`
+1. Template-based report execution: Use an existing report definition as a template and execute it across selected accounts.
+    - It’s ideal if you need to define a complex report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/) and use it across multiple accounts. 
+    - The selected report is left untouched, and its copy is created in all selected accounts. The resulting reports are linked to the configuration. Naming convention: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}`
+2. Running and downloading existing report definitions: Suitable for multiple identical reports across required ad accounts, previously defined using the [CM360 Report Builder](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1).
+3. Defining report definition directly in the UI: Define simple report definition directly in the configuration UI, automatically creating an offline report in the [CM360 Report Builder](https://www.google.com/analytics/dfa) that will be linked to the configuration. Naming convention: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}`
 
-### Creating and running reports from an existing report definition (template)
+### Creating and running reports from an existing report definitions (template)
 
-- This option is extremely useful if you need to define complex report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/) and use it across multiple accounts. 
-- The selected report is left untouched, and it's copy is created in all selected accounts. The resulting reports are linked to the configuration. The naming convention of the created report is: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}
-- All results are downloaded into a single table.
+This option is helpful if you need to define a complex report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/) nd use it across multiple accounts. The selected report is left untouched, and its copy is created in all selected accounts. The resulting reports are linked to the configuration. 
 
+The naming convention of the created report is: `keboola_generated_{PROJECT_ID}_{CONFIG_ID}_{ROWID}`
 
-1. Define your report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/). See the official [docs](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1).
+All results are downloaded into a single table.
+
+To use an existing report as a template, follow these steps:
+
+1. Set up your report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/). See the official [docs](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1).
 2. Select the `Report template` in the `Report definition mode` configuration option.
 3. Select the existing report from the dropdown of available reports. This report will be then used as a template and recreated across selected accounts.
-4. Select the desired `Time Range`
-   - You may select either predefined period or a `Custom Date Range`
-   - This option allows you to define a relative report period range.
-5. Define the **Destination** parameters to control how the result is stored. See the `Destination` section.
-
+4. Select the desired `Time Range` (either a predefined period or `Custom Date Range`). This option allows you to define a relative report period range.
+5. Set the **Destination** parameters to control how the result is stored. See the `Destination` section.
 
 ### Running existing reports
 
-This option is suitable when you already have multiple same reports defined across required Ad Accounts.
+This option is suitable when you already have multiple identical reports defined across required ad accounts.
 
-1. Define your report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/). See the official [docs](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1).
-2. Select the `Existing report ID(s)` in the `Report definition mode` configuration option.
-   - **WARNING** the selected reports must have same structure and definition, otherwise the extraction will fail.
+To run an existing report, follow these steps:
+
+1. Set up your report in the [CM360 Report Builder](https://www.google.com/analytics/dfa/). See the official [documentation](https://support.google.com/campaignmanager/answer/2823849?sjid=16894252783161215189-EU&visit_id=638403222303021904-3691116343&rd=1).
+2. Select `Existing report ID(s)` in `Report definition mode`. 
+    - **WARNING**: Ensure selected reports have the same structure and definition; otherwise extraction will fail.
 3. Select the existing report ID from the dropdown of available reports.
-4. The time range is in this case defined by the source report. This is to keep the source reports untouched, since they are not controlled by the component.
-5. Define the **Destination** parameters to control how the result is stored. See the `Destination` section.
+4. The time range is, in this case, defined by the source report. This is to keep the source reports untouched since they are not controlled by the component.
+5. Set the **Destination** parameters to control how the result is stored. See the `Destination` section.
 
-### Defining report directly in the UI.
+### Setting up reports directly in the UI
 
-1. Select the `Report specification` in the `Report definition mode` configuration option.
-2. Define your report in  `Report Details`
-   1. Select the `Report Type`
-   2. Select desired dimensions
-   3. Select the desired metrics.
-   4. Optionally, specify filters.
-3. Select the desired `Time Range`
-   - You may select either predefined period or a `Custom Date Range`
-   - This option allows you to define a relative report period range.
-4. Define the **Destination** parameters to control how the result is stored. See the `Destination` section.
+1. Select `Report specification` in `Report definition mode`.
+2. Set up your report in  `Report Details`.
+   1. `Report Type`
+   2. `Dimensions`
+   3. `Metrics`
+   4. Optional filters
+3. Select the desired `Time Range` (either a predefined period or `Custom Date Range`). This option allows you to define a relative report period range.
+4. Set the **Destination** parameters to control how the result is stored. See the `Destination` section.
 
+### Destination – report output
 
+This section defines how the extracted data will be saved in Keboola Storage. The resulting table always contains `Profile ID` and `Profile Name` columns because the component runs through multiple accounts.
 
-### Destination - report output
-
-This section defines how the extracted data will be saved in the Keboola Storage. The resulting table always contains `Profile ID` and `Profile Name` columns because the component runs through multiple accounts.
-
-- **Load Type** – If `Full Load` is used, the destination table will be overwritten every run. If `Incremental Load` is used, data will be “upserted” into the destination table.
-- **Storage Table Name** – Name of the resulting table stored in Storage.
-- **Primary Key** - Since the reports are always custom defined, you need to define what dimensions (columns) represent the unique primary key. This is then used to perform "upserts".
-  - Note that if the primary key is not defined properly, you may lose some data during deduplication. If there is no primary key defined and `Incremental Load` mode is used, each execution will lead to a new set of records.
-  - **NOTE** If this field is not empty, `Profile ID` and `Profile Name` are always used as primary key because the component runs through multiple accounts.
-
-
+- **Load type** – If `full load` is used, the destination table will be overwritten every run. If `incremental load` is used, data will be “upserted” into the destination table.
+- **Storage table name** – Name of the resulting table stored in Storage.
+- **Primary key** - Since the reports are always custom-defined, define what dimensions (columns) represent the unique primary key. This is then used to perform "upserts".
+    - **Note**: If the primary key is not defined properly, you may lose some data during deduplication. If there is no primary key defined and `incremental load` mode is used, each execution leads to a new set of records. Also, if this field is not empty, `Profile ID` and `Profile Name` are always used as the primary key because the component runs through multiple accounts.
 
 ## Features
 
 | **Feature**             | **Note**                                      |
 |-------------------------|-----------------------------------------------|
 | Generic UI form         | Dynamic UI form                               |
-| Row Based configuration | Allows structuring the configuration in rows. |
+| Row Based configuration | Allows structuring the configuration in rows  |
 | oAuth                   | oAuth authentication enabled                  |
-| Incremental loading     | Allows fetching data in new increments.       |
-| Dimension filter        | Fetch data of certain dimension values only.  |
-| Date range filter       | Specify date range.                           |
-
-
+| Incremental loading     | Allows fetching data in new increments        |
+| Dimension filter        | Fetch data of certain dimension values only   |
+| Date range filter       | Specify date range                            |
 
 ## Sample Raw Configuration
 
-### existing report ids
+### Existing report IDs
 
 ```json
 {
@@ -134,7 +122,7 @@ This section defines how the extracted data will be saved in the Keboola Storage
 ```
 
 
-### template report
+### Template report
 
 ```json
 {
@@ -203,12 +191,10 @@ This section defines how the extracted data will be saved in the Keboola Storage
 }
 ```
 
-
-
 Development
 -----------
 
-If required, change local data folder (the `CUSTOM_FOLDER` placeholder) path to your custom path in
+If required, change the local data folder (the `CUSTOM_FOLDER` placeholder) path to your custom path in
 the `docker-compose.yml` file:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -217,7 +203,7 @@ the `docker-compose.yml` file:
       - ./CUSTOM_FOLDER:/data
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Clone this repository, init the workspace and run the component with following command:
+Clone this repository, initialize the workspace, and run the component with the following command:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 docker-compose build
@@ -233,5 +219,5 @@ docker-compose run --rm test
 Integration
 ===========
 
-For information about deployment and integration with KBC, please refer to the
-[deployment section of developers documentation](https://developers.keboola.com/extend/component/deployment/)
+For information about deployment and integration with Keboola, please refer to the
+[deployment section of our developer documentation](https://developers.keboola.com/extend/component/deployment/).
