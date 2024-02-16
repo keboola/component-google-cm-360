@@ -22,7 +22,7 @@ class FilterPair:
 
 @dataclass
 class Destination:
-    table_name: str
+    table_name: str = ""
     incremental_loading: bool = True
     primary_key: list[str] = None
     primary_key_existing: list[str] = None
@@ -85,13 +85,15 @@ class InputVariant(str, Enum):
     REPORT_SPEC = "report_specification"
     REPORT_TEMPLATE = "report_template_id"
     REPORT_IDS = "existing_report_ids"
+    METADATA = "metadata"
 
 
 @dataclass
 class Configuration(ConfigurationBase):
     profiles: list[str]
     input_variant: InputVariant
-    destination: Destination
+    destination: Destination = field(default_factory=lambda: ConfigTree({}))
+    metadata: list[str] = field(default_factory=lambda: "")
     time_range: TimeRange = field(default_factory=lambda: ConfigTree({}))
     report_specification: ReportSettings = field(default_factory=lambda: ConfigTree({}))
     existing_report_ids: list[str] = field(default_factory=lambda: "")

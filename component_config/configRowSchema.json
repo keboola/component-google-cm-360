@@ -11,7 +11,7 @@
       "type": "array",
       "title": "Profiles",
       "propertyOrder": 50,
-      "description": "Select profiles to be used in reporting.",
+      "description": "Select profiles to be used in reporting or extracting metadata.",
       "items": {
         "type": "string",
         "enum": [],
@@ -29,22 +29,87 @@
     },
     "input_variant": {
       "type": "string",
-      "title": "Report definition mode",
+      "title": "Data to extract",
       "propertyOrder": 100,
-      "description": "You may choose to either create a new report or to enter an existing report ID.",
+      "description": "Select a metadata or which variant of report to extract. You may choose to either create a new report or to enter an existing report ID.",
       "enum": [
+        "metadata",
         "report_specification",
         "report_template_id",
         "existing_report_ids"
       ],
       "options": {
         "enum_titles": [
+          "Metadata",
           "Report specification",
           "Report template",
           "Existing report ID(s)"
         ]
       },
       "default": "report_specification"
+    },
+        "metadata": {
+      "title": "Metadata",
+      "description": "Which metadata to fetch",
+      "type": "array",
+      "format": "select",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "enum": [
+          "accountPermissionGroups",
+          "accountPermissions",
+          "accounts",
+          "ads",
+          "advertisers",
+          "browsers",
+          "campaigns",
+          "changeLogs",
+          "cities",
+          "connectionTypes",
+          "contentCategories",
+          "countries",
+          "creativeFields",
+          "creativeGroups",
+          "creatives",
+          "directorySites",
+          "floodlightActivityGroups",
+          "floodlightActivities",
+          "floodlightConfigurations",
+          "inventoryItems",
+          "advertiserInvoices",
+          "advertiserLandingPages",
+          "languages",
+          "metros",
+          "mobileApps",
+          "mobileCarriers",
+          "operatingSystems",
+          "operatingSystemVersions",
+          "sites",
+          "subaccounts",
+          "userRoles",
+          "targetingTemplates",
+          "placements",
+          "placementGroups",
+          "placementStrategies",
+          "platformTypes",
+          "postalCodes",
+          "projects",
+          "regions",
+          "sizes",
+          "userRolePermissionGroups",
+          "userRolePermissions",
+          "videoFormats"
+        ],
+        "minLength": 0,
+        "title": "Metadata"
+      },
+      "options": {
+        "dependencies": {
+          "input_variant": "metadata"
+        }
+          },
+      "propertyOrder": 200
     },
     "time_range": {
       "type": "object",
@@ -244,6 +309,11 @@
       "type": "object",
       "title": "Destination",
       "propertyOrder": 600,
+      "options": {
+        "dependencies": {
+          "input_variant": ["report_specification", "report_template_id", "existing_report_ids"]
+        }
+      },
       "required": [
         "table_name",
         "incremental_loading"

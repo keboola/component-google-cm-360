@@ -16,6 +16,7 @@ from google.auth.exceptions import RefreshError
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
+from keboola.csvwriter import ElasticDictWriter
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
@@ -66,6 +67,7 @@ class Component(ComponentBase):
         and collects reported data into CSV tables.
 
         Main steps
+        - Get metadata
         - Prepare a list reports
         - Run all prepared reports
         - Wait for completion of reports
@@ -90,37 +92,64 @@ class Component(ComponentBase):
         """
         self._init_google_client()
 
-        if self.cfg.input_variant != InputVariant.REPORT_IDS:
-            reports_2_run = self._process_generated_reports()
-        else:
-            reports_2_run = self._process_existing_reports()
+        if self.cfg.input_variant == InputVariant.METADATA:
+            metadata = self.cfg.metadata
+            profile_ids = self.cfg.profiles
 
-        # Run all reports
-        report_files = []
-        for item in reports_2_run:
-            profile_id = item['profile_id']
-            report_id = item['report_id']
-            report_file = self.google_client.run_report(profile_id=profile_id, report_id=report_id)
-            logging.info(f'Report {report_id} started')
-            report_files.append(dict(profile_id=profile_id, report_id=report_id, file_id=report_file['id']))
+            if not profile_ids:
+                profile_ids = list(self.google_client.list_profiles().keys())
 
-        self._assign_profile_names(report_files)
-        time.sleep(5)
+            for profile in profile_ids:
+                for endpoint in metadata:
+                    logging.info(f'Listing metadata for {endpoint} in profile {profile}')
 
-        wait_files = report_files.copy()
-        while wait_files:
-            logging.info(f'Waiting for {len(wait_files)} running report(s)')
-            wait_files = self._wait_process_report_files(wait_files)
-            if wait_files:
-                time.sleep(20)
+                    result = self.google_client.list_metadata(profile_id=profile, endpoint_name=endpoint)
 
-        self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
+                    if first := next(result, None):
+                        table_def = ComponentBase.create_out_table_definition(self,
+                                                                              name=f'metadata_{profile}_{endpoint}.csv')
 
-        header = self._process_report_files(report_files)
-        final_header = self.common_dimensions.copy()
-        final_header.insert(0, header[1])
-        final_header.insert(0, header[0])
-        self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
+                        writer = ElasticDictWriter(table_def.full_path, fieldnames=[])
+                        writer.writerow(first)
+
+                        for item in result:
+                            writer.writerow(item)
+
+                        writer.writeheader()
+                        writer.close()
+
+        if self.cfg.input_variant != InputVariant.METADATA:
+            if self.cfg.input_variant != InputVariant.REPORT_IDS:
+                reports_2_run = self._process_generated_reports()
+            else:
+                reports_2_run = self._process_existing_reports()
+
+            # Run all reports
+            report_files = []
+            for item in reports_2_run:
+                profile_id = item['profile_id']
+                report_id = item['report_id']
+                report_file = self.google_client.run_report(profile_id=profile_id, report_id=report_id)
+                logging.info(f'Report {report_id} started')
+                report_files.append(dict(profile_id=profile_id, report_id=report_id, file_id=report_file['id']))
+
+            self._assign_profile_names(report_files)
+            time.sleep(5)
+
+            wait_files = report_files.copy()
+            while wait_files:
+                logging.info(f'Waiting for {len(wait_files)} running report(s)')
+                wait_files = self._wait_process_report_files(wait_files)
+                if wait_files:
+                    time.sleep(20)
+
+            self.write_state_file(state_dict=dict(reports=self.existing_reports_cache))
+
+            header = self._process_report_files(report_files)
+            final_header = self.common_dimensions.copy()
+            final_header.insert(0, header[1])
+            final_header.insert(0, header[0])
+            self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
 
     def _create_date_range(self) -> dict:
         if self.cfg.time_range.period == 'CUSTOM_DATES':
@@ -183,7 +212,7 @@ class Component(ComponentBase):
     def init_configuration(self):
         self.cfg: Configuration = Configuration.load_from_dict(self.configuration.parameters)
 
-        if not self.cfg.destination.table_name:
+        if not self.cfg.destination.table_name and self.cfg.input_variant != InputVariant.METADATA:
             raise UserException("Destination table name is missing!")
 
     def _process_report_files(self, report_files: list):
@@ -420,7 +449,8 @@ class Component(ComponentBase):
         client = GoogleCM360Client(
             self.configuration.oauth_credentials.appKey,
             self.configuration.oauth_credentials.appSecret,
-            self.configuration.oauth_credentials.data
+            self.configuration.oauth_credentials.data,
+            self.configuration.oauth_credentials.data["scope"].split(" "),
         )
         self.google_client = client
 

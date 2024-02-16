@@ -7,13 +7,17 @@ from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from keboola.component.exceptions import UserException
 
+from datetime import datetime
+
+import logging
+
 
 class GoogleDV360ClientException(UserException):
     pass
 
 
 class GoogleCM360Client:
-    def __init__(self, client_id: str, app_secret: str, token_data: dict):
+    def __init__(self, client_id: str, app_secret: str, token_data: dict, scopes: list):
         self.service = None
         token_response = token_data
         token_response['expires_at'] = 22222
@@ -26,7 +30,7 @@ class GoogleCM360Client:
                 "token_uri": "https://oauth2.googleapis.com/token"
             }
         }
-        scopes = ['https://www.googleapis.com/auth/dfareporting']
+
         credentials = Flow.from_client_config(client_secrets, scopes=scopes, token=token_response).credentials
         discovery_url = 'https://dfareporting.googleapis.com/$discovery/rest?version=v4'
         # Build the API service.
@@ -34,6 +38,7 @@ class GoogleCM360Client:
             'dfareporting', 'v4',
             discoveryServiceUrl=discovery_url,
             credentials=credentials)
+        logging.info(f'{datetime.now().strftime("%H:%M:%S.%f")[:-3]} Google DV360 client initialized')
 
     def list_profiles(self) -> dict:
         """Call API to retrieve available profiles
@@ -45,6 +50,37 @@ class GoogleCM360Client:
         response = request.execute()
         id_2_name = dict([(p['profileId'], p['userName']) for p in response['items']])
         return id_2_name
+
+    def list_metadata(self, profile_id: str = None, endpoint_name: str = None):
+        """Call API to retrieve available profiles
+
+        Returns: mapping of profileId -> userName
+
+        """
+        try:
+            next_page = None
+            while True:
+
+                request_args = {'profileId': profile_id}
+                if next_page is not None:
+                    request_args['pageToken'] = next_page
+
+                response = getattr(self.service, endpoint_name)().list(**request_args).execute()
+
+                if endpoint_name in response:
+                    for item in response[endpoint_name]:
+                        yield item
+
+                next_page = response.get('nextPageToken')
+                if not next_page:
+                    break
+
+        except HttpError as ex:
+            if ex.resp.status == 403:
+                raise UserException(f'{ex.reason} Reauthorize the component to enable new scopes for listing metadata')
+
+        except Exception as ex:
+            logging.warning(f'Listing metadata for {endpoint_name}: {ex}')
 
     def list_reports(self, profile_id: str = None):
         if not profile_id:
