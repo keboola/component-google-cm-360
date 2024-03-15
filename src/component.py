@@ -16,7 +16,6 @@ from google.auth.exceptions import RefreshError
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
-from keboola.csvwriter import ElasticDictWriter
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
@@ -99,24 +98,34 @@ class Component(ComponentBase):
             if not profile_ids:
                 profile_ids = list(self.google_client.list_profiles().keys())
 
-            for profile in profile_ids:
-                for endpoint in metadata:
+            for endpoint in metadata:
+                writer = None
+                csvfile = None
+
+                for profile in profile_ids:
+
                     logging.info(f'Listing metadata for {endpoint} in profile {profile}')
 
                     result = self.google_client.list_metadata(profile_id=profile, endpoint_name=endpoint)
 
                     if first := next(result, None):
-                        table_def = ComponentBase.create_out_table_definition(self,
-                                                                              name=f'metadata_{profile}_{endpoint}.csv')
 
-                        writer = ElasticDictWriter(table_def.full_path, fieldnames=[])
+                        if not writer:
+                            table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv')
+                            csvfile = open(table_def.full_path, 'w', newline='')
+                            writer = csv.DictWriter(csvfile, fieldnames=["profile_id"] + list(first.keys()))
+                            writer.writeheader()
+
+                        first['profile_id'] = profile
                         writer.writerow(first)
 
                         for item in result:
+                            item['profile_id'] = profile
                             writer.writerow(item)
 
-                        writer.writeheader()
-                        writer.close()
+                if csvfile:
+                    if not csvfile.closed:
+                        csvfile.close()
 
         if self.cfg.input_variant != InputVariant.METADATA:
             if self.cfg.input_variant != InputVariant.REPORT_IDS:
