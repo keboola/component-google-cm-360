@@ -16,6 +16,7 @@ from google.auth.exceptions import RefreshError
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
+from keboola.csvwriter import ElasticDictWriter
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
@@ -100,7 +101,6 @@ class Component(ComponentBase):
 
             for endpoint in metadata:
                 writer = None
-                csvfile = None
 
                 for profile in profile_ids:
 
@@ -112,8 +112,7 @@ class Component(ComponentBase):
 
                         if not writer:
                             table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv')
-                            csvfile = open(table_def.full_path, 'w', newline='')
-                            writer = csv.DictWriter(csvfile, fieldnames=["profile_id"] + list(first.keys()))
+                            writer = ElasticDictWriter(table_def.full_path, fieldnames=["profile_id"])
                             writer.writeheader()
 
                         first['profile_id'] = profile
@@ -123,9 +122,8 @@ class Component(ComponentBase):
                             item['profile_id'] = profile
                             writer.writerow(item)
 
-                if csvfile:
-                    if not csvfile.closed:
-                        csvfile.close()
+                if writer:
+                    writer.close()
 
         if self.cfg.input_variant != InputVariant.METADATA:
             if self.cfg.input_variant != InputVariant.REPORT_IDS:
