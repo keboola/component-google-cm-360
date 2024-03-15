@@ -111,8 +111,9 @@ class Component(ComponentBase):
                     if first := next(result, None):
 
                         if not writer:
-                            table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv')
-                            writer = ElasticDictWriter(table_def.full_path, fieldnames=["profile_id"])
+                            table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv',
+                                                                         primary_key=["profile_id", "id"])
+                            writer = ElasticDictWriter(table_def.full_path, fieldnames=["profile_id", "id"])
                             writer.writeheader()
 
                         first['profile_id'] = profile
@@ -124,6 +125,7 @@ class Component(ComponentBase):
 
                 if writer:
                     writer.close()
+                    self.write_manifest(table_def)
 
         if self.cfg.input_variant != InputVariant.METADATA:
             if self.cfg.input_variant != InputVariant.REPORT_IDS:
