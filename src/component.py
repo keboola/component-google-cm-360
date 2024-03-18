@@ -3,7 +3,6 @@ Template Component main class.
 
 """
 import csv
-# from typing import List, Tuple
 import json
 import logging
 import os
@@ -16,7 +15,6 @@ from google.auth.exceptions import RefreshError
 from keboola.component.base import ComponentBase, sync_action
 from keboola.component.exceptions import UserException
 from keboola.component.sync_actions import SelectElement
-from keboola.csvwriter import ElasticDictWriter
 
 from configuration import Configuration, InputVariant
 from configuration import FILE_JSON_LABELS
@@ -93,6 +91,9 @@ class Component(ComponentBase):
         self._init_google_client()
 
         if self.cfg.input_variant == InputVariant.METADATA:
+
+            schema = requests.get("https://dfareporting.googleapis.com/$discovery/rest?version=v4").json()
+
             metadata = self.cfg.metadata
             profile_ids = self.cfg.profiles
 
@@ -100,32 +101,27 @@ class Component(ComponentBase):
                 profile_ids = list(self.google_client.list_profiles().keys())
 
             for endpoint in metadata:
-                writer = None
 
-                for profile in profile_ids:
+                all_columns = self.get_endpoint_column_names(endpoint, schema)
 
-                    logging.info(f'Listing metadata for {endpoint} in profile {profile}')
+                table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv',
+                                                             columns=all_columns,
+                                                             primary_key=["profile_id", "id"])
+                self.write_manifest(table_def)
 
-                    result = self.google_client.list_metadata(profile_id=profile, endpoint_name=endpoint)
+                with open(table_def.full_path, 'w', newline='') as csvfile:
+                    writer = csv.DictWriter(csvfile, fieldnames=all_columns)
+                    writer.writeheader()
 
-                    if first := next(result, None):
+                    for profile in profile_ids:
 
-                        if not writer:
-                            table_def = self.create_out_table_definition(name=f'metadata_{endpoint}.csv',
-                                                                         primary_key=["profile_id", "id"])
-                            writer = ElasticDictWriter(table_def.full_path, fieldnames=["profile_id", "id"])
-                            writer.writeheader()
+                        logging.info(f'Listing metadata for {endpoint} in profile {profile}')
 
-                        first['profile_id'] = profile
-                        writer.writerow(first)
+                        result = self.google_client.list_metadata(profile_id=profile, endpoint_name=endpoint)
 
                         for item in result:
                             item['profile_id'] = profile
                             writer.writerow(item)
-
-                if writer:
-                    writer.close()
-                    self.write_manifest(table_def)
 
         if self.cfg.input_variant != InputVariant.METADATA:
             if self.cfg.input_variant != InputVariant.REPORT_IDS:
@@ -159,6 +155,16 @@ class Component(ComponentBase):
             final_header.insert(0, header[1])
             final_header.insert(0, header[0])
             self._write_common_manifest(dimensions=final_header, metrics=self.common_metrics)
+
+    @staticmethod
+    def get_endpoint_column_names(endpoint, schema):
+        list_response = (schema.get("resources").get(endpoint).get('methods')
+                         .get('list').get('response').get('$ref'))
+        list_response_element = schema.get("schemas").get(list_response).get('properties').get(
+            list_response[0].lower() + list_response[1:].replace('ListResponse', '')).get('items').get('$ref')
+        columns = schema.get("schemas").get(list_response_element).get('properties').keys()
+        all_columns = ["profile_id", "id"] + [x for x in columns if x not in ["profile_id", "id"]]
+        return all_columns
 
     def _create_date_range(self) -> dict:
         if self.cfg.time_range.period == 'CUSTOM_DATES':
