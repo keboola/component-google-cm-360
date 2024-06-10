@@ -3,6 +3,7 @@ Template Component main class.
 
 """
 import csv
+import chardet
 # from typing import List, Tuple
 import json
 import logging
@@ -194,10 +195,18 @@ class Component(ComponentBase):
         path = f'{self._get_final_directory()}/{profile_id}_{report_id}.csv'
         return path
 
+    @staticmethod
+    def _detect_encoding(file_path):
+        with open(file_path, 'rb') as f:
+            result = chardet.detect(f.read())
+            return result['encoding']
+
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
-        with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
+        encoding = self._detect_encoding(in_file)
+
+        with open(in_file, 'rt', encoding=encoding) as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
             csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
             for row in csv_src:
