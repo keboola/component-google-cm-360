@@ -205,6 +205,7 @@ class Component(ComponentBase):
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
         encoding = self._detect_encoding(in_file)
+        logging.debug(f'Detected encoding: {encoding}')
 
         with open(in_file, 'rt', encoding=encoding) as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
