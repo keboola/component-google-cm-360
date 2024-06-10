@@ -2,7 +2,6 @@
 Template Component main class.
 
 """
-import codecs
 import csv
 import io
 # from typing import List, Tuple
