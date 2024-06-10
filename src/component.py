@@ -2,8 +2,9 @@
 Template Component main class.
 
 """
-import csv
 import codecs
+import csv
+import io
 # from typing import List, Tuple
 import json
 import logging
@@ -199,7 +200,7 @@ class Component(ComponentBase):
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
         logging.debug(f'Processing raw file {in_file}')
-        with codecs.open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
+        with io.open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
             csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
             for row in csv_src:
