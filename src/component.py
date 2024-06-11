@@ -2,8 +2,8 @@
 Template Component main class.
 
 """
+from ftfy import fix_text
 import csv
-import io
 # from typing import List, Tuple
 import json
 import logging
@@ -195,11 +195,33 @@ class Component(ComponentBase):
         path = f'{self._get_final_directory()}/{profile_id}_{report_id}.csv'
         return path
 
+    @staticmethod
+    def _fix_text_file(file_path):
+        """
+        Fix text file encoding
+        """
+        logging.debug(f'Fixing text file encoding {file_path}')
+        fixed_file_path = f'fixed_{file_path}'
+
+        with open(file_path, 'rb') as f:
+            content = f.read()
+
+        # fix texty by ftfy
+        fixed_content = fix_text(content.decode('utf-8', errors='replace'))
+
+        # save fixed content as utf-8
+        with open(fixed_file_path, 'w', encoding='utf-8') as f:
+            f.write(fixed_content)
+
+        return fixed_file_path
+
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
-        in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+        in_file_raw = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+        in_file = self._fix_text_file(in_file_raw)
+
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
         logging.debug(f'Processing raw file {in_file}')
-        with io.open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
+        with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
             csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
             for row in csv_src:
