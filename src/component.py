@@ -201,7 +201,7 @@ class Component(ComponentBase):
         Fix text file encoding
         """
         logging.debug(f'Fixing text file encoding {file_path}')
-        fixed_file_path = f'fixed_{file_path}'
+        fixed_file_path = f'{file_path}.fixed'
 
         with open(file_path, 'rb') as f:
             content = f.read()
