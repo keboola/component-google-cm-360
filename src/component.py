@@ -2,7 +2,6 @@
 Template Component main class.
 
 """
-from ftfy import fix_text
 import csv
 # from typing import List, Tuple
 import json
@@ -206,8 +205,8 @@ class Component(ComponentBase):
         with open(file_path, 'rb') as f:
             content = f.read()
 
-        # fix texty by ftfy
-        fixed_content = fix_text(content.decode('utf-8', errors='replace'))
+        # fix text encoding
+        fixed_content = content.decode('utf-8', errors='ignore')
 
         # save fixed content as utf-8
         with open(fixed_file_path, 'w', encoding='utf-8') as f:
@@ -216,10 +215,11 @@ class Component(ComponentBase):
         return fixed_file_path
 
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
-        in_file_raw = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
-        in_file = self._fix_text_file(in_file_raw)
+        in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+        in_file = self._fix_text_file(in_file)
 
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
+
         logging.debug(f'Processing raw file {in_file}')
         with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
