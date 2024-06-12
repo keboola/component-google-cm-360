@@ -206,7 +206,7 @@ class Component(ComponentBase):
             content = f.read()
 
         # fix text encoding
-        fixed_content = content.decode('utf-8', errors='ignore')
+        fixed_content = content.decode('utf-8', errors='replace').replace('\ufffd', '')
 
         # save fixed content as utf-8
         with open(fixed_file_path, 'w', encoding='utf-8') as f:
@@ -225,8 +225,8 @@ class Component(ComponentBase):
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
         try:
             in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
-            # self._insert_byte_at_position(in_file, 0xCA, 12)
-            # self._insert_byte_at_position(in_file, 0xf7, 12)
+            #self._insert_byte_at_position(in_file, 0xCA, 12)
+            #self._insert_byte_at_position(in_file, 0xf7, 12)
 
             in_file = self._fix_text_file(in_file)
 
