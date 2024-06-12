@@ -359,6 +359,7 @@ class Component(ComponentBase):
                 logging.debug(
                     f'Unsupported report format {report_spec.report_representation.get("format")},'
                     f' report format will be updated to CSV')
+                report_spec.report_representation['format'] = 'CSV'
                 report_id = self._update_existing_report(profile_id, report_spec, report_spec)
             reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
         return reports_2_process
