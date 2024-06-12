@@ -214,33 +214,48 @@ class Component(ComponentBase):
 
         return fixed_file_path
 
+    @staticmethod
+    def _insert_byte_at_position(file_path, byte, position):
+        with open(file_path, 'rb') as f:
+            content = f.read()
+        modified_content = content[:position] + bytes([byte]) + content[position:]
+        with open(file_path, 'wb') as f:
+            f.write(modified_content)
+
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
-        in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
-        in_file = self._fix_text_file(in_file)
+        try:
+            in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
+            # self._insert_byte_at_position(in_file, 0xCA, 12)
+            # self._insert_byte_at_position(in_file, 0xf7, 12)
 
-        out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
+            in_file = self._fix_text_file(in_file)
 
-        logging.debug(f'Processing raw file {in_file}')
-        with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
-            csv_src = csv.reader(src, delimiter=',')
-            csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
-            for row in csv_src:
-                if row == ['Report Fields']:
-                    break
+            out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
 
-            header = next(csv_src)
-            header.insert(0, 'profileName')
-            header.insert(0, 'profileId')
+            logging.debug(f'Processing raw file {in_file}')
+            with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
+                csv_src = csv.reader(src, delimiter=',')
+                csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
+                for row in csv_src:
+                    if row == ['Report Fields']:
+                        break
 
-            for row in csv_src:
-                if row[0] == 'Grand Total:':
-                    break
-                row.insert(0, profile_name)
-                row.insert(0, profile_id)
-                csv_tgt.writerow(row)
+                header = next(csv_src)
+                header.insert(0, 'profileName')
+                header.insert(0, 'profileId')
 
-        logging.debug(f'Final table file {out_file} was saved')
-        return header
+                for row in csv_src:
+                    if row[0] == 'Grand Total:':
+                        break
+                    row.insert(0, profile_name)
+                    row.insert(0, profile_id)
+                    csv_tgt.writerow(row)
+
+            logging.debug(f'Final table file {out_file} was saved')
+            return header
+        except Exception as e:
+            logging.exception(e)
+            return []
 
     def init_configuration(self):
         self.cfg: Configuration = Configuration.load_from_dict(self.configuration.parameters)
