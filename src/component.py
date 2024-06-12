@@ -254,8 +254,9 @@ class Component(ComponentBase):
             logging.debug(f'Final table file {out_file} was saved')
             return header
         except Exception as e:
-            logging.exception(e)
-            return []
+            logging.info(e)
+            exit(0)
+            # return []
 
     def init_configuration(self):
         self.cfg: Configuration = Configuration.load_from_dict(self.configuration.parameters)
