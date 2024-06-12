@@ -309,6 +309,8 @@ class Component(ComponentBase):
             # Available statuses: PROCESSING|REPORT_AVAILABLE|FAILED|CANCELLED|QUEUED
             if status == 'REPORT_AVAILABLE':
                 file_name = self._get_report_raw_file_path(profile_id, report_id)
+                file_format = file['format']
+                logging.debug(f'Report {report_id} in format {file_format} is ready for download')
                 self.google_client.get_report_file(report_id=report_id, file_id=file_id, local_file_name=file_name)
                 logging.debug(f'Report file {file_name} was saved')
             elif status == 'FAILED' or status == 'CANCELLED':
