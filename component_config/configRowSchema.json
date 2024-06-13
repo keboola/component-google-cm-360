@@ -296,6 +296,7 @@
         "minLength": 1
       },
       "options": {
+        "tooltip": "**Reports must be in CSV format!**/n Format is setup in the report's schedule/delivery settings /n more details [here](https://support.google.com/campaignmanager/answer/7674615?hl=en#:~:text=Click%20the%20%22-,Delivery,-%22%20toggle%20to%20turn)./n If you need to run a report in a different format, please use the 'Report ID as a template' option.",
         "dependencies": {
           "input_variant": "existing_report_ids"
         },
