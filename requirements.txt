@@ -12,3 +12,6 @@ dateparser~=1.1.7
 pyhocon~=0.3.59
 
 beautifulsoup4==4.12.2
+
+exceptiongroup~=1.2.1
+dataconf~=2.1.3
