@@ -358,11 +358,11 @@ class Component(ComponentBase):
                         errors.append(f'Missmatch in report format {report_spec.report_representation.get("format")} '
                                       f'for profile {profile_id} / report {report_id}')
 
-                reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
-                if errors:
-                    for error in errors:
-                        logging.error(error)
-                    raise UserException('Mismatches in report!')
+            reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
+        if errors:
+            for error in errors:
+                logging.error(error)
+            raise UserException('Mismatches in report!')
         return reports_2_process
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
