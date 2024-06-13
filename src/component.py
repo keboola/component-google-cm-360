@@ -362,7 +362,7 @@ class Component(ComponentBase):
                 if errors:
                     for error in errors:
                         logging.error(error)
-                    raise UserException(f'Mismatches in report!')
+                    raise UserException('Mismatches in report!')
         return reports_2_process
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
