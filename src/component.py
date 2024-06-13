@@ -197,7 +197,6 @@ class Component(ComponentBase):
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
-
         logging.debug(f'Processing raw file {in_file}')
         with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
@@ -271,10 +270,8 @@ class Component(ComponentBase):
             # Available statuses: PROCESSING|REPORT_AVAILABLE|FAILED|CANCELLED|QUEUED
             if status == 'REPORT_AVAILABLE':
                 file_name = self._get_report_raw_file_path(profile_id, report_id)
-                file_format = file['format']
-                logging.debug(f'Report {report_id} in format {file_format} is ready for download')
                 self.google_client.get_report_file(report_id=report_id, file_id=file_id, local_file_name=file_name)
-                logging.debug(f'Report file {file_name} was saved')
+                logging.debug(f'Report file {file_name} in format {file["format"]} was saved')
             elif status == 'FAILED' or status == 'CANCELLED':
                 logging.info(f'Report {report_id} failed or canceled')
             else:
@@ -355,14 +352,25 @@ class Component(ComponentBase):
                                   f'{report_spec.get_metrics_names()} '
                                   f'for profile {profile_id} / report {report_id}')
                     raise UserException('Missmatch in report metrics')
+
             if report_spec.report_representation.get('format') != 'CSV':
                 logging.debug(
                     f'Unsupported report format {report_spec.report_representation.get("format")},'
-                    f' report format will be updated to CSV')
-                report_spec.report_representation['format'] = 'CSV'
-                report_id = self._update_existing_report(profile_id, report_spec, report_spec)
+                    f' updating report format to CSV')
+                self._update_existing_report_format(profile_id, report_id, report_spec)
+
             reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
         return reports_2_process
+
+    def _update_existing_report_format(self, profile_id: str, report_id: str, report_spec: CsvReportSpecification):
+        """
+        Updates existing report format to CSV
+        """
+        updated_report_representation = report_spec.report_representation.copy()
+        updated_report_representation['format'] = 'CSV'
+        self.google_client.update_report(report=updated_report_representation,
+                                         profile_id=profile_id,
+                                         report_id=report_id)
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
         report_response = self.google_client.get_report(profile_id=profile_id, report_id=report_id)
