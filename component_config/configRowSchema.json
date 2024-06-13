@@ -286,7 +286,7 @@
       "title": "Report ID(s) to be run in parallel",
       "propertyOrder": 400,
       "minLength": 1,
-      "description": "Select reports that will run in parallel.",
+      "description": "Select reports to run in parallel. If reports have a schedule/delivery format defined, it must be in CSV format!",
       "format": "select",
       "uniqueItems": true,
       "items": {

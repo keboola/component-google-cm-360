@@ -329,48 +329,41 @@ class Component(ComponentBase):
 
         """
         reports_2_process = []
+        errors = []
         for rep_ids in self.cfg.existing_report_ids:
             profile_id, report_id = rep_ids.split(':')
             report_spec = self._get_existing_report(profile_id=profile_id, report_id=report_id)
-            if not self.common_report_type:
+            report_spec.report_representation['format'] = 'None'
+            if self.common_report_type:
                 self.common_report_type = report_spec.report_type
                 self.common_dimensions = report_spec.get_dimensions_names()
                 self.common_metrics = report_spec.get_metrics_names()
             else:
                 if self.common_report_type != report_spec.report_type:
-                    logging.debug(f'Missmatch in report type {self.common_report_type} x {report_spec.report_type} '
+                    errors.append(f'Missmatch in report type {self.common_report_type} x {report_spec.report_type} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report type')
 
                 if self.common_dimensions != report_spec.get_dimensions_names():
-                    logging.debug(f'Missmatch in report dimensions {self.common_dimensions} x '
+                    errors.append(f'Missmatch in report dimensions {self.common_dimensions} x '
                                   f'{report_spec.get_dimensions_names()} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report dimensions')
+
                 if self.common_metrics != report_spec.get_metrics_names():
-                    logging.debug(f'Missmatch in report metrics {self.common_metrics} x '
+                    errors.append(f'Missmatch in report metrics {self.common_metrics} x '
                                   f'{report_spec.get_metrics_names()} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report metrics')
 
-            if report_spec.report_representation.get('format') != 'CSV':
-                logging.debug(
-                    f'Unsupported report format {report_spec.report_representation.get("format")},'
-                    f' updating report format to CSV')
-                self._update_existing_report_format(profile_id, report_id, report_spec)
+                if report_spec.report_representation.get('format'):
+                    if report_spec.report_representation.get('format') != 'CSV':
+                        errors.append(f'Missmatch in report format {report_spec.report_representation.get("format")} '
+                                      f'for profile {profile_id} / report {report_id}')
 
-            reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
+                reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
+                if errors:
+                    for error in errors:
+                        logging.error(error)
+                    raise UserException(f'Mismatches in report!')
         return reports_2_process
-
-    def _update_existing_report_format(self, profile_id: str, report_id: str, report_spec: CsvReportSpecification):
-        """
-        Updates existing report format to CSV
-        """
-        updated_report_representation = report_spec.report_representation.copy()
-        updated_report_representation['format'] = 'CSV'
-        self.google_client.update_report(report=updated_report_representation,
-                                         profile_id=profile_id,
-                                         report_id=report_id)
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
         report_response = self.google_client.get_report(profile_id=profile_id, report_id=report_id)
@@ -543,10 +536,11 @@ class Component(ComponentBase):
         reports_w_labels = []
         for profile_id in profile_ids:
             reports = self.google_client.list_reports(profile_id=profile_id)
+            # list all report only in CSV format, with None format CM360 API returns CSV
             reports_w_labels.extend([SelectElement(value=f'{profile_id}:{report["id"]}',
                                                    label=f'[{profiles_2_names[profile_id]}] '
                                                          f'{report["name"]} ({profile_id}:{report["id"]})')
-                                     for report in reports])
+                                     for report in reports if report.get('format', 'CSV') == 'CSV'])
         return reports_w_labels
 
     @sync_action('list_report_dimensions')
