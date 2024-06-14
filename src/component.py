@@ -353,9 +353,9 @@ class Component(ComponentBase):
                                   f'{report_spec.get_metrics_names()} '
                                   f'for profile {profile_id} / report {report_id}')
 
-                if report_spec.report_representation.get('format', 'CSV') != 'CSV':
-                    errors.append(f'Missmatch in report format {report_spec.report_representation.get("format")} '
-                                  f'for profile {profile_id} / report {report_id}')
+            if report_spec.report_representation.get('format', 'CSV') != 'CSV':
+                errors.append(f'Missmatch in report format {report_spec.report_representation.get("format")} '
+                              f'for profile {profile_id} / report {report_id}')
 
             reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
         if errors:
