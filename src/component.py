@@ -539,7 +539,7 @@ class Component(ComponentBase):
 
         self._init_google_client()
         profiles_2_names = self.google_client.list_profiles()
-        reports_w_labels = [SelectElement(value='', label='Select report')]
+        reports_w_labels = []
         for profile_id in profile_ids:
             reports = self.google_client.list_reports(profile_id=profile_id)
 
