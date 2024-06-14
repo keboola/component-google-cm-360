@@ -8,7 +8,6 @@ import json
 import logging
 import os
 import time
-from exceptiongroup import ExceptionGroup
 from typing import Dict, List
 
 import dateparser
