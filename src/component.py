@@ -358,9 +358,8 @@ class Component(ComponentBase):
 
             reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
         if errors:
-            for error in errors:
-                logging.error(error)
-            raise UserException('Mismatches in report. More in result.')
+            logging.exception(exc, extra={"full_message": '\n'.join(errors), 'error': exc})
+            #raise UserException('Mismatches in report. More in result.')
         return reports_2_process
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
