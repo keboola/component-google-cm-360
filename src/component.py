@@ -532,8 +532,8 @@ class Component(ComponentBase):
             if is choice existing report we return reports only in CSV format
             or None (with None format CM360 API returns CSV)
             """
-            selected_variant = self.configuration.parameters.get('destination').get('selected_variant')
-            if selected_variant == 'existing_report_ids':
+            input_variant = self.configuration.parameters.get('input_variant')
+            if input_variant == 'existing_report_ids':
                 return report.get('format', 'CSV') == 'CSV'
             return True
 
