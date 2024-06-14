@@ -334,7 +334,6 @@ class Component(ComponentBase):
         for rep_ids in self.cfg.existing_report_ids:
             profile_id, report_id = rep_ids.split(':')
             report_spec = self._get_existing_report(profile_id=profile_id, report_id=report_id)
-            report_spec.report_representation['format'] = 'None'
             if not self.common_report_type:
                 self.common_report_type = report_spec.report_type
                 self.common_dimensions = report_spec.get_dimensions_names()
