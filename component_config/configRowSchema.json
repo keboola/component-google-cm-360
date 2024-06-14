@@ -286,7 +286,7 @@
       "title": "Report ID(s) to be run in parallel",
       "propertyOrder": 400,
       "minLength": 1,
-      "description": "Select reports that will run in parallel.",
+      "description": "Select reports to run in parallel. If reports have a schedule/delivery format defined, it must be in CSV format! Setup details <a href=\"https://support.google.com/campaignmanager/answer/7674615?hl=en#:~:text=Click%20the%20%22-,Delivery,-%22%20toggle%20to%20turn\">here.</a>",
       "format": "select",
       "uniqueItems": true,
       "items": {
@@ -296,6 +296,7 @@
         "minLength": 1
       },
       "options": {
+        "tooltip": "**Reports must be in CSV format!**\n Format setup is in the report's schedule/delivery settings.\n If you need to run a report in a different format, please use the 'Report ID as a template' option.",
         "dependencies": {
           "input_variant": "existing_report_ids"
         },

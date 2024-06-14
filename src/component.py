@@ -197,6 +197,7 @@ class Component(ComponentBase):
     def _retrieve_table_from_raw(self, profile_id, profile_name, report_id) -> list:
         in_file = self._get_report_raw_file_path(profile_id=profile_id, report_id=report_id)
         out_file = self._get_final_file_path(profile_id=profile_id, report_id=report_id)
+        logging.debug(f'Processing raw file {in_file}')
         with open(in_file, 'rt') as src, open(out_file, 'wt') as tgt:
             csv_src = csv.reader(src, delimiter=',')
             csv_tgt = csv.writer(tgt, delimiter=',', lineterminator='\n')
@@ -270,7 +271,7 @@ class Component(ComponentBase):
             if status == 'REPORT_AVAILABLE':
                 file_name = self._get_report_raw_file_path(profile_id, report_id)
                 self.google_client.get_report_file(report_id=report_id, file_id=file_id, local_file_name=file_name)
-                logging.debug(f'Report file {file_name} was saved')
+                logging.debug(f'Report file {file_name} in format {file["format"]} was saved')
             elif status == 'FAILED' or status == 'CANCELLED':
                 logging.info(f'Report {report_id} failed or canceled')
             else:
@@ -328,6 +329,7 @@ class Component(ComponentBase):
 
         """
         reports_2_process = []
+        errors = []
         for rep_ids in self.cfg.existing_report_ids:
             profile_id, report_id = rep_ids.split(':')
             report_spec = self._get_existing_report(profile_id=profile_id, report_id=report_id)
@@ -337,21 +339,26 @@ class Component(ComponentBase):
                 self.common_metrics = report_spec.get_metrics_names()
             else:
                 if self.common_report_type != report_spec.report_type:
-                    logging.debug(f'Missmatch in report type {self.common_report_type} x {report_spec.report_type} '
+                    errors.append(f'Missmatch in report type {self.common_report_type} x {report_spec.report_type} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report type')
 
                 if self.common_dimensions != report_spec.get_dimensions_names():
-                    logging.debug(f'Missmatch in report dimensions {self.common_dimensions} x '
+                    errors.append(f'Missmatch in report dimensions {self.common_dimensions} x '
                                   f'{report_spec.get_dimensions_names()} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report dimensions')
+
                 if self.common_metrics != report_spec.get_metrics_names():
-                    logging.debug(f'Missmatch in report metrics {self.common_metrics} x '
+                    errors.append(f'Missmatch in report metrics {self.common_metrics} x '
                                   f'{report_spec.get_metrics_names()} '
                                   f'for profile {profile_id} / report {report_id}')
-                    raise UserException('Missmatch in report metrics')
+
+            if report_spec.report_representation.get('format', 'CSV') != 'CSV':
+                errors.append(f'Missmatch in report format {report_spec.report_representation.get("format")} '
+                              f'for profile {profile_id} / report {report_id}')
+
             reports_2_process.append(dict(profile_id=profile_id, report_id=report_id))
+        if errors:
+            raise UserException('\n'.join(errors))
         return reports_2_process
 
     def _get_existing_report(self, profile_id: str, report_id: str) -> CsvReportSpecification:
@@ -516,19 +523,30 @@ class Component(ComponentBase):
 
     @sync_action('load_reports')
     def load_reports(self):
-
         profile_ids = self.configuration.parameters.get('profiles')
         if not profile_ids or len(profile_ids) == 0:
             raise ValueError('No profiles were specified')
+
+        def _check_format_existing_report(report) -> bool:
+            """
+            if is choice existing report we return reports only in CSV format
+            or None (with None format CM360 API returns CSV)
+            """
+            input_variant = self.configuration.parameters.get('input_variant')
+            if input_variant == 'existing_report_ids':
+                return report.get('format', 'CSV') == 'CSV'
+            return True
+
         self._init_google_client()
         profiles_2_names = self.google_client.list_profiles()
         reports_w_labels = []
         for profile_id in profile_ids:
             reports = self.google_client.list_reports(profile_id=profile_id)
+
             reports_w_labels.extend([SelectElement(value=f'{profile_id}:{report["id"]}',
                                                    label=f'[{profiles_2_names[profile_id]}] '
                                                          f'{report["name"]} ({profile_id}:{report["id"]})')
-                                     for report in reports])
+                                     for report in reports if _check_format_existing_report(report)])
         return reports_w_labels
 
     @sync_action('list_report_dimensions')
