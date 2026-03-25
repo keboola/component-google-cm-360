@@ -3,15 +3,13 @@ name = "component-google-cm-360"
 dynamic = ["version"]
 requires-python = "~=3.13.0"
 dependencies = [
-    "keboola-component>=1.4.2",
+    "keboola-component>=1.9.0",
     "keboola.utils>=1.1.0",
     "keboola.csvwriter>=1.0.1",
     "google-api-python-client>=2.119.0",
     "google-auth-oauthlib>=1.2.0",
-    "dataconf @ git+https://github.com/bakobako/dataconf.git",
     "requests>=2.28.1",
     "dateparser>=1.1.7",
-    "pyhocon>=0.3.59",
     "beautifulsoup4>=4.12.2",
 ]
 
