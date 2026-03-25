@@ -57,7 +57,7 @@ class Component(ComponentBase):
 
     def __init__(self):
         super().__init__()
-        self.cfg: Configuration = None
+        self.cfg = Configuration(**self.configuration.parameters)
         self.google_client: GoogleCM360Client
 
         self.existing_reports_cache: dict = {}
@@ -77,7 +77,8 @@ class Component(ComponentBase):
         - Collect reported data into an output table(s)
         """
 
-        self.init_configuration()
+        if not self.cfg.destination.table_name and self.cfg.input_variant != InputVariant.METADATA:
+            raise UserException("Destination table name is missing!")
 
         prev_state = self.get_state_file()
         self.existing_reports_cache = prev_state.get("reports")
@@ -216,12 +217,6 @@ class Component(ComponentBase):
 
         logging.debug(f"Final table file {out_file} was saved")
         return header
-
-    def init_configuration(self):
-        self.cfg: Configuration = Configuration.load_from_dict(self.configuration.parameters)
-
-        if not self.cfg.destination.table_name and self.cfg.input_variant != InputVariant.METADATA:
-            raise UserException("Destination table name is missing!")
 
     def _process_report_files(self, report_files: list):
         os.makedirs(self._get_final_directory(), exist_ok=True)

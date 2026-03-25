@@ -1,4 +1,3 @@
-import json
 from enum import StrEnum
 
 from keboola.component.exceptions import UserException
@@ -55,9 +54,3 @@ class Configuration(BaseModel):
     existing_report_ids: list[str] = Field(default_factory=list)
     report_template_id: str = ""
     debug: bool = False
-
-    @classmethod
-    def load_from_dict(cls, configuration: dict) -> "Configuration":
-        json_conf = json.dumps(configuration)
-        json_conf = json_conf.replace('"#', '"pswd_')
-        return cls.model_validate(json.loads(json_conf))
