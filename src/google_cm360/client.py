@@ -1,15 +1,13 @@
 # import http
 import io
+import logging
+from datetime import datetime
 
 from google_auth_oauthlib.flow import Flow
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
 from googleapiclient.http import MediaIoBaseDownload
 from keboola.component.exceptions import UserException
-
-from datetime import datetime
-
-import logging
 
 
 class GoogleDV360ClientException(UserException):
@@ -20,25 +18,22 @@ class GoogleCM360Client:
     def __init__(self, client_id: str, app_secret: str, token_data: dict, scopes: list):
         self.service = None
         token_response = token_data
-        token_response['expires_at'] = 22222
+        token_response["expires_at"] = 22222
         client_secrets = {
             "web": {
                 "client_id": client_id,
                 "client_secret": app_secret,
                 "redirect_uris": ["https://www.example.com/oauth2callback"],
                 "auth_uri": "https://oauth2.googleapis.com/auth",
-                "token_uri": "https://oauth2.googleapis.com/token"
+                "token_uri": "https://oauth2.googleapis.com/token",
             }
         }
 
         credentials = Flow.from_client_config(client_secrets, scopes=scopes, token=token_response).credentials
-        discovery_url = 'https://dfareporting.googleapis.com/$discovery/rest?version=v5'
+        discovery_url = "https://dfareporting.googleapis.com/$discovery/rest?version=v5"
         # Build the API service.
-        self.service = discovery.build(
-            'dfareporting', 'v5',
-            discoveryServiceUrl=discovery_url,
-            credentials=credentials)
-        logging.info(f'{datetime.now().strftime("%H:%M:%S.%f")[:-3]} Google DV360 client initialized')
+        self.service = discovery.build("dfareporting", "v5", discoveryServiceUrl=discovery_url, credentials=credentials)
+        logging.info(f"{datetime.now().strftime('%H:%M:%S.%f')[:-3]} Google DV360 client initialized")
 
     def list_profiles(self) -> dict:
         """Call API to retrieve available profiles
@@ -48,7 +43,7 @@ class GoogleCM360Client:
         """
         request = self.service.userProfiles().list()
         response = request.execute()
-        id_2_name = dict([(p['profileId'], p['userName']) for p in response['items']])
+        id_2_name = dict([(p["profileId"], p["userName"]) for p in response["items"]])
         return id_2_name
 
     def list_metadata(self, profile_id: str = None, endpoint_name: str = None):
@@ -60,39 +55,37 @@ class GoogleCM360Client:
         try:
             next_page = None
             while True:
-
-                request_args = {'profileId': profile_id}
+                request_args = {"profileId": profile_id}
                 if next_page is not None:
-                    request_args['pageToken'] = next_page
+                    request_args["pageToken"] = next_page
 
                 response = getattr(self.service, endpoint_name)().list(**request_args).execute()
 
                 if endpoint_name in response:
-                    for item in response[endpoint_name]:
-                        yield item
+                    yield from response[endpoint_name]
 
-                next_page = response.get('nextPageToken')
+                next_page = response.get("nextPageToken")
                 if not next_page:
                     break
 
         except HttpError as ex:
             if ex.resp.status == 403:
-                raise UserException(f'{ex.reason} Reauthorize the component to enable new scopes for listing metadata')
+                raise UserException(f"{ex.reason} Reauthorize the component to enable new scopes for listing metadata")
 
         except Exception as ex:
-            logging.warning(f'Listing metadata for {endpoint_name}: {ex}')
+            logging.warning(f"Listing metadata for {endpoint_name}: {ex}")
 
     def list_reports(self, profile_id: str = None):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
+            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
 
         request = self.service.reports().list(profileId=profile_id)
         response = request.execute()
-        return response['items']
+        return response["items"]
 
     def get_report(self, report_id: str, profile_id: str = None, ignore_error: bool = False):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
+            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
         request = self.service.reports().get(profileId=profile_id, reportId=report_id)
         try:
             response = request.execute()
@@ -100,7 +93,7 @@ class GoogleCM360Client:
             if ignore_error:
                 return None
             else:
-                raise UserException(f'Get report {report_id} for {profile_id}: {ex.reason}')
+                raise UserException(f"Get report {report_id} for {profile_id}: {ex.reason}")
         return response
 
     def delete_report(self, report_id: str, profile_id: str, ignore_error: bool = False):
@@ -111,7 +104,7 @@ class GoogleCM360Client:
             if ignore_error:
                 return None
             else:
-                raise UserException(f'Error deleting report {report_id} for {profile_id}: {ex.reason}')
+                raise UserException(f"Error deleting report {report_id} for {profile_id}: {ex.reason}")
         return response
 
     def patch_report(self, report: dict, report_id: str, profile_id: str):
@@ -122,15 +115,20 @@ class GoogleCM360Client:
         response = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report).execute()
         return response
 
-    def list_compatible_fields(self, report_type: str = "STANDARD", compat_fields: str = "reportCompatibleFields",
-                               attribute: str = "dimensions", profile_id: str = None):
+    def list_compatible_fields(
+        self,
+        report_type: str = "STANDARD",
+        compat_fields: str = "reportCompatibleFields",
+        attribute: str = "dimensions",
+        profile_id: str = None,
+    ):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()['items'][0]['profileId']
+            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
 
         request = self.service.reports().compatibleFields().query(profileId=profile_id, body={"type": report_type})
         response = request.execute()
 
-        return [item['name'] for item in response[compat_fields][attribute]]
+        return [item["name"] for item in response[compat_fields][attribute]]
 
     def create_report(self, report: dict, profile_id: str = None):
         inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
@@ -145,11 +143,10 @@ class GoogleCM360Client:
         return report_file
 
     def get_report_file(self, report_id: str, file_id: str, local_file_name: str):
-        out_file = io.FileIO(local_file_name, mode='wb')
+        out_file = io.FileIO(local_file_name, mode="wb")
         request = self.service.files().get_media(reportId=report_id, fileId=file_id)
         CHUNK_SIZE = 8192
-        downloader = MediaIoBaseDownload(
-            out_file, request, chunksize=CHUNK_SIZE)
+        downloader = MediaIoBaseDownload(out_file, request, chunksize=CHUNK_SIZE)
         download_finished = False
         while download_finished is False:
             _, download_finished = downloader.next_chunk()

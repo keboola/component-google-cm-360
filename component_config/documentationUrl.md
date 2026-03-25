@@ -1,0 +1,1 @@
+https://github.com/keboola/component-google-cm-360/blob/main/README.md
