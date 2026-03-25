@@ -32,10 +32,10 @@ class GoogleCM360Client:
         }
 
         credentials = Flow.from_client_config(client_secrets, scopes=scopes, token=token_response).credentials
-        discovery_url = 'https://dfareporting.googleapis.com/$discovery/rest?version=v4'
+        discovery_url = 'https://dfareporting.googleapis.com/$discovery/rest?version=v5'
         # Build the API service.
         self.service = discovery.build(
-            'dfareporting', 'v4',
+            'dfareporting', 'v5',
             discoveryServiceUrl=discovery_url,
             credentials=credentials)
         logging.info(f'{datetime.now().strftime("%H:%M:%S.%f")[:-3]} Google DV360 client initialized')
