@@ -262,7 +262,7 @@ class Component(ComponentBase):
             f"{self.cfg.destination.table_name}.csv",
             primary_key=pks,
             incremental=self.cfg.destination.incremental_loading,
-            columns=dimensions + metrics,
+            schema=dimensions + metrics,
         )
         self.write_manifest(result_table)
 
