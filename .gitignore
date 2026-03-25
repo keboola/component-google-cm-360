@@ -1,11 +1,18 @@
 # Byte-compiled / optimized / DLL files
+.venv/
 __pycache__/
-*.py[cod]
-.idea
+*.pyc
+*.pyo
+.pytest_cache/
+.ruff_cache/
+/data
+*.egg-info/
+src/*.egg-info/
+dist/
+build/
+.env
+.claude
 .vscode
-.DS_Store
-/example/.project
-/example/.pydevproject
 
 # kbc datafolder
 /data
