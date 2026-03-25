@@ -1,13 +1,13 @@
 import dataclasses
 import json
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import StrEnum
 
 import dataconf
 from keboola.component.exceptions import UserException
 from pyhocon.config_tree import ConfigTree
 
-FILE_JSON_LABELS = 'labels.json'
+FILE_JSON_LABELS = "labels.json"
 
 
 class ConfigurationException(UserException):
@@ -43,15 +43,14 @@ class ReportSettings:
 
 
 class ConfigurationBase:
-
     @staticmethod
     def _convert_private_value(value: str):
         return value.replace('"#', '"pswd_')
 
     @staticmethod
     def _convert_private_value_inv(value: str):
-        if value and value.startswith('pswd_'):
-            return value.replace('pswd_', '#', 1)
+        if value and value.startswith("pswd_"):
+            return value.replace("pswd_", "#", 1)
         else:
             return value
 
@@ -76,12 +75,14 @@ class ConfigurationBase:
         Returns: List[str]
 
         """
-        return [cls._convert_private_value_inv(f.name) for f in dataclasses.fields(cls)
-                if f.default == dataclasses.MISSING
-                and f.default_factory == dataclasses.MISSING]
+        return [
+            cls._convert_private_value_inv(f.name)
+            for f in dataclasses.fields(cls)
+            if f.default == dataclasses.MISSING and f.default_factory == dataclasses.MISSING
+        ]
 
 
-class InputVariant(str, Enum):
+class InputVariant(StrEnum):
     REPORT_SPEC = "report_specification"
     REPORT_TEMPLATE = "report_template_id"
     REPORT_IDS = "existing_report_ids"

@@ -1,0 +1,11 @@
+[project]
+name = "component-google-cm-360"
+dynamic = ["version"]
+requires-python = "~=3.13.0"
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+
+[tool.ruff.lint]
+extend-select = ["I", "UP"]
