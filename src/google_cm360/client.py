@@ -43,7 +43,13 @@ class GoogleCM360Client:
         """
         request = self.service.userProfiles().list()
         response = request.execute()
-        id_2_name = dict([(p["profileId"], p["userName"]) for p in response["items"]])
+        items = response.get("items", [])
+        if not items:
+            raise UserException(
+                "No Campaign Manager 360 profiles found for the authorized account. "
+                "Please verify the account has access to at least one CM360 profile."
+            )
+        id_2_name = dict([(p["profileId"], p["userName"]) for p in items])
         return id_2_name
 
     def list_metadata(self, profile_id: str = None, endpoint_name: str = None):
@@ -77,15 +83,29 @@ class GoogleCM360Client:
 
     def list_reports(self, profile_id: str = None):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
+            profiles_response = self.service.userProfiles().list().execute()
+            items = profiles_response.get("items", [])
+            if not items:
+                raise UserException(
+                    "No Campaign Manager 360 profiles found for the authorized account. "
+                    "Please verify the account has access to at least one CM360 profile."
+                )
+            profile_id = items[0]["profileId"]
 
         request = self.service.reports().list(profileId=profile_id)
         response = request.execute()
-        return response["items"]
+        return response.get("items", [])
 
     def get_report(self, report_id: str, profile_id: str = None, ignore_error: bool = False):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
+            profiles_response = self.service.userProfiles().list().execute()
+            items = profiles_response.get("items", [])
+            if not items:
+                raise UserException(
+                    "No Campaign Manager 360 profiles found for the authorized account. "
+                    "Please verify the account has access to at least one CM360 profile."
+                )
+            profile_id = items[0]["profileId"]
         request = self.service.reports().get(profileId=profile_id, reportId=report_id)
         try:
             response = request.execute()
@@ -123,7 +143,14 @@ class GoogleCM360Client:
         profile_id: str = None,
     ):
         if not profile_id:
-            profile_id = self.service.userProfiles().list().execute()["items"][0]["profileId"]
+            profiles_response = self.service.userProfiles().list().execute()
+            items = profiles_response.get("items", [])
+            if not items:
+                raise UserException(
+                    "No Campaign Manager 360 profiles found for the authorized account. "
+                    "Please verify the account has access to at least one CM360 profile."
+                )
+            profile_id = items[0]["profileId"]
 
         request = self.service.reports().compatibleFields().query(profileId=profile_id, body={"type": report_type})
         response = request.execute()
