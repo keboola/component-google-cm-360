@@ -3,6 +3,7 @@ import io
 import logging
 from datetime import datetime
 
+from google.auth.exceptions import RefreshError
 from google_auth_oauthlib.flow import Flow
 from googleapiclient import discovery
 from googleapiclient.errors import HttpError
@@ -44,6 +45,10 @@ class GoogleCM360Client:
         try:
             request = self.service.userProfiles().list()
             response = request.execute()
+        except RefreshError as ex:
+            raise UserException(
+                "The OAuth token has expired or been revoked. Please reauthorize the application."
+            ) from ex
         except HttpError as ex:
             raise UserException(f"Failed to load CM360 profiles: {ex.reason}") from ex
         items = response.get("items", [])
