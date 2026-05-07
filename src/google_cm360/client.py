@@ -41,8 +41,11 @@ class GoogleCM360Client:
         Returns: mapping of profileId -> userName
 
         """
-        request = self.service.userProfiles().list()
-        response = request.execute()
+        try:
+            request = self.service.userProfiles().list()
+            response = request.execute()
+        except HttpError as ex:
+            raise UserException(f"Failed to load CM360 profiles: {ex.reason}") from ex
         items = response.get("items", [])
         if not items:
             raise UserException(

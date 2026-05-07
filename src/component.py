@@ -77,6 +77,9 @@ class Component(ComponentBase):
         - Collect reported data into an output table(s)
         """
 
+        if not self.cfg.input_variant:
+            raise UserException("Input variant is not configured.")
+
         if not self.cfg.destination.table_name and self.cfg.input_variant != InputVariant.METADATA:
             raise UserException("Destination table name is missing!")
 

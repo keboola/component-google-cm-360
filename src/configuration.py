@@ -45,8 +45,8 @@ class InputVariant(StrEnum):
 class Configuration(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
-    profiles: list[str]
-    input_variant: InputVariant
+    profiles: list[str] = Field(default_factory=list)
+    input_variant: InputVariant | None = None
     destination: Destination = Field(default_factory=Destination)
     metadata: list[str] = Field(default_factory=list)
     time_range: TimeRange = Field(default_factory=TimeRange)
