@@ -77,6 +77,9 @@ class Component(ComponentBase):
         - Collect reported data into an output table(s)
         """
 
+        if not self.cfg.input_variant:
+            raise UserException("Input variant is not configured.")
+
         if not self.cfg.destination.table_name and self.cfg.input_variant != InputVariant.METADATA:
             raise UserException("Destination table name is missing!")
 
@@ -514,12 +517,15 @@ class Component(ComponentBase):
             raise ValueError("No or invalid report_type")
 
         dims = _load_attribute_labels_from_json(report_type, attribute)
-        self._init_google_client()
-        ids = self.google_client.list_compatible_fields(
-            report_type=report_type,
-            compat_fields=MAP_REPORT_TYPE_2_COMPATIBLE_SECTION[report_type],
-            attribute=attribute,
-        )
+        try:
+            self._init_google_client()
+            ids = self.google_client.list_compatible_fields(
+                report_type=report_type,
+                compat_fields=MAP_REPORT_TYPE_2_COMPATIBLE_SECTION[report_type],
+                attribute=attribute,
+            )
+        except RefreshError:
+            raise UserException("The OAuth token has expired or been revoked. Please reauthorize the application.")
 
         # assign labels to attribute ids an generate a response to action
         result = []
@@ -600,6 +606,8 @@ class Component(ComponentBase):
                 SelectElement(value=id, label=map_2_labels[id] if id in map_2_labels else id) for id in dimensions
             ]
             return dims_w_labels
+        except RefreshError:
+            raise UserException("The OAuth token has expired or been revoked. Please reauthorize the application.")
         except Exception:
             raise UserException(f"Cannot load Report id / profile: {report_id} / {profile_id}")
 
