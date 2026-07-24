@@ -1,6 +1,7 @@
 # import http
 import io
 import logging
+import time
 from datetime import datetime
 
 from google.auth.exceptions import RefreshError
@@ -13,6 +14,38 @@ from keboola.component.exceptions import UserException
 
 class GoogleDV360ClientException(UserException):
     pass
+
+
+# HTTP statuses worth retrying: transient server-side errors and rate limiting.
+# Any other status (e.g. 401/403/404) is re-raised immediately so those failures
+# keep failing exactly as before.
+RETRYABLE_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
+MAX_API_RETRIES = 5
+
+
+def _execute_with_retry(request_factory, attempts: int = MAX_API_RETRIES):
+    """Execute a googleapiclient request, retrying only transient HTTP errors.
+
+    ``request_factory`` is a no-argument callable that builds a fresh request; it is
+    invoked once per attempt. Behaviour on requests that already succeeded is unchanged:
+    the request is executed once and its result returned. Only a transient server-side
+    error (HTTP 429/5xx) triggers a bounded exponential backoff; any other ``HttpError``
+    is re-raised immediately, and a still-failing transient error is re-raised after the
+    final attempt so the job still fails loudly.
+    """
+    delay = 2
+    for attempt in range(1, attempts + 1):
+        try:
+            return request_factory().execute()
+        except HttpError as ex:
+            status = getattr(ex.resp, "status", None)
+            if status not in RETRYABLE_HTTP_STATUSES or attempt == attempts:
+                raise
+            logging.warning(
+                f"Transient error from CM360 API (HTTP {status}); retry {attempt}/{attempts - 1} in {delay}s"
+            )
+            time.sleep(delay)
+            delay = min(delay * 2, 30)
 
 
 class GoogleCM360Client:
@@ -170,7 +203,7 @@ class GoogleCM360Client:
         return inserted_report
 
     def run_report(self, report_id: str, profile_id: str):
-        report_file = self.service.reports().run(profileId=profile_id, reportId=report_id).execute()
+        report_file = _execute_with_retry(lambda: self.service.reports().run(profileId=profile_id, reportId=report_id))
         return report_file
 
     def report_status(self, report_id: str, file_id: str):
