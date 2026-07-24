@@ -20,10 +20,11 @@ class GoogleDV360ClientException(UserException):
 # Any other status (e.g. 401/403/404) is re-raised immediately so those failures
 # keep failing exactly as before.
 RETRYABLE_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
-MAX_API_RETRIES = 5
+# Total attempts, i.e. the initial call plus (MAX_API_ATTEMPTS - 1) retries.
+MAX_API_ATTEMPTS = 5
 
 
-def _execute_with_retry(request_factory, attempts: int = MAX_API_RETRIES):
+def _execute_with_retry(request_factory, attempts: int = MAX_API_ATTEMPTS):
     """Execute a googleapiclient request, retrying only transient HTTP errors.
 
     ``request_factory`` is a no-argument callable that builds a fresh request; it is
