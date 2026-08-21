@@ -24,6 +24,26 @@ RETRYABLE_HTTP_STATUSES = frozenset({429, 500, 502, 503, 504})
 MAX_API_ATTEMPTS = 5
 
 
+def _user_error_for_rejected_report(ex: HttpError, action: str) -> UserException | None:
+    """Map an HTTP 400 from the CM360 API onto a ``UserException`` the customer can act on.
+
+    The CM360 Reporting API answers an unacceptable report definition with HTTP 400 and a
+    self-explanatory message (e.g. "You cannot save or run a report for a date over 2 years
+    in the past."). Without this mapping that message never reaches the user: the raw
+    ``HttpError`` propagates to the entrypoint's generic handler and the job dies with an
+    opaque internal error (exit 2).
+
+    Returns ``None`` for any other status so the caller re-raises it untouched -- only the
+    exit code and the message of an already-failing job change, never whether it fails.
+    """
+    if getattr(ex.resp, "status", None) != 400:
+        return None
+    return UserException(
+        f"Campaign Manager 360 rejected the report definition while {action}: {ex.reason} "
+        "Please review the report configuration (for example the selected date range) and run the job again."
+    )
+
+
 def _execute_with_retry(request_factory, attempts: int = MAX_API_ATTEMPTS):
     """Execute a googleapiclient request, retrying only transient HTTP errors.
 
@@ -174,7 +194,13 @@ class GoogleCM360Client:
         return response
 
     def update_report(self, report: dict, report_id: str, profile_id: str):
-        response = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report).execute()
+        try:
+            response = self.service.reports().update(profileId=profile_id, reportId=report_id, body=report).execute()
+        except HttpError as ex:
+            user_error = _user_error_for_rejected_report(ex, f"updating report {report_id} in profile {profile_id}")
+            if user_error is None:
+                raise
+            raise user_error from ex
         return response
 
     def list_compatible_fields(
@@ -200,7 +226,13 @@ class GoogleCM360Client:
         return [item["name"] for item in response[compat_fields][attribute]]
 
     def create_report(self, report: dict, profile_id: str = None):
-        inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
+        try:
+            inserted_report = self.service.reports().insert(profileId=profile_id, body=report).execute()
+        except HttpError as ex:
+            user_error = _user_error_for_rejected_report(ex, f"creating a report in profile {profile_id}")
+            if user_error is None:
+                raise
+            raise user_error from ex
         return inserted_report
 
     def run_report(self, report_id: str, profile_id: str):
